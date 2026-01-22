@@ -2,12 +2,17 @@ package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Questionario;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 @Service
 public class QuestionarioService {
+
+    @Autowired
+    private DomandaService domandaService;
 
     private ArrayList<Questionario> questionari = new ArrayList<Questionario>() {
         {
@@ -23,7 +28,12 @@ public class QuestionarioService {
 
     public Questionario creaQuestionario(String nome, int numeroDomande) {
 
+        int ID = (int) (Math.random() * 100000); // TEMPORARIO
+
         Questionario questionario = new Questionario(nome, creaDomande(numeroDomande));
+
+        questionario.setID(ID); // TEMPORARIO
+
         return questionario;
     }
 
@@ -44,17 +54,17 @@ public class QuestionarioService {
         questionario.setDescrizione(descrizione);
     }
 
-    public void aggiungiDomanda(Questionario questionario, int numeroRisposte) {
+    public void aggiungiDomanda(Questionario questionario, String testo, int numeroRisposte) {
 
-        Domanda domanda = new Domanda(numeroRisposte);
+        Domanda domanda = domandaService.creaDomanda(testo, numeroRisposte);
         questionario.setNumeroDomande(questionario.getNumeroDomande() + 1);
-        questionario.getDomande().add(domanda);
+        questionario.getElencoDomande().add(domanda);
 
     }
 
     public void rimuoviDomanda(Questionario questionario,  Domanda domanda) {
 
         questionario.setNumeroDomande(questionario.getNumeroDomande() - 1);
-        questionario.getDomande().remove(domanda);
+        questionario.getElencoDomande().remove(domanda);
     }
 }

@@ -5,12 +5,7 @@ public class Risposta {
     private int ID; // GLI ID SARANNO LEGATI ALLE RISPOSTA SALVATI SUL DB
     private String testo;
 
-    public Risposta() {
-        testo = "";
-    }
-
     public Risposta(String testo) {
-        super();
         setTesto(testo);
     }
 

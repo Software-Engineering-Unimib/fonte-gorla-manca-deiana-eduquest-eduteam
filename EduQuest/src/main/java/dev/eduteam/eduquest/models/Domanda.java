@@ -11,15 +11,10 @@ public class Domanda {
     private ArrayList<Risposta> elencoRisposte;
     private Risposta rispostaCorretta;
 
-    public Domanda(int numeroRisposte) {
+    public Domanda(String testo) {
 
-        setNumeroRisposte(numeroRisposte);
-        elencoRisposte = creaRisposte(numeroRisposte);
-        testo = "";
-    }
-
-    public Domanda(String testo, int numeroRisposte) {
-        super();
+        setNumeroRisposte(0);
+        elencoRisposte = new ArrayList<Risposta>();
         setTesto(testo);
     }
 
@@ -38,7 +33,7 @@ public class Domanda {
 
     public int getNumeroRisposte() { return numeroRisposte; }
 
-    private void setNumeroRisposte(int numeroRisposte) {
+    public void setNumeroRisposte(int numeroRisposte) {
 
         if (numeroRisposte < 0) {
             throw new IllegalArgumentException("Il numero di risposte non puo' essere negativo");
@@ -46,32 +41,10 @@ public class Domanda {
 
         this.numeroRisposte = numeroRisposte;
     }
-    private ArrayList<Risposta> creaRisposte(int numeroRisposte) {
 
-        ArrayList<Risposta> tempRisposte = new ArrayList<Risposta>();
+    public ArrayList<Risposta> getElencoRisposte() { return elencoRisposte; }
 
-        for (int i = 0; i < numeroRisposte; i++) {
+    public Risposta getRispostaCorretta() { return rispostaCorretta; }
 
-            Risposta risposta = new Risposta();
-            tempRisposte.add(risposta);
-        }
-
-        return tempRisposte;
-    }
-
-    public void aggiungiRisposta() {
-
-        Risposta risposta = new Risposta();
-        setNumeroRisposte(numeroRisposte + 1);
-        elencoRisposte.add(risposta);
-
-    }
-
-    public void rimuoviDomanda(int ID) {
-
-        Risposta rispostaDaRimuovere = elencoRisposte.stream().filter(r -> r.getID() == ID).findFirst().orElse(null);
-        elencoRisposte.remove(rispostaDaRimuovere);
-        setNumeroRisposte(numeroRisposte - 1);
-
-    }
+    public void setRispostaCorretta(Risposta risposta) { rispostaCorretta = risposta; }
 }

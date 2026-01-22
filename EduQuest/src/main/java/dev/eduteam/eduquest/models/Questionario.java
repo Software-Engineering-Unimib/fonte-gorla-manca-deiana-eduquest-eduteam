@@ -54,7 +54,7 @@ public class Questionario {
         this.numeroDomande = numeroDomande;
     }
 
-    public ArrayList<Domanda> getDomande() { return elencoDomande;}
+    public ArrayList<Domanda> getElencoDomande() { return elencoDomande;}
 
     public LocalDate getDataCreazione() { return dataCreazione; }
 
