@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 @Service
 public class QuestionarioService {
@@ -16,9 +15,9 @@ public class QuestionarioService {
 
     private ArrayList<Questionario> questionari = new ArrayList<Questionario>() {
         {
-            add(creaQuestionario("Questionario Dinosauri", 5));
-            add(creaQuestionario("Questionario Scienze", 2));
-            add(creaQuestionario("Questionario Matematica", 3));
+            add(creaQuestionario("Questionario Dinosauri", "Domande su dinosauri", 5));
+            add(creaQuestionario("Questionario Scienze", "Domande su scienze", 2));
+            add(creaQuestionario("Questionario Matematica", "Domande su matematica", 3));
         }
     };
 
@@ -26,12 +25,11 @@ public class QuestionarioService {
         return questionari;
     }
 
-    public Questionario creaQuestionario(String nome, int numeroDomande) {
+    public Questionario creaQuestionario(String nome, String descrizione, int numeroDomande) {
 
         int ID = (int) (Math.random() * 100000); // TEMPORARIO
 
-        Questionario questionario = new Questionario(nome, creaDomande(numeroDomande));
-
+        Questionario questionario = new Questionario(nome, descrizione, creaDomande(numeroDomande));
         questionario.setID(ID); // TEMPORARIO
 
         return questionario;
@@ -43,7 +41,7 @@ public class QuestionarioService {
 
         for (int i = 0; i < numeroDomande; i++) {
 
-            Domanda domanda = new Domanda(0);
+            Domanda domanda = new Domanda(""); // Testo vuoto temporaneo sostitutivo allo 0
             tempDomande.add(domanda);
         }
 
@@ -62,7 +60,7 @@ public class QuestionarioService {
 
     }
 
-    public void rimuoviDomanda(Questionario questionario,  Domanda domanda) {
+    public void rimuoviDomanda(Questionario questionario, Domanda domanda) {
 
         questionario.setNumeroDomande(questionario.getNumeroDomande() - 1);
         questionario.getElencoDomande().remove(domanda);

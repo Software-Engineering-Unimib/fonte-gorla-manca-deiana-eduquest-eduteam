@@ -1,7 +1,5 @@
 package dev.eduteam.eduquest.models;
 
-
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -9,30 +7,50 @@ public class Questionario {
 
     // Variabili private del questionario
     private int ID; // GLI ID SARANNO LEGATI AI QUESTIONARI SALVATI SUL DB
-    private String descrizione;
+    //ID inizializzato nel costruttore vuoto
+    private String nome; //null
+    private String descrizione; //null
 
-    private int numeroDomande;
-    private ArrayList<Domanda> elencoDomande;
+    private int numeroDomande; //0
+    private ArrayList<Domanda> elencoDomande; //vuota?
 
-    private LocalDate dataCreazione;
+    private LocalDate dataCreazione; //inizializzata di default nel costruttore senza parametri
     // private Docente creatore;
 
-    // IL SUPER NON VUOLE IL PARAMETRO "numeroDomande" QUINDI SE CAUSA PROBLEMI PRENDETEVELA CON JAVA
+    //COSTRUTTORE SENZA PARAMETRI
 
-    public Questionario(String descrizione, ArrayList<Domanda> domande /*, Docente docente */) {
+    // IL SUPER NON VUOLE IL PARAMETRO "numeroDomande" QUINDI SE CAUSA PROBLEMI
+    // PRENDETEVELA CON JAVA
 
+    public Questionario(String nome, String descrizione, ArrayList<Domanda> domande /* , Docente docente */) {
+
+        setNome(nome);
         setNumeroDomande(domande.size());
-        dataCreazione = LocalDate.now();
+        dataCreazione = LocalDate.now(); //questo va spostato nel costruttore senza parametri
         // creatore = docente;
         elencoDomande = domande;
         setDescrizione(descrizione);
     }
 
-    public int getID() { return ID; }
+    public int getID() {
+        return ID;
+    }
 
-    public void setID(int ID) { this.ID = ID; }
+    public void setID(int ID) {
+        this.ID = ID;
+    }
 
-    public String getDescrizione() { return descrizione; }
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
 
     public void setDescrizione(String descrizione) {
 
@@ -43,7 +61,9 @@ public class Questionario {
         this.descrizione = descrizione;
     }
 
-    public int getNumeroDomande() { return numeroDomande; }
+    public int getNumeroDomande() {
+        return numeroDomande;
+    }
 
     public void setNumeroDomande(int numeroDomande) {
 
@@ -54,9 +74,13 @@ public class Questionario {
         this.numeroDomande = numeroDomande;
     }
 
-    public ArrayList<Domanda> getElencoDomande() { return elencoDomande;}
+    public ArrayList<Domanda> getElencoDomande() {
+        return elencoDomande;
+    }
 
-    public LocalDate getDataCreazione() { return dataCreazione; }
+    public LocalDate getDataCreazione() {
+        return dataCreazione;
+    }
 
     // AGGIUNGERE EVENTUALI GETTER PER DOCENTE
 }

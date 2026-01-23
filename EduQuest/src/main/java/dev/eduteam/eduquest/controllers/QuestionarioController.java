@@ -20,7 +20,7 @@ public class QuestionarioController {
     }
 
     @GetMapping("get")
-    public Questionario getQuestionario(@RequestParam(name="id") int ID) {
+    public Questionario getQuestionario(@RequestParam(name = "id") int ID) {
 
         return questionarioService.getQuestionari().stream().filter(q -> q.getID() == ID).findFirst().orElse(null);
 
@@ -29,7 +29,8 @@ public class QuestionarioController {
     @PostMapping("crea")
     public Questionario creaQuestionario(@RequestBody InfoQuestionario questionario) {
 
-        Questionario questionarioCreato = questionarioService.creaQuestionario(questionario.getDescrizione(), questionario.getNumeroDomande());
+        Questionario questionarioCreato = questionarioService.creaQuestionario(questionario.getNome(),
+                questionario.getDescrizione(), questionario.getNumeroDomande());
 
         questionarioService.getQuestionari().add(questionarioCreato);
         return questionarioCreato;
@@ -37,18 +38,30 @@ public class QuestionarioController {
 }
 
 class InfoQuestionario {
+    private String nome;
     private String descrizione;
     private int numeroDomande;
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
     public void setDescrizione(String descrizione) {
         this.descrizione = descrizione;
     }
+
     public void setNumeroDomande(int numeroDomande) {
         this.numeroDomande = numeroDomande;
     }
+
+    public String getNome() {
+        return nome;
+    }
+
     public int getNumeroDomande() {
         return numeroDomande;
     }
+
     public String getDescrizione() {
         return descrizione;
     }

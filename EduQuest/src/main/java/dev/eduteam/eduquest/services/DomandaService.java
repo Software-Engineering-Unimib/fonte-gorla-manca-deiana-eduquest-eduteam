@@ -1,11 +1,8 @@
 package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.Domanda;
-import dev.eduteam.eduquest.models.Questionario;
 import dev.eduteam.eduquest.models.Risposta;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 public class DomandaService {
