@@ -19,9 +19,6 @@ public class Questionario {
 
     //COSTRUTTORE SENZA PARAMETRI
 
-    // IL SUPER NON VUOLE IL PARAMETRO "numeroDomande" QUINDI SE CAUSA PROBLEMI
-    // PRENDETEVELA CON JAVA
-
     public Questionario(String nome, String descrizione, ArrayList<Domanda> domande /* , Docente docente */) {
 
         setNome(nome);

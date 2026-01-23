@@ -1,5 +1,6 @@
 package dev.eduteam.eduquest.controllers;
 
+import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Questionario;
 import dev.eduteam.eduquest.services.QuestionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,50 +20,64 @@ public class QuestionarioController {
         return questionarioService.getQuestionari();
     }
 
-    @GetMapping("get")
-    public Questionario getQuestionario(@RequestParam(name = "id") int ID) {
+    @GetMapping("get/{ID}")
+    public Questionario getQuestionario(@PathVariable int ID) {
 
-        return questionarioService.getQuestionari().stream().filter(q -> q.getID() == ID).findFirst().orElse(null);
-
+        return questionarioService.getQuestionario(ID);
     }
 
     @PostMapping("crea")
-    public Questionario creaQuestionario(@RequestBody InfoQuestionario questionario) {
+    public Questionario creaQuestionario() {
 
-        Questionario questionarioCreato = questionarioService.creaQuestionario(questionario.getNome(),
-                questionario.getDescrizione(), questionario.getNumeroDomande());
+        Questionario questionarioCreato = questionarioService.creaQuestionario();
 
         questionarioService.getQuestionari().add(questionarioCreato);
         return questionarioCreato;
     }
-}
 
-class InfoQuestionario {
-    private String nome;
-    private String descrizione;
-    private int numeroDomande;
+    @PostMapping("modifica/{ID}/rinomina")
+    public Questionario rinominaQuestionario(
+            @PathVariable int ID,
+            @RequestParam(name = "nome") String nome) {
 
-    public void setNome(String nome) {
-        this.nome = nome;
+        Questionario questionarioModificato = questionarioService.getQuestionario(ID);
+
+        if (nome != null) {
+            questionarioService.modificaNome(questionarioModificato, nome);
+        }
+
+        return questionarioModificato;
+    }
+    @PostMapping("modifica/{ID}/descrizione")
+    public Questionario setDescrizoneQuestionario(
+            @PathVariable int ID,
+            @RequestParam(name = "descrizione") String descrizione) {
+
+        Questionario questionarioModificato = questionarioService.getQuestionario(ID);
+
+        if (descrizione != null) {
+            questionarioService.modificaDescrizione(questionarioModificato, descrizione);
+        }
+
+        return questionarioModificato;
     }
 
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
+    @PostMapping("/modifica/{ID}/aggiungi_domanda")
+    public Questionario aggiungiDomanda(@PathVariable int ID) {
+        Questionario questionarioModificato = questionarioService.getQuestionario(ID);
+
+        questionarioService.aggiungiDomanda(questionarioModificato);
+
+        return questionarioModificato;
     }
 
-    public void setNumeroDomande(int numeroDomande) {
-        this.numeroDomande = numeroDomande;
-    }
+    @PostMapping("/modifica/{ID}/rimuovi_domanda/{domandaID}")
+    public Questionario rimuoviDomanda(@PathVariable int ID, @PathVariable int domandaID) {
+        Questionario questionarioModificato = questionarioService.getQuestionario(ID);
+        Domanda domandaRimossa = questionarioService.getDomanda(questionarioModificato, domandaID);
 
-    public String getNome() {
-        return nome;
-    }
+        questionarioService.rimuoviDomanda(questionarioModificato, domandaRimossa);
 
-    public int getNumeroDomande() {
-        return numeroDomande;
-    }
-
-    public String getDescrizione() {
-        return descrizione;
+        return questionarioModificato;
     }
 }

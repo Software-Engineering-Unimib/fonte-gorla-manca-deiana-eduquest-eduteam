@@ -13,11 +13,13 @@ public class QuestionarioService {
     @Autowired
     private DomandaService domandaService;
 
+    // INIZIO ZONA TEMPORANEA
+
     private ArrayList<Questionario> questionari = new ArrayList<Questionario>() {
         {
-            add(creaQuestionario("Questionario Dinosauri", "Domande su dinosauri", 5));
-            add(creaQuestionario("Questionario Scienze", "Domande su scienze", 2));
-            add(creaQuestionario("Questionario Matematica", "Domande su matematica", 3));
+            add(creaQuestionario());
+            add(creaQuestionario());
+            add(creaQuestionario());
         }
     };
 
@@ -25,36 +27,39 @@ public class QuestionarioService {
         return questionari;
     }
 
-    public Questionario creaQuestionario(String nome, String descrizione, int numeroDomande) {
+    // FINE ZONA TEMPORANEA
+
+    public Questionario getQuestionario(int ID) {
+
+        return questionari.stream().filter(q -> q.getID() == ID).findFirst().orElse(null);
+    }
+
+    public Domanda getDomanda(Questionario questionario, int ID) {
+
+        return questionario.getElencoDomande().stream().filter(d -> d.getID() == ID).findFirst().orElse(null);
+    }
+
+    public Questionario creaQuestionario() {
 
         int ID = (int) (Math.random() * 100000); // TEMPORARIO
 
-        Questionario questionario = new Questionario(nome, descrizione, creaDomande(numeroDomande));
+        Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
         questionario.setID(ID); // TEMPORARIO
 
         return questionario;
     }
 
-    private ArrayList<Domanda> creaDomande(int numeroDomande) {
-
-        ArrayList<Domanda> tempDomande = new ArrayList<Domanda>();
-
-        for (int i = 0; i < numeroDomande; i++) {
-
-            Domanda domanda = new Domanda(""); // Testo vuoto temporaneo sostitutivo allo 0
-            tempDomande.add(domanda);
-        }
-
-        return tempDomande;
+    public void modificaNome(Questionario questionario, String nome) {
+        questionario.setNome(nome);
     }
 
     public void modificaDescrizione(Questionario questionario, String descrizione) {
         questionario.setDescrizione(descrizione);
     }
 
-    public void aggiungiDomanda(Questionario questionario, String testo, int numeroRisposte) {
+    public void aggiungiDomanda(Questionario questionario) {
 
-        Domanda domanda = domandaService.creaDomanda(testo, numeroRisposte);
+        Domanda domanda = domandaService.creaDomanda();
         questionario.setNumeroDomande(questionario.getNumeroDomande() + 1);
         questionario.getElencoDomande().add(domanda);
 

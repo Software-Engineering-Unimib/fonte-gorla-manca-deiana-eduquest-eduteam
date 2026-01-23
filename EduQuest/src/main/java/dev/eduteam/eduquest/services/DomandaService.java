@@ -2,29 +2,37 @@ package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Risposta;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DomandaService {
 
-    public void modificaTesto(Domanda domanda, String testo) {
-        domanda.setTesto(testo);
-    }
+    @Autowired
+    private RispostaService rispostaService;
 
-    public Domanda creaDomanda(String testo, int numeroRisposte) {
+    public Domanda creaDomanda() {
 
         int ID = (int) (Math.random() * 100000); // TEMPORARIO
 
-        Domanda domanda = new Domanda(testo);
+        Domanda domanda = new Domanda("");
 
         domanda.setID(ID); // TEMPORARIO
 
         return domanda;
     }
 
-    public void aggiungiRisposta(Domanda domanda, String testo) {
+    public Risposta getRisposta(Domanda domanda, int ID) {
+        return domanda.getElencoRisposte().stream().filter(r -> r.getID() == ID).findFirst().orElse(null);
+    }
 
-        Risposta risposta = new Risposta(testo);
+    public void modificaTesto(Domanda domanda, String testo) {
+        domanda.setTesto(testo);
+    }
+
+    public void aggiungiRisposta(Domanda domanda) {
+
+        Risposta risposta = rispostaService.creaRisposta();
         domanda.setNumeroRisposte(domanda.getNumeroRisposte() + 1);
         domanda.getElencoRisposte().add(risposta);
     }
