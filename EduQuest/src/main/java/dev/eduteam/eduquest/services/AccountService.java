@@ -1,21 +1,62 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
-public class UtenteNonLoggato {
-    private static final String EMAILVALIDA = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
+import org.springframework.stereotype.Service;
+import dev.eduteam.eduquest.models.Account;
+import dev.eduteam.eduquest.models.AccountFactory;
+import dev.eduteam.eduquest.models.Docente;
+import dev.eduteam.eduquest.models.Studente;
 
-    // simple factory che crea l'account a seconda del parametro boolean docente
-    // passato in input
-    public Account creaAccount(String nome, String cognome, String userName, String email, String password,
-            boolean docente) {
-        validaDati(nome, cognome, userName, email, password);
-        return AccountFactory.creaAccount(nome, cognome, userName, email, password, docente);
+@Service
+public class AccountService {
+
+    private static final Pattern EMAILVALIDA = Pattern.compile("^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+
+    private List<Account> accountProvvis = new ArrayList<Account>() {
+        {
+            add(new Studente("pinco", "pallo", "PincoPallino1", "PincoPallo@prova.edu", "PasswordValida1!"));
+            add(new Docente("Franco", "Rossi", "FrancoRossi2", "FrancoRossi@prova.edu", "PasswordValida2!"));
+        }
+    };
+
+    public List<Account> getAllAccounts() {
+        return accountProvvis;
     }
 
-    // placeholder per il login
-    public void logIn(String userName, String password) {
-        // TBD
+    public Account getAccountByNomeECognome(String nom, String cog) {
+        return accountProvvis.stream()
+                .filter(a -> a.getNome().equalsIgnoreCase(nom) && a.getCognome().equalsIgnoreCase(cog))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Account registraAccount(String nome, String cognome, String userName, String email, String password,
+            boolean docente) {
+        validaDati(nome, cognome, userName, email, password);
+        Account nuovoAccount = AccountFactory.creaAccount(nome, cognome, userName, email, password, docente);
+        accountProvvis.add(nuovoAccount); // poi da sostituire con repositories
+        return nuovoAccount;
+    }
+
+    public void eliminaAccount(String userName, String password) {
+        accountProvvis.removeIf(a -> a.getUserName().equalsIgnoreCase(userName) && a.getPassword().equals(password));
+    }
+
+    public Account logIn(String userName, String password) {
+        Account accountTrovato = accountProvvis.stream().filter(a -> a.getUserName().equals(userName)).findFirst()
+                .orElse(null);
+        if (accountTrovato == null) {
+            throw new IllegalArgumentException("Credenziali non valide");
+        }
+        // per ora è cosi, però in futuro per sicurezza dell'account dovrò usare
+        // passwordEncoder.matches(password, accountTrovato.getPassword())
+        if (!accountTrovato.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Password errata");
+        }
+        return accountTrovato;
     }
 
     // metodo che controlla se i parametri passati in input durante la creazione
@@ -58,7 +99,7 @@ public class UtenteNonLoggato {
         if (email == null || email.isEmpty()) {
             return false;
         }
-        return Pattern.matches(EMAILVALIDA, email);
+        return EMAILVALIDA.matcher(email).matches();
     }
 
     /*

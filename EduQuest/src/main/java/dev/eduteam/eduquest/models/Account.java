@@ -1,21 +1,46 @@
 package dev.eduteam.eduquest.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class Account {
     protected String nome;
     protected String cognome;
     protected String userName;
     protected String email;
+    @JsonIgnore // non voglio che la password sia visibile
     protected String password;
 
-    public Account(String nome, String cognome, String userName, String email, String password) {
-        this.nome = nome;
-        this.cognome = cognome;
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
-    };
+    public Account() {
+    }
 
-    public abstract boolean isDocente();
+    public Account(String nome, String cognome, String userName, String email, String password) {
+        super();
+        setNome(nome);
+        setCognome(cognome);
+        setUserName(userName);
+        setEmail(email);
+        setPassword(password);
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setCognome(String cognome) {
+        this.cognome = cognome;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getNome() {
         return nome;
@@ -33,8 +58,29 @@ public abstract class Account {
         return email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public abstract boolean isDocente();
+
     @Override
     public String toString() {
         return "Account -> " + userName + " (" + (isDocente() ? "Docente" : "Studente") + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Account))
+            return false;
+        Account other = (Account) o;
+        return userName != null && userName.equals(other.userName);
+    }
+
+    @Override
+    public int hashCode() {
+        return userName != null ? userName.hashCode() : 0;
     }
 }
