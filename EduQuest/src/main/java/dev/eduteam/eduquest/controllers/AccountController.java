@@ -54,4 +54,16 @@ public class AccountController {
                 temp.getEmail(), temp.getPassword(), isDocente);
     }
 
+    @PostMapping("aggiorna")
+    public Account aggiornaAccount(
+            @RequestParam(name = "user") String userName,
+            @RequestParam(name = "pw") String passwordAttuale,
+            @RequestParam(name = "nome", required = false) String nuovoNome,
+            @RequestParam(name = "cognome", required = false) String nuovoCognome,
+            @RequestParam(name = "email", required = false) String nuovaEmail,
+            @RequestParam(name = "newPw", required = false) String nuovaPassword) {
+        return accountService.aggiornaAccount(userName, passwordAttuale, nuovoNome, nuovoCognome, nuovaEmail,
+                nuovaPassword);
+    }
+
 }

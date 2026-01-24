@@ -59,6 +59,55 @@ public class AccountService {
         return accountTrovato;
     }
 
+    public Account aggiornaAccount(String userName, String passwordAttuale, String nuovoNome, String nuovoCognome,
+            String nuovaEmail, String nuovaPassword) {
+        Account accountTrovato = accountProvvis.stream().filter(a -> a.getUserName().equals(userName)).findFirst()
+                .orElse(null);
+        if (accountTrovato == null) {
+            throw new IllegalArgumentException("Account non trovato");
+        }
+        if (!accountTrovato.getPassword().equals(passwordAttuale)) {
+            throw new IllegalArgumentException("Password attuale errata");
+        }
+
+        if (nuovoNome != null && !nuovoNome.isBlank()) {
+            aggiornaNome(accountTrovato, nuovoNome);
+        }
+        if (nuovoCognome != null && !nuovoCognome.isBlank()) {
+            aggiornaCognome(accountTrovato, nuovoCognome);
+        }
+        if (nuovaEmail != null && !nuovaEmail.isBlank()) {
+            aggiornaEmail(accountTrovato, nuovaEmail);
+        }
+        if (nuovaPassword != null && !nuovaPassword.isBlank()) {
+            aggiornaPassword(accountTrovato, nuovaPassword);
+        }
+
+        return accountTrovato;
+    }
+
+    private void aggiornaNome(Account account, String nuovoNome) {
+        account.setNome(nuovoNome);
+    }
+
+    private void aggiornaCognome(Account account, String nuovoCognome) {
+        account.setCognome(nuovoCognome);
+    }
+
+    private void aggiornaEmail(Account account, String nuovaEmail) {
+        if (!isEmailValida(nuovaEmail)) {
+            throw new IllegalArgumentException("Email non valida");
+        }
+        account.setEmail(nuovaEmail);
+    }
+
+    private void aggiornaPassword(Account account, String nuovaPassword) {
+        if (!isPasswordValida(nuovaPassword)) {
+            throw new IllegalArgumentException("Password non valida");
+        }
+        account.setPassword(nuovaPassword);
+    }
+
     // metodo che controlla se i parametri passati in input durante la creazione
     // sono validi, in caso contrario lancia una eccezione
     private void validaDati(String nome, String cognome, String userName, String email, String password) {
