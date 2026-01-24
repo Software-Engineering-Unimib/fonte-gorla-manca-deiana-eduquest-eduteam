@@ -2,6 +2,8 @@ package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Questionario;
+import dev.eduteam.eduquest.repositories.QuestionarioRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,9 @@ class QuestionarioServiceTest {
     @Mock
     private DomandaService domandaService;
 
+    @Mock
+    private QuestionarioRepository questionarioRepository;
+
     @InjectMocks
     private QuestionarioService questionarioService;
 
@@ -27,15 +32,24 @@ class QuestionarioServiceTest {
 
     @BeforeEach
     void setUp() {
-        questionario = questionarioService.creaQuestionario("Test Questionario", "Descrizione test", 3);
+        ArrayList<Domanda> domande = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            domande.add(new Domanda("Domanda " + i));
+        }
+        questionario = new Questionario("Test Questionario", "Descrizione test", domande);
+        questionario.setID(1);
     }
 
     @Test
     void testGetQuestionari() {
-        ArrayList<Questionario> questionari = questionarioService.getQuestionari();
-        assertNotNull(questionari);
-        assertFalse(questionari.isEmpty());
-        assertTrue(questionari.size() >= 3);
+        ArrayList<Questionario> questionari = new ArrayList<>();
+        questionari.add(questionario);
+        when(questionarioRepository.getQuestionari()).thenReturn(questionari);
+
+        ArrayList<Questionario> result = questionarioService.getQuestionari();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        verify(questionarioRepository, times(1)).getQuestionari();
     }
 
     @Test
@@ -50,8 +64,16 @@ class QuestionarioServiceTest {
 
     @Test
     void testCreaQuestionarioDiversi() {
-        Questionario q1 = questionarioService.creaQuestionario("Quiz 1", "Descrizione 1", 2);
-        Questionario q2 = questionarioService.creaQuestionario("Quiz 2", "Descrizione 2", 4);
+        ArrayList<Domanda> domande1 = new ArrayList<>();
+        domande1.add(new Domanda("Domanda 1"));
+        domande1.add(new Domanda("Domanda 2"));
+        Questionario q1 = new Questionario("Quiz 1", "Descrizione 1", domande1);
+
+        ArrayList<Domanda> domande2 = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            domande2.add(new Domanda("Domanda " + i));
+        }
+        Questionario q2 = new Questionario("Quiz 2", "Descrizione 2", domande2);
 
         assertEquals("Quiz 1", q1.getNome());
         assertEquals("Quiz 2", q2.getNome());
@@ -62,29 +84,38 @@ class QuestionarioServiceTest {
     @Test
     void testModificaDescrizione() {
         String nuovaDescrizione = "Nuova descrizione";
+        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
+
         questionarioService.modificaDescrizione(questionario, nuovaDescrizione);
         assertEquals(nuovaDescrizione, questionario.getDescrizione());
+        verify(questionarioRepository, times(1)).updateQuestionario(questionario);
     }
 
     @Test
     void testAggiungiDomanda() {
-        Domanda domandaMock = new Domanda("Domanda aggiunta");
-        when(domandaService.creaDomanda("Domanda aggiunta", 4)).thenReturn(domandaMock);
+        Domanda domandaMock = new Domanda("Domanda da aggiungere");
+        when(domandaService.creaDomanda()).thenReturn(domandaMock);
+        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
 
         int numeroDomandeIniziale = questionario.getNumeroDomande();
-        questionarioService.aggiungiDomanda(questionario, "Domanda aggiunta", 4);
+        questionarioService.aggiungiDomanda(questionario);
 
         assertEquals(numeroDomandeIniziale + 1, questionario.getNumeroDomande());
         assertTrue(questionario.getElencoDomande().contains(domandaMock));
-        verify(domandaService, times(1)).creaDomanda("Domanda aggiunta", 4);
+        verify(domandaService, times(1)).creaDomanda();
+        verify(questionarioRepository, times(1)).updateQuestionario(questionario);
     }
 
     @Test
     void testRimuoviDomanda() {
         Domanda domandaDaRimuovere = questionario.getElencoDomande().get(0);
+        domandaDaRimuovere.setID(10);
         int numeroDomandeIniziale = questionario.getNumeroDomande();
 
-        questionarioService.rimuoviDomanda(questionario, domandaDaRimuovere);
+        when(questionarioRepository.getQuestionarioByID(questionario.getID())).thenReturn(questionario);
+        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
+
+        questionarioService.rimuoviDomanda(questionario.getID(), domandaDaRimuovere.getID());
 
         assertEquals(numeroDomandeIniziale - 1, questionario.getNumeroDomande());
         assertFalse(questionario.getElencoDomande().contains(domandaDaRimuovere));
@@ -93,21 +124,24 @@ class QuestionarioServiceTest {
     @Test
     void testAggiungiERimuoviDomande() {
         Domanda domanda1 = new Domanda("Domanda 1");
+        domanda1.setID(101);
         Domanda domanda2 = new Domanda("Domanda 2");
+        domanda2.setID(102);
 
-        when(domandaService.creaDomanda("Domanda 1", 3)).thenReturn(domanda1);
-        when(domandaService.creaDomanda("Domanda 2", 3)).thenReturn(domanda2);
+        when(domandaService.creaDomanda()).thenReturn(domanda1).thenReturn(domanda2);
+        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
+        when(questionarioRepository.getQuestionarioByID(questionario.getID())).thenReturn(questionario);
 
         int numeroDomandeIniziale = questionario.getNumeroDomande();
 
         // Aggiungi due domande
-        questionarioService.aggiungiDomanda(questionario, "Domanda 1", 3);
-        questionarioService.aggiungiDomanda(questionario, "Domanda 2", 3);
+        questionarioService.aggiungiDomanda(questionario);
+        questionarioService.aggiungiDomanda(questionario);
 
         assertEquals(numeroDomandeIniziale + 2, questionario.getNumeroDomande());
 
         // Rimuovi una domanda
-        questionarioService.rimuoviDomanda(questionario, domanda1);
+        questionarioService.rimuoviDomanda(questionario.getID(), domanda1.getID());
         assertEquals(numeroDomandeIniziale + 1, questionario.getNumeroDomande());
 
         assertTrue(questionario.getElencoDomande().contains(domanda2));
@@ -116,7 +150,7 @@ class QuestionarioServiceTest {
 
     @Test
     void testCreaQuestionarioConZeroDomande() {
-        Questionario questionarioZero = questionarioService.creaQuestionario("Quiz Vuoto", "Senza domande", 0);
+        Questionario questionarioZero = new Questionario("Quiz Vuoto", "Senza domande", new ArrayList<>());
         assertEquals(0, questionarioZero.getNumeroDomande());
         assertTrue(questionarioZero.getElencoDomande().isEmpty());
     }

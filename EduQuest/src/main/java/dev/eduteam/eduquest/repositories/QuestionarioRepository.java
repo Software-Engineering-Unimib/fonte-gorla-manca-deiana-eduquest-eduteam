@@ -18,139 +18,135 @@ import java.util.ArrayList;
 @Repository
 public class QuestionarioRepository {
 
-    private final String serverName = "Localhost";
-    private final int portNumber = 3306;
-    private final String userName = "root";
-    private final String password = "nicksql";
-    private final String databaseName = "Test_Questionario";
-    private final boolean useSSL = false;
-    private final boolean allowPublicKeyRetrieval = true;
+    public Questionario getQuestionarioByID(int id) {
+        Questionario questionario = null;
 
-    private Connection connect() {
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+            String query = "SELECT " +
+                    "questionarioID, " +
+                    "nome, " +
+                    "descrizione, " +
+                    "numeroDomande, " +
+                    "dataCreazione FROM questionari WHERE questionarioID = ?";
 
-        try {
-            MysqlDataSource ds = new MysqlDataSource();
-            ds.setServerName(serverName);
-            ds.setPortNumber(portNumber);
-            ds.setUser(userName);
-            ds.setPassword(password);
-            ds.setDatabaseName(databaseName);
-            ds.setUseSSL(useSSL);
-            ds.setAllowPublicKeyRetrieval(allowPublicKeyRetrieval);
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, id);
 
-            return ds.getConnection();
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                questionario = new Questionario("", "", new ArrayList<Domanda>());
+
+                questionario.setID(rs.getInt("questionarioID"));
+                questionario.setNome(rs.getString("nome"));
+                questionario.setDescrizione(rs.getString("descrizione"));
+                questionario.setNumeroDomande(rs.getInt("numeroDomande"));
+                questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+            }
+            conn.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return null;
+        return questionario;
     }
 
-    // - METODI DI GET / READ -
-    public Questionario getQuestionarioByID(int id) {
-
-        return null;
-    }
-
-    // MOLTO PROBABILMENTE QUESTO METODO DIVENTERA' "getQuestionariByDocente" DOPO IL MERGE
+    // MOLTO PROBABILMENTE QUESTO METODO DIVENTERA' "getQuestionariByDocente" DOPO
+    // IL MERGE
     // QUINDI CAMBIERA'
     public ArrayList<Questionario> getQuestionari() {
 
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+            String query = "SELECT " +
+                    "questionarioID, " +
+                    "nome, " +
+                    "descrizione, " +
+                    "numeroDomande, " +
+                    "dataCreazione FROM questionari";
 
-        Connection conn = connect();
+            PreparedStatement ps = conn.prepareStatement(query);
 
-        if (conn != null) {
-            try {
-                String query = "SELECT " +
-                        "questionarioID, " +
-                        "nome, " +
-                        "descrizione, " +
-                        "numeroDomande, " +
-                        "dataCreazione FROM questionari";
+            ResultSet rs = ps.executeQuery();
 
-                PreparedStatement ps = conn.prepareStatement(query);
+            while (rs.next()) {
+                Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
 
-                ResultSet rs = ps.executeQuery();
+                questionario.setID(rs.getInt("questionarioID"));
+                questionario.setNome(rs.getString("nome"));
+                questionario.setDescrizione(rs.getString("descrizione"));
+                questionario.setNumeroDomande(rs.getInt("numeroDomande"));
+                questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
 
-                while (rs.next()) {
-                    Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
-
-                    questionario.setID(rs.getInt("questionarioID"));
-                    questionario.setNome(rs.getString("nome"));
-                    questionario.setDescrizione(rs.getString("descrizione"));
-                    questionario.setNumeroDomande(rs.getInt("numeroDomande"));
-                    questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
-
-                    questionari.add(questionario);
-                }
-
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+                questionari.add(questionario);
             }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return questionari;
     }
 
-    public ArrayList<Domanda> getDomandeByQuestionario(Questionario questionario) {
+    public Questionario insertQuestionario(Questionario questionario) {
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
 
-        return null;
+            String query = "INSERT INTO questionari (nome, descrizione, numeroDomande, dataCreazione) VALUES (?, ?, ?, ?)";
+
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, questionario.getNome());
+            ps.setString(2, questionario.getDescrizione());
+            ps.setInt(3, 0); // Numero domande inizializzato a 0
+            ps.setDate(4, java.sql.Date.valueOf(LocalDate.now()));
+
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    questionario.setID(rs.getInt(1)); // Imposta l'ID generato al questionario
+                }
+            }
+            return questionario;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
-    public ArrayList<Risposta> getRispostaByDomanda(Domanda domanda) {
+    public boolean removeQuestionario(int id) {
+        boolean result = false;
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
 
-        return null;
-    }
-    // - FINE METODI DI GET / READ -
+            String query = "DELETE FROM questionari WHERE questionarioID = ?";
 
-    // - METODI DI ADD / INSERT -
-    public boolean addQuestionario(Questionario questionario) {
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, id);
 
-        return false;
-    }
-
-    public boolean addDomanda(Questionario questionario, Domanda domanda) {
-
-        return false;
-    }
-
-    public boolean addRisposta(Domanda domanda, Risposta risposta) {
-
-        return false;
-    }
-    // - FINE METODI DI ADD / INSERT -
-
-    // - METODI DI REMOVE / DELETE -
-    public boolean removeQuestionario(Questionario questionario) {
-
-        return false;
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                result = true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
     }
 
-    public boolean removeDomanda(Questionario questionario, Domanda domanda) {
+    public boolean updateQuestionario(Questionario questionario) {
+        boolean result = false;
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
 
-        return false;
+            // Se non erro la correttezza dei dati passati al metodo è già stata verificata
+            String query = "UPDATE questionari SET nome = ?, descrizione = ? WHERE questionarioID = ?";
+
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, questionario.getNome());
+            ps.setString(2, questionario.getDescrizione());
+            ps.setInt(3, questionario.getID());
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                result = true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
     }
-
-    public boolean removeRisposta(Domanda domanda, Risposta risposta) {
-
-        return false;
-    }
-    // - FINE METODI DI REMOVE / DELETE -
-
-    // - METODI DI SET / UPDATE -
-    public boolean setQuestionario(Questionario questionario) {
-
-        return false;
-    }
-
-    public boolean setDomanda(Questionario questionario, Domanda domanda) {
-
-        return false;
-    }
-
-    public boolean setRisposta(Domanda domanda, Risposta risposta) {
-
-        return false;
-    }
-    // - FINE DEI METODI DI SET / UPDATE -
 
 }

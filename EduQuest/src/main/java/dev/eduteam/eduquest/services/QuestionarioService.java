@@ -20,15 +20,13 @@ public class QuestionarioService {
     // INIZIO ZONA TEMPORANEA
 
     public ArrayList<Questionario> getQuestionari() {
-
         return questionarioRepository.getQuestionari();
     }
 
     // FINE ZONA TEMPORANEA
 
     public Questionario getQuestionario(int ID) {
-
-        return getQuestionari().stream().filter(q -> q.getID() == ID).findFirst().orElse(null);
+        return questionarioRepository.getQuestionarioByID(ID);
     }
 
     public Domanda getDomanda(Questionario questionario, int ID) {
@@ -37,30 +35,43 @@ public class QuestionarioService {
     }
 
     public Questionario creaQuestionario() {
-
-        Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
-        return questionario;
+        Questionario nuovo = new Questionario("", "", new ArrayList<Domanda>());
+        return questionarioRepository.insertQuestionario(nuovo);
     }
 
-    public void modificaNome(Questionario questionario, String nome) {
+    public boolean rimuoviQuestionario(int ID) {
+        return questionarioRepository.removeQuestionario(ID);
+    }
+
+    public boolean modificaNome(Questionario questionario, String nome) {
         questionario.setNome(nome);
+        return questionarioRepository.updateQuestionario(questionario);
     }
 
-    public void modificaDescrizione(Questionario questionario, String descrizione) {
+    public boolean modificaDescrizione(Questionario questionario, String descrizione) {
         questionario.setDescrizione(descrizione);
+        return questionarioRepository.updateQuestionario(questionario);
     }
 
-    public void aggiungiDomanda(Questionario questionario) {
+    // Forse da spostare in DomandaService
+    // Non rivisti per bene
+    public boolean aggiungiDomanda(Questionario questionario) {
 
         Domanda domanda = domandaService.creaDomanda();
         questionario.setNumeroDomande(questionario.getNumeroDomande() + 1);
         questionario.getElencoDomande().add(domanda);
-
+        return questionarioRepository.updateQuestionario(questionario);
     }
 
-    public void rimuoviDomanda(Questionario questionario, Domanda domanda) {
+    public boolean rimuoviDomanda(int ID, int domandaID) {
 
+        Questionario questionario = getQuestionario(ID);
+        Domanda domanda = getDomanda(questionario, domandaID);
+        if (domanda == null) {
+            return false;
+        }
         questionario.setNumeroDomande(questionario.getNumeroDomande() - 1);
         questionario.getElencoDomande().remove(domanda);
+        return questionarioRepository.updateQuestionario(questionario);
     }
 }
