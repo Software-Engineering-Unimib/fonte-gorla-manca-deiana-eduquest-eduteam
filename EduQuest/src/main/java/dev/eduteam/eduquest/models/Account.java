@@ -7,7 +7,8 @@ public abstract class Account {
     protected String cognome;
     protected String userName;
     protected String email;
-    @JsonIgnore // non voglio che la password sia visibile
+    // @JsonIgnore // non voglio che la password sia visibile, cosi funziona, TBD
+    // come rendere la password non visibile
     protected String password;
 
     public Account() {

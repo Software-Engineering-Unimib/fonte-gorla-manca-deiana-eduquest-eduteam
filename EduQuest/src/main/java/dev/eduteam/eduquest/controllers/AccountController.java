@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.eduteam.eduquest.models.Account;
+import dev.eduteam.eduquest.models.Studente;
 import dev.eduteam.eduquest.services.AccountService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,15 +46,12 @@ public class AccountController {
         return accountService.logIn(userName, password);
     }
 
-    @PostMapping()
-    public Account registraAccount(
-            @RequestParam(name = "nom") String nome,
-            @RequestParam(name = "cog") String cognome,
-            @RequestParam(name = "user") String userName,
-            @RequestParam(name = "em") String email,
-            @RequestParam(name = "pw") String password,
-            @RequestParam(name = "doc") boolean docente) {
-        return accountService.registraAccount(nome, cognome, userName, email, password, docente);
+    @PostMapping("{tipo}") // Creo uno studente temporaneo che poi se in realtà è un docente
+                           // l'AccountFactory lo crea comunque come tale
+    public Account registraAccount(@RequestBody Studente temp, @PathVariable String tipo) {
+        boolean isDocente = tipo.equalsIgnoreCase("docente");
+        return accountService.registraAccount(temp.getNome(), temp.getCognome(), temp.getUserName(),
+                temp.getEmail(), temp.getPassword(), isDocente);
     }
 
 }
