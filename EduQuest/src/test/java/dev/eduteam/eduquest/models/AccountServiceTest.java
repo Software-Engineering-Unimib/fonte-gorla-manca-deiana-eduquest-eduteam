@@ -298,4 +298,36 @@ public class AccountServiceTest {
                 assertEquals("La nuova password è uguale a quella attuale", e.getMessage());
         }
 
+        @Test
+        void registraAccountUserNameGiaEsistenteTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.registraAccount("Mario", "Rossi", "PincoPallino1",
+                                                "mario123@email.com", "PasswordValida1!", false));
+                assertEquals("Username già in uso", e.getMessage());
+        }
+
+        @Test
+        void registraAccountEmailGiaEsistenteTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.registraAccount("Mario", "Rossi", "mariorossi123",
+                                                "PincoPallo@prova.edu", "PasswordValida1!", false));
+                assertEquals("Email già in uso", e.getMessage());
+        }
+
+        @Test
+        void registraAccountUserNameCaseInsensitiveTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.registraAccount("Mario", "Rossi", "pincopallino1",
+                                                "mario123@email.com", "PasswordValida1!", false));
+                assertEquals("Username già in uso", e.getMessage());
+        }
+
+        @Test
+        void registraAccountEmailCaseInsensitiveTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.registraAccount("Mario", "Rossi", "mariorossi123",
+                                                "pincopallo@prova.edu", "PasswordValida1!", false));
+                assertEquals("Email già in uso", e.getMessage());
+        }
+
 }

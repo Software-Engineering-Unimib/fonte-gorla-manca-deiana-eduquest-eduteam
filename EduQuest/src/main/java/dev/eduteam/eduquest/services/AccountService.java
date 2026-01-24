@@ -36,6 +36,7 @@ public class AccountService {
     public Account registraAccount(String nome, String cognome, String userName, String email, String password,
             boolean docente) {
         validaDati(nome, cognome, userName, email, password);
+        verificaUnicitaUserNameEmail(userName, email);
         Account nuovoAccount = AccountFactory.creaAccount(nome, cognome, userName, email, password, docente);
         accountProvvis.add(nuovoAccount); // poi da sostituire con repositories
         return nuovoAccount;
@@ -123,6 +124,21 @@ public class AccountService {
             account.setPassword(nuovaPassword);
         } else {
             throw new IllegalArgumentException("La nuova password è uguale a quella attuale");
+        }
+    }
+
+    // metodo che controlla se i parametri passati in input durante la creazione
+    // sono nuovi, in caso contrario lancia una eccezione
+    private void verificaUnicitaUserNameEmail(String userName, String email) {
+        boolean userNameEsiste = accountProvvis.stream()
+                .anyMatch(a -> a.getUserName().equalsIgnoreCase(userName));
+        if (userNameEsiste) {
+            throw new IllegalArgumentException("Username già in uso");
+        }
+        boolean emailEsiste = accountProvvis.stream()
+                .anyMatch(a -> a.getEmail().equalsIgnoreCase(email));
+        if (emailEsiste) {
+            throw new IllegalArgumentException("Email già in uso");
         }
     }
 
