@@ -162,4 +162,108 @@ public class AccountServiceTest {
                 assertNotNull(accountMinPw);
                 assertNotNull(accountMaxPw);
         }
+
+        @Test
+        void aggiornaAccountSuccessoTest() {
+                Account accountUpdated = accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                "pinco_aggiornato", "pallo_aggiornato", "nuovaemail@prova.edu", "NuovaPass1!");
+                assertNotNull(accountUpdated);
+                assertEquals("pinco_aggiornato", accountUpdated.getNome());
+                assertEquals("pallo_aggiornato", accountUpdated.getCognome());
+                assertEquals("nuovaemail@prova.edu", accountUpdated.getEmail());
+                assertEquals("NuovaPass1!", accountUpdated.getPassword());
+        }
+
+        @Test
+        void aggiornaSoloNomeTest() {
+                Account account = accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                "NuovoNome", null, null, null);
+                assertEquals("NuovoNome", account.getNome());
+                assertEquals("pallo", account.getCognome());
+                assertEquals("PincoPallo@prova.edu", account.getEmail());
+                assertEquals("PasswordValida1!", account.getPassword());
+        }
+
+        @Test
+        void aggiornaSoloCognomeTest() {
+                Account account = accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                null, "NuovoCognome", null, null);
+                assertEquals("pinco", account.getNome());
+                assertEquals("NuovoCognome", account.getCognome());
+                assertEquals("PincoPallo@prova.edu", account.getEmail());
+                assertEquals("PasswordValida1!", account.getPassword());
+        }
+
+        @Test
+        void aggiornaSoloEmailTest() {
+                Account account = accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                null, null, "nuovamail@dominio.com", null);
+                assertEquals("pinco", account.getNome());
+                assertEquals("pallo", account.getCognome());
+                assertEquals("nuovamail@dominio.com", account.getEmail());
+                assertEquals("PasswordValida1!", account.getPassword());
+        }
+
+        @Test
+        void aggiornaSoloPasswordTest() {
+                Account account = accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                null, null, null, "NuovaPassword2!");
+                assertEquals("pinco", account.getNome());
+                assertEquals("pallo", account.getCognome());
+                assertEquals("PincoPallo@prova.edu", account.getEmail());
+                assertEquals("NuovaPassword2!", account.getPassword());
+        }
+
+        @Test
+        void aggiornaAccountPasswordAttualErratTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordSbagliata",
+                                                "NuovoNome", null, null, null));
+                assertEquals("Password attuale errata", e.getMessage());
+        }
+
+        @Test
+        void aggiornaAccountNonTrovatoTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("UsernameNonEsistente", "PasswordValida1!",
+                                                "NuovoNome", null, null, null));
+                assertEquals("Account non trovato", e.getMessage());
+        }
+
+        @Test
+        void aggiornaEmailNonValidaTest() {
+                IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, "emailNonValida.com", null));
+                IllegalArgumentException e2 = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, "@email.com", null));
+                assertEquals("Email non valida", e1.getMessage());
+                assertEquals("Email non valida", e2.getMessage());
+        }
+
+        @Test
+        void aggiornaPasswordNonValidaTest() {
+                // password troppo corta
+                IllegalArgumentException e1 = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, null, "Pass1!"));
+                // password senza maiuscola
+                IllegalArgumentException e2 = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, null, "passwordvalida1!"));
+                // password senza numero
+                IllegalArgumentException e3 = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, null, "PasswordValida!"));
+                // password senza simbolo
+                IllegalArgumentException e4 = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, null, "PasswordValida1"));
+                assertEquals("Password non valida", e1.getMessage());
+                assertEquals("Password non valida", e2.getMessage());
+                assertEquals("Password non valida", e3.getMessage());
+                assertEquals("Password non valida", e4.getMessage());
+        }
+
 }
