@@ -2,6 +2,7 @@ package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Questionario;
+import dev.eduteam.eduquest.repositories.QuestionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,25 +14,21 @@ public class QuestionarioService {
     @Autowired
     private DomandaService domandaService;
 
+    @Autowired
+    private QuestionarioRepository questionarioRepository;
+
     // INIZIO ZONA TEMPORANEA
 
-    private ArrayList<Questionario> questionari = new ArrayList<Questionario>() {
-        {
-            add(creaQuestionario());
-            add(creaQuestionario());
-            add(creaQuestionario());
-        }
-    };
-
     public ArrayList<Questionario> getQuestionari() {
-        return questionari;
+
+        return questionarioRepository.getQuestionari();
     }
 
     // FINE ZONA TEMPORANEA
 
     public Questionario getQuestionario(int ID) {
 
-        return questionari.stream().filter(q -> q.getID() == ID).findFirst().orElse(null);
+        return getQuestionari().stream().filter(q -> q.getID() == ID).findFirst().orElse(null);
     }
 
     public Domanda getDomanda(Questionario questionario, int ID) {
@@ -41,11 +38,7 @@ public class QuestionarioService {
 
     public Questionario creaQuestionario() {
 
-        int ID = (int) (Math.random() * 100000); // TEMPORARIO
-
         Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
-        questionario.setID(ID); // TEMPORARIO
-
         return questionario;
     }
 

@@ -79,5 +79,7 @@ public class Questionario {
         return dataCreazione;
     }
 
+    public void setDataCreazione(LocalDate dataCreazione) { this.dataCreazione = dataCreazione; }
+
     // AGGIUNGERE EVENTUALI GETTER PER DOCENTE
 }
