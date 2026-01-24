@@ -59,6 +59,8 @@ public class AccountService {
         return accountTrovato;
     }
 
+    // metodo per aggiornare i dati di un account
+    //non verifica se i dati nuovi sono uguali a quelli vecchi(TODO)
     public Account aggiornaAccount(String userName, String passwordAttuale, String nuovoNome, String nuovoCognome,
             String nuovaEmail, String nuovaPassword) {
         Account accountTrovato = accountProvvis.stream().filter(a -> a.getUserName().equals(userName)).findFirst()
@@ -87,25 +89,41 @@ public class AccountService {
     }
 
     private void aggiornaNome(Account account, String nuovoNome) {
-        account.setNome(nuovoNome);
+        if (!account.getNome().equals(nuovoNome)) {
+            account.setNome(nuovoNome);
+        } else {
+            throw new IllegalArgumentException("Il nuovo nome è uguale a quello attuale");
+        }
     }
 
     private void aggiornaCognome(Account account, String nuovoCognome) {
-        account.setCognome(nuovoCognome);
+        if (!account.getCognome().equals(nuovoCognome)) {
+            account.setCognome(nuovoCognome);
+        } else {
+            throw new IllegalArgumentException("Il nuovo cognome è uguale a quello attuale");
+        }
     }
 
     private void aggiornaEmail(Account account, String nuovaEmail) {
         if (!isEmailValida(nuovaEmail)) {
             throw new IllegalArgumentException("Email non valida");
         }
-        account.setEmail(nuovaEmail);
+        if (!account.getEmail().equals(nuovaEmail)) {
+            account.setEmail(nuovaEmail);
+        } else {
+            throw new IllegalArgumentException("La nuova email è uguale a quella attuale");
+        }
     }
 
     private void aggiornaPassword(Account account, String nuovaPassword) {
         if (!isPasswordValida(nuovaPassword)) {
             throw new IllegalArgumentException("Password non valida");
         }
-        account.setPassword(nuovaPassword);
+        if (!account.getPassword().equals(nuovaPassword)) {
+            account.setPassword(nuovaPassword);
+        } else {
+            throw new IllegalArgumentException("La nuova password è uguale a quella attuale");
+        }
     }
 
     // metodo che controlla se i parametri passati in input durante la creazione

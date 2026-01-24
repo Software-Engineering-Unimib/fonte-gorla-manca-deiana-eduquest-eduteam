@@ -266,4 +266,36 @@ public class AccountServiceTest {
                 assertEquals("Password non valida", e4.getMessage());
         }
 
+        @Test
+        void aggiornaNomeUgualTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                "pinco", null, null, null));
+                assertEquals("Il nuovo nome è uguale a quello attuale", e.getMessage());
+        }
+
+        @Test
+        void aggiornaCognomeUgualTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, "pallo", null, null));
+                assertEquals("Il nuovo cognome è uguale a quello attuale", e.getMessage());
+        }
+
+        @Test
+        void aggiornaEmailUgualTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, "PincoPallo@prova.edu", null));
+                assertEquals("La nuova email è uguale a quella attuale", e.getMessage());
+        }
+
+        @Test
+        void aggiornaPasswordUgualTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
+                                                null, null, null, "PasswordValida1!"));
+                assertEquals("La nuova password è uguale a quella attuale", e.getMessage());
+        }
+
 }
