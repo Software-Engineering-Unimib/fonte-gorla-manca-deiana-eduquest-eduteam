@@ -26,9 +26,9 @@ public class AccountService {
         return accountProvvis;
     }
 
-    public Account getAccountByNomeECognome(String nom, String cog) {
+    public Account getAccountByUserName(String userName) {
         return accountProvvis.stream()
-                .filter(a -> a.getNome().equalsIgnoreCase(nom) && a.getCognome().equalsIgnoreCase(cog))
+                .filter(a -> a.getUserName().equalsIgnoreCase(userName))
                 .findFirst()
                 .orElse(null);
     }
@@ -43,7 +43,16 @@ public class AccountService {
     }
 
     public void eliminaAccount(String userName, String password) {
-        accountProvvis.removeIf(a -> a.getUserName().equalsIgnoreCase(userName) && a.getPassword().equals(password));
+        Account account = accountProvvis.stream()
+                .filter(a -> a.getUserName().equals(userName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+
+        if (!account.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Password errata");
+        }
+
+        accountProvvis.remove(account);
     }
 
     public Account logIn(String userName, String password) {
@@ -61,7 +70,7 @@ public class AccountService {
     }
 
     // metodo per aggiornare i dati di un account
-    //non verifica se i dati nuovi sono uguali a quelli vecchi(TODO)
+    // non verifica se i dati nuovi sono uguali a quelli vecchi(TODO)
     public Account aggiornaAccount(String userName, String passwordAttuale, String nuovoNome, String nuovoCognome,
             String nuovaEmail, String nuovaPassword) {
         Account accountTrovato = accountProvvis.stream().filter(a -> a.getUserName().equals(userName)).findFirst()
