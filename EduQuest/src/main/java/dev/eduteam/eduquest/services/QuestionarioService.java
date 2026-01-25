@@ -12,9 +12,6 @@ import java.util.ArrayList;
 public class QuestionarioService {
 
     @Autowired
-    private DomandaService domandaService;
-
-    @Autowired
     private QuestionarioRepository questionarioRepository;
 
     // INIZIO ZONA TEMPORANEA
@@ -27,11 +24,6 @@ public class QuestionarioService {
 
     public Questionario getQuestionario(int ID) {
         return questionarioRepository.getQuestionarioByID(ID);
-    }
-
-    public Domanda getDomanda(Questionario questionario, int ID) {
-
-        return questionario.getElencoDomande().stream().filter(d -> d.getID() == ID).findFirst().orElse(null);
     }
 
     public Questionario creaQuestionario() {
@@ -53,25 +45,4 @@ public class QuestionarioService {
         return questionarioRepository.updateQuestionario(questionario);
     }
 
-    // Forse da spostare in DomandaService
-    // Non rivisti per bene
-    public boolean aggiungiDomanda(Questionario questionario) {
-
-        Domanda domanda = domandaService.creaDomanda();
-        questionario.setNumeroDomande(questionario.getNumeroDomande() + 1);
-        questionario.getElencoDomande().add(domanda);
-        return questionarioRepository.updateQuestionario(questionario);
-    }
-
-    public boolean rimuoviDomanda(int ID, int domandaID) {
-
-        Questionario questionario = getQuestionario(ID);
-        Domanda domanda = getDomanda(questionario, domandaID);
-        if (domanda == null) {
-            return false;
-        }
-        questionario.setNumeroDomande(questionario.getNumeroDomande() - 1);
-        questionario.getElencoDomande().remove(domanda);
-        return questionarioRepository.updateQuestionario(questionario);
-    }
 }

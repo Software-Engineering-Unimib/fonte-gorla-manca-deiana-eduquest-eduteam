@@ -20,9 +20,6 @@ import static org.mockito.Mockito.*;
 class QuestionarioServiceTest {
 
     @Mock
-    private DomandaService domandaService;
-
-    @Mock
     private QuestionarioRepository questionarioRepository;
 
     @InjectMocks
@@ -34,7 +31,9 @@ class QuestionarioServiceTest {
     void setUp() {
         ArrayList<Domanda> domande = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            domande.add(new Domanda("Domanda " + i));
+            Domanda d = new Domanda("Domanda " + i);
+            d.setID(i + 1);
+            domande.add(d);
         }
         questionario = new Questionario("Test Questionario", "Descrizione test", domande);
         questionario.setID(1);
@@ -53,32 +52,51 @@ class QuestionarioServiceTest {
     }
 
     @Test
-    void testCreaQuestionario() {
-        assertNotNull(questionario);
-        assertEquals("Test Questionario", questionario.getNome());
-        assertEquals("Descrizione test", questionario.getDescrizione());
-        assertEquals(3, questionario.getNumeroDomande());
-        assertNotNull(questionario.getID());
-        assertTrue(questionario.getID() >= 0);
+    void testGetQuestionario() {
+        when(questionarioRepository.getQuestionarioByID(1)).thenReturn(questionario);
+
+        Questionario result = questionarioService.getQuestionario(1);
+        assertNotNull(result);
+        assertEquals("Test Questionario", result.getNome());
+        verify(questionarioRepository, times(1)).getQuestionarioByID(1);
     }
 
     @Test
-    void testCreaQuestionarioDiversi() {
-        ArrayList<Domanda> domande1 = new ArrayList<>();
-        domande1.add(new Domanda("Domanda 1"));
-        domande1.add(new Domanda("Domanda 2"));
-        Questionario q1 = new Questionario("Quiz 1", "Descrizione 1", domande1);
+    void testCreaQuestionario() {
+        Questionario nuovoQuestionario = new Questionario("", "", new ArrayList<>());
+        nuovoQuestionario.setID(2);
+        when(questionarioRepository.insertQuestionario(any(Questionario.class))).thenReturn(nuovoQuestionario);
 
-        ArrayList<Domanda> domande2 = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            domande2.add(new Domanda("Domanda " + i));
-        }
-        Questionario q2 = new Questionario("Quiz 2", "Descrizione 2", domande2);
+        Questionario result = questionarioService.creaQuestionario();
+        assertNotNull(result);
+        assertEquals(2, result.getID());
+        verify(questionarioRepository, times(1)).insertQuestionario(any(Questionario.class));
+    }
 
-        assertEquals("Quiz 1", q1.getNome());
-        assertEquals("Quiz 2", q2.getNome());
-        assertEquals(2, q1.getNumeroDomande());
-        assertEquals(4, q2.getNumeroDomande());
+    @Test
+    void testRimuoviQuestionario() {
+        when(questionarioRepository.removeQuestionario(1)).thenReturn(true);
+
+        boolean result = questionarioService.rimuoviQuestionario(1);
+        assertTrue(result);
+        verify(questionarioRepository, times(1)).removeQuestionario(1);
+    }
+
+    @Test
+    void testModificaNome() {
+        String nuovoNome = "Nuovo Nome";
+        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
+
+        boolean result = questionarioService.modificaNome(questionario, nuovoNome);
+        assertTrue(result);
+        assertEquals(nuovoNome, questionario.getNome());
+        verify(questionarioRepository, times(1)).updateQuestionario(questionario);
+    }
+
+    @Test
+    void testModificaNomeNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> questionarioService.modificaNome(questionario, null));
     }
 
     @Test
@@ -86,73 +104,10 @@ class QuestionarioServiceTest {
         String nuovaDescrizione = "Nuova descrizione";
         when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
 
-        questionarioService.modificaDescrizione(questionario, nuovaDescrizione);
+        boolean result = questionarioService.modificaDescrizione(questionario, nuovaDescrizione);
+        assertTrue(result);
         assertEquals(nuovaDescrizione, questionario.getDescrizione());
         verify(questionarioRepository, times(1)).updateQuestionario(questionario);
-    }
-
-    @Test
-    void testAggiungiDomanda() {
-        Domanda domandaMock = new Domanda("Domanda da aggiungere");
-        when(domandaService.creaDomanda()).thenReturn(domandaMock);
-        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
-
-        int numeroDomandeIniziale = questionario.getNumeroDomande();
-        questionarioService.aggiungiDomanda(questionario);
-
-        assertEquals(numeroDomandeIniziale + 1, questionario.getNumeroDomande());
-        assertTrue(questionario.getElencoDomande().contains(domandaMock));
-        verify(domandaService, times(1)).creaDomanda();
-        verify(questionarioRepository, times(1)).updateQuestionario(questionario);
-    }
-
-    @Test
-    void testRimuoviDomanda() {
-        Domanda domandaDaRimuovere = questionario.getElencoDomande().get(0);
-        domandaDaRimuovere.setID(10);
-        int numeroDomandeIniziale = questionario.getNumeroDomande();
-
-        when(questionarioRepository.getQuestionarioByID(questionario.getID())).thenReturn(questionario);
-        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
-
-        questionarioService.rimuoviDomanda(questionario.getID(), domandaDaRimuovere.getID());
-
-        assertEquals(numeroDomandeIniziale - 1, questionario.getNumeroDomande());
-        assertFalse(questionario.getElencoDomande().contains(domandaDaRimuovere));
-    }
-
-    @Test
-    void testAggiungiERimuoviDomande() {
-        Domanda domanda1 = new Domanda("Domanda 1");
-        domanda1.setID(101);
-        Domanda domanda2 = new Domanda("Domanda 2");
-        domanda2.setID(102);
-
-        when(domandaService.creaDomanda()).thenReturn(domanda1).thenReturn(domanda2);
-        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
-        when(questionarioRepository.getQuestionarioByID(questionario.getID())).thenReturn(questionario);
-
-        int numeroDomandeIniziale = questionario.getNumeroDomande();
-
-        // Aggiungi due domande
-        questionarioService.aggiungiDomanda(questionario);
-        questionarioService.aggiungiDomanda(questionario);
-
-        assertEquals(numeroDomandeIniziale + 2, questionario.getNumeroDomande());
-
-        // Rimuovi una domanda
-        questionarioService.rimuoviDomanda(questionario.getID(), domanda1.getID());
-        assertEquals(numeroDomandeIniziale + 1, questionario.getNumeroDomande());
-
-        assertTrue(questionario.getElencoDomande().contains(domanda2));
-        assertFalse(questionario.getElencoDomande().contains(domanda1));
-    }
-
-    @Test
-    void testCreaQuestionarioConZeroDomande() {
-        Questionario questionarioZero = new Questionario("Quiz Vuoto", "Senza domande", new ArrayList<>());
-        assertEquals(0, questionarioZero.getNumeroDomande());
-        assertTrue(questionarioZero.getElencoDomande().isEmpty());
     }
 
     @Test

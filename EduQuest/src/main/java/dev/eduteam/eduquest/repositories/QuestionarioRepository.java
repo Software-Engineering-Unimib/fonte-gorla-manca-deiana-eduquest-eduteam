@@ -42,7 +42,6 @@ public class QuestionarioRepository {
                 questionario.setNumeroDomande(rs.getInt("numeroDomande"));
                 questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
             }
-            conn.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

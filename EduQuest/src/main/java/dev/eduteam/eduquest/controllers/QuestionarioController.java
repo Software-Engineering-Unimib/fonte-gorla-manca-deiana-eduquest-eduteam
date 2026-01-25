@@ -2,6 +2,7 @@ package dev.eduteam.eduquest.controllers;
 
 import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Questionario;
+import dev.eduteam.eduquest.services.DomandaService;
 import dev.eduteam.eduquest.services.QuestionarioService;
 
 import org.apache.catalina.connector.Response;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("questionari")
-@Validated
 public class QuestionarioController {
 
     @Autowired
@@ -25,7 +25,7 @@ public class QuestionarioController {
         return questionarioService.getQuestionari();
     }
 
-    @GetMapping("get/{ID}") // si può semplificare in @GetMapping("{ID}")
+    @GetMapping("{ID}") // si può semplificare in @GetMapping("{ID}")
     public ResponseEntity<Questionario> getQuestionario(@PathVariable int ID) {
         Questionario questionario = questionarioService.getQuestionario(ID);
         if (questionario != null) {
@@ -109,34 +109,4 @@ public class QuestionarioController {
         }
     }
 
-    // Forse da spostare in DomandeController e sistemare i path
-    @PostMapping("/modifica/{ID}/aggiungi_domanda")
-    public ResponseEntity<Questionario> aggiungiDomanda(@PathVariable int ID) {
-        Questionario questionarioDaModificare = questionarioService.getQuestionario(ID);
-
-        if (questionarioDaModificare == null) {
-            return ResponseEntity.notFound().build();
-        }
-        boolean result = questionarioService.aggiungiDomanda(questionarioDaModificare);
-
-        if (result) {
-            return ResponseEntity.ok(questionarioDaModificare);
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @PostMapping("/modifica/{ID}/rimuovi_domanda/{domandaID}")
-    public ResponseEntity<Questionario> rimuoviDomanda(@PathVariable int ID, @PathVariable int domandaID) {
-        Questionario questionarioDaModificare = questionarioService.getQuestionario(ID);
-        if (questionarioDaModificare == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        boolean rimosso = questionarioService.rimuoviDomanda(ID, domandaID);
-        if (!rimosso) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(questionarioDaModificare);
-    }
 }
