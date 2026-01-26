@@ -17,132 +17,85 @@ public class DocenteRepository {
     private AccountRepository accountRepository;
 
     public Docente getDocenteByAccountID(int accountID) {
-        Docente docente = null;
+        String query = "SELECT a.*, d.insegnamento FROM account a " +
+                "INNER JOIN docenti d ON a.accountID = d.accountID_FK WHERE a.accountID = ?";
 
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "a.accountID, " +
-                    "a.nome, " +
-                    "a.cognome, " +
-                    "a.userName, " +
-                    "a.email, " +
-                    "a.password, " +
-                    "d.insegnamento FROM account a " +
-                    "INNER JOIN docenti d ON a.accountID = d.accountID_FK " +
-                    "WHERE a.accountID = ?";
-
-            PreparedStatement ps = conn.prepareStatement(query);
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, accountID);
-
             ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
-                docente = new Docente(
-                        rs.getString("nome"),
-                        rs.getString("cognome"),
-                        rs.getString("userName"),
-                        rs.getString("email"),
-                        rs.getString("password")
-                );
-                docente.setAccountID(rs.getInt("accountID"));
-                String insegnamento = rs.getString("insegnamento");
-                if (insegnamento != null) {
-                    docente.setInsegnamento(insegnamento);
-                }
+                Docente d = new Docente(rs.getString("nome"), rs.getString("cognome"),
+                        rs.getString("userName"), rs.getString("email"), rs.getString("password"));
+                d.setAccountID(rs.getInt("accountID"));
+                d.setInsegnamento(rs.getString("insegnamento"));
+                return d;
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
-        return docente;
-    }
-
-    public ArrayList<Docente> getAllDocenti() {
-        ArrayList<Docente> docenti = new ArrayList<Docente>();
-
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "a.accountID, " +
-                    "a.nome, " +
-                    "a.cognome, " +
-                    "a.userName, " +
-                    "a.email, " +
-                    "a.password, " +
-                    "d.insegnamento FROM account a " +
-                    "INNER JOIN docenti d ON a.accountID = d.accountID_FK";
-
-            PreparedStatement ps = conn.prepareStatement(query);
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Docente docente = new Docente(
-                        rs.getString("nome"),
-                        rs.getString("cognome"),
-                        rs.getString("userName"),
-                        rs.getString("email"),
-                        rs.getString("password")
-                );
-                docente.setAccountID(rs.getInt("accountID"));
-                String insegnamento = rs.getString("insegnamento");
-                if (insegnamento != null) {
-                    docente.setInsegnamento(insegnamento);
-                }
-                docenti.add(docente);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return docenti;
+        return null;
     }
 
     public Docente insertDocente(Docente docente) {
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-
-            // Usa AccountRepository per inserire nella tabella account
-            // L'ID viene generato dal DB e settato su docente
-            Docente docenteInserito = (Docente) accountRepository.insertAccount(docente, true);
-            
-            if (docenteInserito == null) {
-                return null;
+        try {
+            // 1. Inserimento nella tabella 'account' tramite la repository comune
+            int generatedID = accountRepository.insertAccount(docente, "Docente");
+            docente.setAccountID(generatedID);
+            // 2. Inserimento nella tabella 'docenti'
+            try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+                String query = "INSERT INTO docenti (accountID_FK, insegnamento) VALUES (?, ?)";
+                PreparedStatement ps = conn.prepareStatement(query);
+                ps.setInt(1, docente.getAccountID());
+                ps.setString(2, docente.getInsegnamento());
+                ps.executeUpdate();
             }
-
-            // Poi inserisci nella tabella docenti usando l'ID generato
-            String docenteQuery = "INSERT INTO docenti (accountID_FK, insegnamento) VALUES (?, ?)";
-            PreparedStatement docentePs = conn.prepareStatement(docenteQuery);
-            docentePs.setInt(1, docenteInserito.getAccountID());
-            docentePs.setString(2, docenteInserito.getInsegnamento());
-            docentePs.executeUpdate();
-
             return docente;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println("Errore insertDocente: " + e.getMessage());
             return null;
         }
     }
 
-    public boolean removeDocente(int accountID) {
-        // Delega a AccountRepository che gestisce il DELETE CASCADE
-        return accountRepository.removeAccount(accountID);
-    }
+    public ArrayList<Docente> getAllDocenti() {
+        ArrayList<Docente> docenti = new ArrayList<>();
+        String query = "SELECT a.*, d.insegnamento FROM account a " +
+                "INNER JOIN docenti d ON a.accountID = d.accountID_FK";
 
-    public boolean updateDocente(Docente docente, int accountID) {
-        boolean result = false;
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()) {
 
-            // Usa AccountRepository per aggiornare i dati comuni
-            accountRepository.updateAccount(docente);
-
-            // Aggiorna solo i dati specifici del docente
-            String docenteQuery = "UPDATE docenti SET insegnamento = ? WHERE accountID_FK = ?";
-            PreparedStatement docentePs = conn.prepareStatement(docenteQuery);
-            docentePs.setString(1, docente.getInsegnamento());
-            docentePs.setInt(2, accountID);
-            int rowsAffected = docentePs.executeUpdate();
-
-            if (rowsAffected > 0) {
-                result = true;
+            while (rs.next()) {
+                Docente d = new Docente(rs.getString("nome"), rs.getString("cognome"),
+                        rs.getString("userName"), rs.getString("email"), rs.getString("password"));
+                d.setAccountID(rs.getInt("accountID"));
+                d.setInsegnamento(rs.getString("insegnamento"));
+                docenti.add(d);
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println("Errore getAllDocenti: " + e.getMessage());
         }
-        return result;
+        return docenti;
+    }
+
+    public boolean updateDocente(Docente docente) {
+        try {
+            // Aggiorna i dati comuni
+            accountRepository.updateAccount(docente);
+
+            // Aggiorna i dati specifici
+            String query = "UPDATE docenti SET insegnamento = ? WHERE accountID_FK = ?";
+            try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                    PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, docente.getInsegnamento());
+                ps.setInt(2, docente.getAccountID());
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            System.err.println("Errore updateDocente: " + e.getMessage());
+            return false;
+        }
     }
 }
