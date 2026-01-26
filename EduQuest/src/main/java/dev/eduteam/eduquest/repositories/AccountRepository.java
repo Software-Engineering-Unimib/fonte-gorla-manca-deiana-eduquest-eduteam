@@ -7,9 +7,47 @@ import java.sql.ResultSet;
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.Account;
+import dev.eduteam.eduquest.models.AccountFactory;
 
 @Repository
 public class AccountRepository {
+
+    // Recupera l'account tramite userName
+    public Account getAccountByUserName(String userName) {
+        String query = "SELECT * FROM account WHERE userName = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, userName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    boolean isDocente = rs.getString("tipo").equals("Docente");
+                    Account acc = AccountFactory.creaAccount(
+                            rs.getString("nome"), rs.getString("cognome"),
+                            rs.getString("userName"), rs.getString("email"),
+                            rs.getString("password"), isDocente);
+                    acc.setAccountID(rs.getInt("accountID"));
+                    return acc;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
+
+    // Nuovo metodo per verificare se esiste l'email
+    public boolean existsByEmail(String email) {
+        String query = "SELECT 1 FROM account WHERE email = ? LIMIT 1";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public int insertAccount(Account account, String tipo) throws Exception {
         String query = "INSERT INTO account (nome, cognome, userName, email, password, tipo) VALUES (?, ?, ?, ?, ?, ?)";

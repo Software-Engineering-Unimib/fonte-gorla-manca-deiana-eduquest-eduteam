@@ -40,10 +40,10 @@ public class DocenteRepository {
 
     public Docente insertDocente(Docente docente) {
         try {
-            // 1. Inserimento nella tabella 'account' tramite la repository comune
+            // Inserimento nella tabella 'account' tramite la repository comune
             int generatedID = accountRepository.insertAccount(docente, "Docente");
             docente.setAccountID(generatedID);
-            // 2. Inserimento nella tabella 'docenti'
+            // Inserimento nella tabella 'docenti'
             try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
                 String query = "INSERT INTO docenti (accountID_FK, insegnamento) VALUES (?, ?)";
                 PreparedStatement ps = conn.prepareStatement(query);
