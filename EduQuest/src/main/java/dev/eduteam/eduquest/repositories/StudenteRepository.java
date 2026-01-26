@@ -43,6 +43,7 @@ public class StudenteRepository {
                         rs.getString("email"),
                         rs.getString("password")
                 );
+                studente.setAccountID(rs.getInt("accountID"));
                 studente.setMediaPunteggio(rs.getDouble("mediaPunteggio"));
             }
         } catch (Exception e) {
@@ -76,6 +77,7 @@ public class StudenteRepository {
                         rs.getString("email"),
                         rs.getString("password")
                 );
+                studente.setAccountID(rs.getInt("accountID"));
                 studente.setMediaPunteggio(rs.getDouble("mediaPunteggio"));
                 studenti.add(studente);
             }
@@ -89,13 +91,18 @@ public class StudenteRepository {
         try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
 
             // Usa AccountRepository per inserire nella tabella account
-            accountRepository.insertAccount(studente, false);
+            // L'ID viene generato dal DB e settato su studente
+            Studente studenteInserito = (Studente) accountRepository.insertAccount(studente, false);
+            
+            if (studenteInserito == null) {
+                return null;
+            }
 
-            // Poi inserisci nella tabella studenti
-            String studenteQuery = "INSERT INTO studenti (accountID_FK, mediaPunteggio) VALUES ((SELECT accountID FROM account WHERE userName = ?), ?)";
+            // Poi inserisci nella tabella studenti usando l'ID generato
+            String studenteQuery = "INSERT INTO studenti (accountID_FK, mediaPunteggio) VALUES (?, ?)";
             PreparedStatement studentePs = conn.prepareStatement(studenteQuery);
-            studentePs.setString(1, studente.getUserName());
-            studentePs.setDouble(2, studente.getMediaPunteggio());
+            studentePs.setInt(1, studenteInserito.getAccountID());
+            studentePs.setDouble(2, studenteInserito.getMediaPunteggio());
             studentePs.executeUpdate();
 
             return studente;

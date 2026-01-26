@@ -40,7 +40,7 @@ public class AccountRepository {
                         rs.getString("password"),
                         isDocente
                 );
-                //da estendere AccountFactory per gestire anche l'ID
+                account.setAccountID(rs.getInt("accountID"));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -75,6 +75,7 @@ public class AccountRepository {
                         rs.getString("password"),
                         isDocente
                 );
+                account.setAccountID(rs.getInt("accountID"));
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -108,6 +109,7 @@ public class AccountRepository {
                         rs.getString("password"),
                         isDocente
                 );
+                account.setAccountID(rs.getInt("accountID"));
                 accounts.add(account);
             }
         } catch (Exception e) {
@@ -132,8 +134,8 @@ public class AccountRepository {
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    // L'ID viene generato dal DB,
-                    // per ora restituiamo l'account senza
+                    int generatedID = rs.getInt(1);
+                    account.setAccountID(generatedID);
                 }
             }
             return account;

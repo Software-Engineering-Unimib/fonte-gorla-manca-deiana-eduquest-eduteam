@@ -43,6 +43,7 @@ public class DocenteRepository {
                         rs.getString("email"),
                         rs.getString("password")
                 );
+                docente.setAccountID(rs.getInt("accountID"));
                 String insegnamento = rs.getString("insegnamento");
                 if (insegnamento != null) {
                     docente.setInsegnamento(insegnamento);
@@ -79,6 +80,7 @@ public class DocenteRepository {
                         rs.getString("email"),
                         rs.getString("password")
                 );
+                docente.setAccountID(rs.getInt("accountID"));
                 String insegnamento = rs.getString("insegnamento");
                 if (insegnamento != null) {
                     docente.setInsegnamento(insegnamento);
@@ -95,13 +97,18 @@ public class DocenteRepository {
         try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
 
             // Usa AccountRepository per inserire nella tabella account
-            accountRepository.insertAccount(docente, true);
+            // L'ID viene generato dal DB e settato su docente
+            Docente docenteInserito = (Docente) accountRepository.insertAccount(docente, true);
+            
+            if (docenteInserito == null) {
+                return null;
+            }
 
-            // Poi inserisci nella tabella docenti
-            String docenteQuery = "INSERT INTO docenti (accountID_FK, insegnamento) VALUES ((SELECT accountID FROM account WHERE userName = ?), ?)";
+            // Poi inserisci nella tabella docenti usando l'ID generato
+            String docenteQuery = "INSERT INTO docenti (accountID_FK, insegnamento) VALUES (?, ?)";
             PreparedStatement docentePs = conn.prepareStatement(docenteQuery);
-            docentePs.setString(1, docente.getUserName());
-            docentePs.setString(2, docente.getInsegnamento());
+            docentePs.setInt(1, docenteInserito.getAccountID());
+            docentePs.setString(2, docenteInserito.getInsegnamento());
             docentePs.executeUpdate();
 
             return docente;

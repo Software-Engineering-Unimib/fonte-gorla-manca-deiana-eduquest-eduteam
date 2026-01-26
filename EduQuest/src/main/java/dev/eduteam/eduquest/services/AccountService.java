@@ -4,60 +4,73 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import dev.eduteam.eduquest.models.Account;
 import dev.eduteam.eduquest.models.AccountFactory;
 import dev.eduteam.eduquest.models.Docente;
 import dev.eduteam.eduquest.models.Studente;
+import dev.eduteam.eduquest.repositories.AccountRepository;
+import dev.eduteam.eduquest.repositories.StudenteRepository;
+import dev.eduteam.eduquest.repositories.DocenteRepository;
 
 @Service
 public class AccountService {
 
     private static final Pattern EMAILVALIDA = Pattern.compile("^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
 
-    private List<Account> accountProvvis = new ArrayList<Account>() {
-        {
-            add(new Studente("pinco", "pallo", "PincoPallino1", "PincoPallo@prova.edu", "PasswordValida1!"));
-            add(new Docente("Franco", "Rossi", "FrancoRossi2", "FrancoRossi@prova.edu", "PasswordValida2!"));
-        }
-    };
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private StudenteRepository studenteRepository;
+
+    @Autowired
+    private DocenteRepository docenteRepository;
 
     public List<Account> getAllAccounts() {
-        return accountProvvis;
+        return new ArrayList<>(accountRepository.getAllAccounts());
     }
 
     public Account getAccountByUserName(String userName) {
-        return accountProvvis.stream()
-                .filter(a -> a.getUserName().equalsIgnoreCase(userName))
-                .findFirst()
-                .orElse(null);
+        return accountRepository.getAccountByUserName(userName);
     }
 
+    //TODO da sistemare il ritorno di account con id da repository
     public Account registraAccount(String nome, String cognome, String userName, String email, String password,
             boolean docente) {
         validaDati(nome, cognome, userName, email, password);
         verificaUnicitaUserNameEmail(userName, email);
         Account nuovoAccount = AccountFactory.creaAccount(nome, cognome, userName, email, password, docente);
-        accountProvvis.add(nuovoAccount); // poi da sostituire con repositories
+        
+        if (docente) {
+            docenteRepository.insertDocente((Docente) nuovoAccount);
+        } else {
+            studenteRepository.insertStudente((Studente) nuovoAccount);
+        }
+        
         return nuovoAccount;
     }
 
     public void eliminaAccount(String userName, String password) {
-        Account account = accountProvvis.stream()
-                .filter(a -> a.getUserName().equals(userName))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+        Account account = accountRepository.getAccountByUserName(userName);
+        if (account == null) {
+            throw new IllegalArgumentException("Utente non trovato");
+        }
 
         if (!account.getPassword().equals(password)) {
             throw new IllegalArgumentException("Password errata");
         }
 
-        accountProvvis.remove(account);
+        if (account.isDocente()) {
+            docenteRepository.removeDocente(getAccountIDByUserName(userName));
+        } else {
+            studenteRepository.removeStudente(getAccountIDByUserName(userName));
+        }
     }
 
     public Account logIn(String userName, String password) {
-        Account accountTrovato = accountProvvis.stream().filter(a -> a.getUserName().equals(userName)).findFirst()
-                .orElse(null);
+        Account accountTrovato = accountRepository.getAccountByUserName(userName);
         if (accountTrovato == null) {
             throw new IllegalArgumentException("Credenziali non valide");
         }
@@ -69,12 +82,13 @@ public class AccountService {
         return accountTrovato;
     }
 
-    // metodo per aggiornare i dati di un account
-    // non verifica se i dati nuovi sono uguali a quelli vecchi(TODO)
+    //--------TODO: da capire a che livello splittare le chiamate di aggiornamento dei singoli campi---------
+    // CONVIENE RIFARLA COMPLETAMENTE
+    // per ora solo ID viene aggiornato nel DB, gli altri campi vengono aggiornati nell'oggetto in memoria
+    // TODO non verifica se la nuova email è già in uso o se i valori sono uguali a quelli attuali
     public Account aggiornaAccount(String userName, String passwordAttuale, String nuovoNome, String nuovoCognome,
             String nuovaEmail, String nuovaPassword) {
-        Account accountTrovato = accountProvvis.stream().filter(a -> a.getUserName().equals(userName)).findFirst()
-                .orElse(null);
+        Account accountTrovato = accountRepository.getAccountByUserName(userName);
         if (accountTrovato == null) {
             throw new IllegalArgumentException("Account non trovato");
         }
@@ -93,6 +107,13 @@ public class AccountService {
         }
         if (nuovaPassword != null && !nuovaPassword.isBlank()) {
             aggiornaPassword(accountTrovato, nuovaPassword);
+        }
+
+        int accountID = getAccountIDByUserName(userName);
+        if (accountTrovato.isDocente()) {
+            docenteRepository.updateDocente((Docente) accountTrovato, accountID);
+        } else {
+            studenteRepository.updateStudente((Studente) accountTrovato, accountID);
         }
 
         return accountTrovato;
@@ -135,16 +156,18 @@ public class AccountService {
             throw new IllegalArgumentException("La nuova password è uguale a quella attuale");
         }
     }
-
+    //TODO sistemare chiamate a repository
     // metodo che controlla se i parametri passati in input durante la creazione
     // sono nuovi, in caso contrario lancia una eccezione
     private void verificaUnicitaUserNameEmail(String userName, String email) {
-        boolean userNameEsiste = accountProvvis.stream()
-                .anyMatch(a -> a.getUserName().equalsIgnoreCase(userName));
-        if (userNameEsiste) {
+        Account accountPerUserName = accountRepository.getAccountByUserName(userName);
+        //da vedere se si può far passare un booleano
+        if (accountPerUserName != null) {
             throw new IllegalArgumentException("Username già in uso");
         }
-        boolean emailEsiste = accountProvvis.stream()
+        // anche sta roba va ottimizzata
+        List<Account> allAccounts = accountRepository.getAllAccounts();
+        boolean emailEsiste = allAccounts.stream()
                 .anyMatch(a -> a.getEmail().equalsIgnoreCase(email));
         if (emailEsiste) {
             throw new IllegalArgumentException("Email già in uso");
@@ -223,5 +246,15 @@ public class AccountService {
             }
         }
         return haMaiuscola && haSimbolo && haNumero;
+    }
+
+    //TODO penso da rimuovere
+    // metodo helper per ottenere l'accountID dal userName
+    private int getAccountIDByUserName(String userName) {
+        Account account = accountRepository.getAccountByUserName(userName);
+        if (account == null) {
+            throw new IllegalArgumentException("Account non trovato");
+        }
+        return account.getAccountID();
     }
 }

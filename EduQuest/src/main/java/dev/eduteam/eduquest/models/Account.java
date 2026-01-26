@@ -3,6 +3,7 @@ package dev.eduteam.eduquest.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class Account {
+    protected int accountID;
     protected String nome;
     protected String cognome;
     protected String userName;
@@ -41,6 +42,14 @@ public abstract class Account {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getAccountID() {
+        return accountID;
+    }
+
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
     }
 
     public String getNome() {
