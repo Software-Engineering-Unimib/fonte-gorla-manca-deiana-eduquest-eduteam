@@ -60,6 +60,21 @@ public class AccountService {
         return accountTrovato;
     }
 
+    // metodi nuovi necessari nei controller
+    public Docente logInDocente(String userName, String password) {
+        Account acc = logIn(userName, password); // Chiama il metodo sopra
+        if (acc instanceof Docente)
+            return (Docente) acc;
+        throw new IllegalArgumentException("L'account non è un Docente.");
+    }
+
+    public Studente logInStudente(String userName, String password) {
+        Account acc = logIn(userName, password); // Chiama il metodo sopra
+        if (acc instanceof Studente)
+            return (Studente) acc;
+        throw new IllegalArgumentException("L'account non è uno Studente.");
+    }
+
     public Account aggiornaAccount(String userName, String passwordAttuale, String nuovoNome, String nuovoCognome,
             String nuovaEmail, String nuovaPassword) {
         // Verifichiamo l'identità dell'utente prima di permettere modifiche

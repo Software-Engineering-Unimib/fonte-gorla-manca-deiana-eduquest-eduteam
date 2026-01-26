@@ -2,7 +2,7 @@ CREATE DATABASE Test_EduQuest;
 USE Test_EduQuest;
 
 -- Tabelle Account
-CREATE TABLE account (
+CREATE TABLE accounts (
     accountID INTEGER auto_increment,
     nome VARCHAR(100) NOT NULL,
     cognome VARCHAR(100) NOT NULL,
@@ -17,14 +17,14 @@ CREATE TABLE studenti (
     accountID_FK INTEGER NOT NULL,
     mediaPunteggio DOUBLE DEFAULT 0.0,
     PRIMARY KEY(accountID_FK),
-    CONSTRAINT FK_AccountStudente FOREIGN KEY (accountID_FK) REFERENCES account(accountID) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT FK_AccountStudente FOREIGN KEY (accountID_FK) REFERENCES accounts(accountID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 
 CREATE TABLE docenti (
     accountID_FK INTEGER NOT NULL,
     insegnamento VARCHAR(100),
     PRIMARY KEY(accountID_FK),
-    CONSTRAINT FK_AccountDocente FOREIGN KEY (accountID_FK) REFERENCES account(accountID) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT FK_AccountDocente FOREIGN KEY (accountID_FK) REFERENCES accounts(accountID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 
 -- Tabelle Questionari
@@ -59,7 +59,7 @@ ALTER TABLE domande
 ADD CONSTRAINT FK_RispostaCorretta FOREIGN KEY (rispostaCorrettaID) REFERENCES risposte(rispostaID) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- Dati di test Account
-INSERT INTO account (nome, cognome, userName, email, password, tipo)
+INSERT INTO accounts (nome, cognome, userName, email, password, tipo)
 VALUES 
     ('pinco', 'pallo', 'PincoPallino1', 'PincoPallo@prova.edu', 'PasswordValida1!', 'Studente'),
     ('Franco', 'Rossi', 'FrancoRossi2', 'FrancoRossi@prova.edu', 'PasswordValida2!', 'Docente');

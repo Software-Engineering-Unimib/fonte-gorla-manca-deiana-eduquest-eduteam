@@ -14,7 +14,7 @@ public class AccountRepository {
 
     // Recupera l'account tramite userName
     public Account getAccountByUserName(String userName) {
-        String query = "SELECT * FROM account WHERE userName = ?";
+        String query = "SELECT * FROM accounts WHERE userName = ?";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, userName);
@@ -37,7 +37,7 @@ public class AccountRepository {
 
     // Nuovo metodo per verificare se esiste l'email
     public boolean existsByEmail(String email) {
-        String query = "SELECT 1 FROM account WHERE email = ? LIMIT 1";
+        String query = "SELECT 1 FROM accounts WHERE email = ? LIMIT 1";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, email);
@@ -50,7 +50,7 @@ public class AccountRepository {
     }
 
     public int insertAccount(Account account, String tipo) throws Exception {
-        String query = "INSERT INTO account (nome, cognome, userName, email, password, tipo) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO accounts (nome, cognome, userName, email, password, tipo) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -73,7 +73,7 @@ public class AccountRepository {
     }
 
     public void updateAccount(Account account) throws Exception {
-        String query = "UPDATE account SET nome = ?, cognome = ?, email = ?, password = ? WHERE accountID = ?";
+        String query = "UPDATE accounts SET nome = ?, cognome = ?, email = ?, password = ? WHERE accountID = ?";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, account.getNome());
@@ -86,7 +86,7 @@ public class AccountRepository {
     }
 
     public boolean removeAccount(int accountID) {
-        String query = "DELETE FROM account WHERE accountID = ?";
+        String query = "DELETE FROM accounts WHERE accountID = ?";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, accountID);
