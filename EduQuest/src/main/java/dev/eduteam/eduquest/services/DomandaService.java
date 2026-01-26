@@ -35,8 +35,8 @@ public class DomandaService {
         return domandaRepository.getDomandaByID(questionarioID, domandaID);
     }
 
-    public Domanda aggiungiDomanda(int questionarioID) {
-        Domanda nuovaDomanda = new Domanda("");
+    public Domanda aggiungiDomanda(int questionarioID, Domanda.Type tipoDomanda) {
+        Domanda nuovaDomanda = Domanda.createDomandaOfType(tipoDomanda);
         return domandaRepository.insertDomanda(nuovaDomanda, questionarioID);
     }
 
@@ -49,7 +49,9 @@ public class DomandaService {
         return domandaRepository.updateDomanda(domanda);
     }
 
-    public boolean modificaRispostaCorretta(Domanda domanda, Risposta risposta) {
+    // POSSIBILE AGGIUNTA FUTURA DI UN METODO MODIFICA IMMAGINE/AUDIO PER DOMANDE MULTIMEDIALI
+
+    public boolean setRispostaCorretta(Domanda domanda, Risposta risposta) {
         if (domanda.getElencoRisposte().contains(risposta)) {
             domanda.setRispostaCorretta(risposta);
         }

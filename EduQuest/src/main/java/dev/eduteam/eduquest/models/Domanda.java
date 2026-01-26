@@ -2,21 +2,24 @@ package dev.eduteam.eduquest.models;
 
 import java.util.ArrayList;
 
-public class Domanda {
+public abstract class Domanda {
 
-    private int ID; // GLI ID SARANNO LEGATI ALLE DOMANDE SALVATI SUL DB
-    private String testo;
-
-    private int numeroRisposte;
-    private ArrayList<Risposta> elencoRisposte;
-    private Risposta rispostaCorretta;
-
-    public Domanda(String testo) {
-
-        setNumeroRisposte(0);
-        elencoRisposte = new ArrayList<Risposta>();
-        setTesto(testo);
+    public enum Type {
+        DOMANDA_MULTIPLA,
+        DOMANDA_MULTIPLE_RISPOSTE,
+        DOMANDA_VERO_FALSO
     }
+
+    protected Type tipoDomanda;
+
+    // VARIABILI COMUNI A TUTTE LE DOMANDE
+
+    protected int ID; // GLI ID SARANNO LEGATI ALLE DOMANDE SALVATI SUL DB
+    private String testo;
+    protected int numeroRisposte;
+    protected ArrayList<Risposta> elencoRisposte;
+
+    // VARIABILI COMUNI A TUTTE LE DOMANDE
 
     public int getID() { return ID; }
 
@@ -44,7 +47,19 @@ public class Domanda {
 
     public ArrayList<Risposta> getElencoRisposte() { return elencoRisposte; }
 
-    public Risposta getRispostaCorretta() { return rispostaCorretta; }
+    public void addRisposta(Risposta risposta) {
+        elencoRisposte.add(risposta);
+    }
 
-    public void setRispostaCorretta(Risposta risposta) { rispostaCorretta = risposta; }
+    public static Domanda createDomandaOfType(Type tipoDomanda) {
+
+        return switch (tipoDomanda) {
+            case DOMANDA_MULTIPLA -> new DomandaMultipla("");
+            case DOMANDA_MULTIPLE_RISPOSTE -> new DomandaMultipleRisposte("");
+            case DOMANDA_VERO_FALSO -> new DomandaVeroFalso("");
+            default -> null;
+        };
+    }
+
+    public abstract void setRispostaCorretta(Risposta risposta);
 }
