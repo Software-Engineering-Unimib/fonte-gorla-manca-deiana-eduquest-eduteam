@@ -10,6 +10,7 @@ CREATE TABLE questionari(
 ) ENGINE = INNODB;
 CREATE TABLE domande(
     domandaID INTEGER auto_increment,
+    tipo TINYINT(8) NOT NULL,
     testo VARCHAR(500) NOT NULL,
     numeroRisposte INTEGER NOT NULL,
     rispostaVera TINYINT(1),
@@ -56,8 +57,9 @@ VALUES (
         '2026-01-24'
     );
 
-INSERT INTO domande (testo, numeroRisposte, rispostaVera, questionarioID_FK)
+INSERT INTO domande (tipo, testo, numeroRisposte, rispostaVera, questionarioID_FK)
 VALUES(
+       '0'
        'Domanda fantasma',
        '0',
        '0',
