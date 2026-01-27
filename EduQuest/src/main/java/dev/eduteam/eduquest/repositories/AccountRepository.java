@@ -72,7 +72,8 @@ public class AccountRepository {
         throw new Exception("Errore durante l'inserimento dell'account base.");
     }
 
-    public void updateAccount(Account account) throws Exception {
+    public boolean updateAccount(Account account) {
+        boolean result = false;
         String query = "UPDATE accounts SET nome = ?, cognome = ?, email = ?, password = ? WHERE accountID = ?";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -81,8 +82,15 @@ public class AccountRepository {
             ps.setString(3, account.getEmail());
             ps.setString(4, account.getPassword());
             ps.setInt(5, account.getAccountID());
-            ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected > 0) {
+                result = true;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
+        return result;
     }
 
     public boolean removeAccount(int accountID) {
