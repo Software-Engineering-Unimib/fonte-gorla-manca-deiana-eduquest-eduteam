@@ -17,7 +17,7 @@ public class DocenteRepository {
     private AccountRepository accountRepository;
 
     public Docente getDocenteByAccountID(int accountID) {
-        String query = "SELECT a.*, d.insegnamento FROM account a " +
+        String query = "SELECT a.*, d.insegnamento FROM accounts a " +
                 "INNER JOIN docenti d ON a.accountID = d.accountID_FK WHERE a.accountID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
@@ -60,7 +60,7 @@ public class DocenteRepository {
 
     public ArrayList<Docente> getAllDocenti() {
         ArrayList<Docente> docenti = new ArrayList<>();
-        String query = "SELECT a.*, d.insegnamento FROM account a " +
+        String query = "SELECT a.*, d.insegnamento FROM accounts a " +
                 "INNER JOIN docenti d ON a.accountID = d.accountID_FK";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();

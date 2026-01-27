@@ -17,7 +17,7 @@ public class StudenteRepository {
     private AccountRepository accountRepository;
 
     public Studente getStudenteByAccountID(int accountID) {
-        String query = "SELECT a.*, s.mediaPunteggio FROM account a " +
+        String query = "SELECT a.*, s.mediaPunteggio FROM accounts a " +
                 "INNER JOIN studenti s ON a.accountID = s.accountID_FK WHERE a.accountID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
@@ -60,7 +60,7 @@ public class StudenteRepository {
 
     public ArrayList<Studente> getAllStudenti() {
         ArrayList<Studente> studenti = new ArrayList<>();
-        String query = "SELECT a.*, s.mediaPunteggio FROM account a " +
+        String query = "SELECT a.*, s.mediaPunteggio FROM accounts a " +
                 "INNER JOIN studenti s ON a.accountID = s.accountID_FK";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
