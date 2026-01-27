@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -58,8 +59,8 @@ public class DocenteRepository {
         }
     }
 
-    public ArrayList<Docente> getAllDocenti() {
-        ArrayList<Docente> docenti = new ArrayList<>();
+    public List<Docente> getAllDocenti() {
+        List<Docente> docenti = new ArrayList<>();
         String query = "SELECT a.*, d.insegnamento FROM accounts a " +
                 "INNER JOIN docenti d ON a.accountID = d.accountID_FK";
 
