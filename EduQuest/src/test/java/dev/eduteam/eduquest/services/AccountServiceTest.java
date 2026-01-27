@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -6,13 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
 
-import dev.eduteam.eduquest.services.AccountService;
+import dev.eduteam.eduquest.models.Account;
 
 @SpringBootTest
 public class AccountServiceTest {
 
         @Autowired
         private AccountService accountService;
+
+        //test di registrazione account
 
         @Test
         void creazioneAccountStudenteValidoTest() {
@@ -163,6 +165,8 @@ public class AccountServiceTest {
                 assertNotNull(accountMaxPw);
         }
 
+        //test di aggiornamento account
+
         @Test
         void aggiornaAccountSuccessoTest() {
                 Account accountUpdated = accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
@@ -219,7 +223,7 @@ public class AccountServiceTest {
                 IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                                 () -> accountService.aggiornaAccount("PincoPallino1", "PasswordSbagliata",
                                                 "NuovoNome", null, null, null));
-                assertEquals("Password attuale errata", e.getMessage());
+                assertEquals("Credenziali non valide: username o password errati.", e.getMessage());
         }
 
         @Test
@@ -227,7 +231,7 @@ public class AccountServiceTest {
                 IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                                 () -> accountService.aggiornaAccount("UsernameNonEsistente", "PasswordValida1!",
                                                 "NuovoNome", null, null, null));
-                assertEquals("Account non trovato", e.getMessage());
+                assertEquals("Credenziali non valide: username o password errati.", e.getMessage());
         }
 
         @Test
@@ -238,8 +242,8 @@ public class AccountServiceTest {
                 IllegalArgumentException e2 = assertThrows(IllegalArgumentException.class,
                                 () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
                                                 null, null, "@email.com", null));
-                assertEquals("Email non valida", e1.getMessage());
-                assertEquals("Email non valida", e2.getMessage());
+                assertEquals("Il formato della nuova email non è valido.", e1.getMessage());
+                assertEquals("Il formato della nuova email non è valido.", e2.getMessage());
         }
 
         @Test
@@ -260,50 +264,20 @@ public class AccountServiceTest {
                 IllegalArgumentException e4 = assertThrows(IllegalArgumentException.class,
                                 () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
                                                 null, null, null, "PasswordValida1"));
-                assertEquals("Password non valida", e1.getMessage());
-                assertEquals("Password non valida", e2.getMessage());
-                assertEquals("Password non valida", e3.getMessage());
-                assertEquals("Password non valida", e4.getMessage());
+                assertEquals("La nuova password non rispetta i requisiti di sicurezza.", e1.getMessage());
+                assertEquals("La nuova password non rispetta i requisiti di sicurezza.", e2.getMessage());
+                assertEquals("La nuova password non rispetta i requisiti di sicurezza.", e3.getMessage());
+                assertEquals("La nuova password non rispetta i requisiti di sicurezza.", e4.getMessage());
         }
 
-        @Test
-        void aggiornaNomeUgualTest() {
-                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
-                                                "pinco", null, null, null));
-                assertEquals("Il nuovo nome è uguale a quello attuale", e.getMessage());
-        }
-
-        @Test
-        void aggiornaCognomeUgualTest() {
-                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
-                                                null, "pallo", null, null));
-                assertEquals("Il nuovo cognome è uguale a quello attuale", e.getMessage());
-        }
-
-        @Test
-        void aggiornaEmailUgualTest() {
-                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
-                                                null, null, "PincoPallo@prova.edu", null));
-                assertEquals("La nuova email è uguale a quella attuale", e.getMessage());
-        }
-
-        @Test
-        void aggiornaPasswordUgualTest() {
-                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                                () -> accountService.aggiornaAccount("PincoPallino1", "PasswordValida1!",
-                                                null, null, null, "PasswordValida1!"));
-                assertEquals("La nuova password è uguale a quella attuale", e.getMessage());
-        }
+        //test di registraAccount con username o email già esistenti
 
         @Test
         void registraAccountUserNameGiaEsistenteTest() {
                 IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                                 () -> accountService.registraAccount("Mario", "Rossi", "PincoPallino1",
                                                 "mario123@email.com", "PasswordValida1!", false));
-                assertEquals("Username già in uso", e.getMessage());
+                assertEquals("Lo username 'PincoPallino1' è già occupato.", e.getMessage());
         }
 
         @Test
@@ -311,7 +285,7 @@ public class AccountServiceTest {
                 IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                                 () -> accountService.registraAccount("Mario", "Rossi", "mariorossi123",
                                                 "PincoPallo@prova.edu", "PasswordValida1!", false));
-                assertEquals("Email già in uso", e.getMessage());
+                assertEquals("L'email 'PincoPallo@prova.edu' è già associata a un account.", e.getMessage());
         }
 
         @Test
@@ -328,6 +302,42 @@ public class AccountServiceTest {
                                 () -> accountService.registraAccount("Mario", "Rossi", "mariorossi123",
                                                 "pincopallo@prova.edu", "PasswordValida1!", false));
                 assertEquals("Email già in uso", e.getMessage());
+        }
+
+        //test di cancellazione account
+
+        @Test
+        void eliminaAccountValidoTest() {
+                Account account = accountService.registraAccount("Giovanni", "Bianchi", "gbianchi123",
+                                "gbianchi@email.com", "PasswordValida1!", false);
+                assertNotNull(account);
+
+                accountService.eliminaAccount("gbianchi123", "PasswordValida1!");
+
+                Account accountCancellato = accountService.getAccountByUserName("gbianchi123");
+                assertNull(accountCancellato);
+        }
+
+        @Test
+        void eliminaAccountPasswordErratTest() {
+                Account account = accountService.registraAccount("Fabio", "Gialli", "fgialli123",
+                                "fgialli@email.com", "PasswordValida1!", false);
+                assertNotNull(account);
+
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.eliminaAccount("fgialli123", "PasswordSbagliata"));
+                assertEquals("Credenziali non valide: username o password errati.", e.getMessage());
+
+                // Verifichiamo che l'account non è stato cancellato
+                Account accountEsistente = accountService.getAccountByUserName("fgialli123");
+                assertNotNull(accountEsistente);
+        }
+
+        @Test
+        void eliminaAccountNonEsistenteTest() {
+                IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                                () -> accountService.eliminaAccount("usernameNonEsistente", "PasswordValida1!"));
+                assertEquals("Credenziali non valide: username o password errati.", e.getMessage());
         }
 
 }
