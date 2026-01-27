@@ -25,7 +25,7 @@ public class RispostaService {
      * }
      */
 
-    public ArrayList<Risposta> getDomande(int domandaID) {
+    public ArrayList<Risposta> getRisposteByDomanda(int domandaID) {
         return rispostaRepository.getRisposteByDomanda(domandaID);
     }
 
@@ -33,12 +33,13 @@ public class RispostaService {
         return rispostaRepository.getRispostaByID(domandaID, rispostaID);
     }
 
-    public Risposta aggiungiRisposta(int questionarioID, int domandaID) {
-        Risposta nuovaRisposta = new Risposta("");
+    public Risposta aggiungiRisposta(int domandaID) {
+        Risposta nuovaRisposta = new Risposta("Nuova Risposta");
+        nuovaRisposta.setCorretta(false);
         return rispostaRepository.insertRisposta(nuovaRisposta, domandaID);
     }
 
-    public boolean rimuoviRisposta(int questionario, int domandaID, int rispostaID) {
+    public boolean rimuoviRisposta(int domandaID, int rispostaID) {
         return rispostaRepository.removeRisposta(domandaID, rispostaID);
     }
 

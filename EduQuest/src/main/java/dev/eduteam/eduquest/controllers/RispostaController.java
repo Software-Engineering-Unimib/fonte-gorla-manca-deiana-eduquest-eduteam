@@ -29,9 +29,10 @@ public class RispostaController {
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        Domanda domanda = domandaService.getDomandaById(questionarioID, domandaID);
-        // Non c'è bisogno di controllare, se la domanda/questionario non esiste torna
-        // una lista vuota
+        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
+        if (domanda == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(domanda.getElencoRisposte());
     }
 
@@ -41,10 +42,6 @@ public class RispostaController {
             @PathVariable int domandaID,
             @PathVariable int rispostaID) {
 
-        Domanda domanda = domandaService.getDomandaById(questionarioID, domandaID);
-        if (domanda == null) {
-            return ResponseEntity.notFound().build();
-        }
         Risposta risposta = rispostaService.getRispostaById(domandaID, rispostaID);
         if (risposta == null) {
             return ResponseEntity.notFound().build();
@@ -53,36 +50,31 @@ public class RispostaController {
     }
 
     @PostMapping("aggiungi")
-    public ResponseEntity<Domanda> aggiungiRisposta(
+    public ResponseEntity<Risposta> aggiungiRisposta(
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        Domanda domanda = domandaService.getDomandaById(questionarioID, domandaID);
+        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
         if (domanda == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Risposta ripostaAggiunta = rispostaService.aggiungiRisposta(questionarioID, domandaID);
+        Risposta ripostaAggiunta = rispostaService.aggiungiRisposta(domandaID);
         if (ripostaAggiunta != null) {
-            return ResponseEntity.ok(domanda);
+            return ResponseEntity.ok(ripostaAggiunta);
         } else {
             return ResponseEntity.internalServerError().build();
         }
     }
 
     @PostMapping("rimuovi/{rispostaID}")
-    public ResponseEntity<Domanda> rimuoviRisposta(
-            @PathVariable int questionarioID,
+    public ResponseEntity<Void> rimuoviRisposta(
             @PathVariable int domandaID,
             @PathVariable int rispostaID) {
-        Domanda domanda = domandaService.getDomandaById(questionarioID, domandaID);
-        if (domanda == null) {
-            return ResponseEntity.notFound().build();
-        }
 
-        boolean rimosso = rispostaService.rimuoviRisposta(questionarioID, domandaID, rispostaID);
+        boolean rimosso = rispostaService.rimuoviRisposta(domandaID, rispostaID);
         if (rimosso) {
-            return ResponseEntity.ok(domanda);
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -90,14 +82,20 @@ public class RispostaController {
 
     @PostMapping("modifica/{rispostaID}/testo")
     public ResponseEntity<Risposta> setTestoRisposta(
-            @PathVariable int questionarioID,
             @PathVariable int domandaID,
             @PathVariable int rispostaID,
             @RequestParam(name = "testo") String testo) {
 
+        // Controllo validità del testo
+        if (testo == null || testo.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Risposta rispostaDaModificare = rispostaService.getRispostaById(domandaID, rispostaID);
-        if (rispostaDaModificare != null) {
-            rispostaService.modificaTesto(rispostaDaModificare, testo);
+        if (rispostaDaModificare == null)
+            return ResponseEntity.notFound().build();
+
+        if (rispostaService.modificaTesto(rispostaDaModificare, testo)) {
             return ResponseEntity.ok(rispostaDaModificare);
         } else {
             return ResponseEntity.internalServerError().build();

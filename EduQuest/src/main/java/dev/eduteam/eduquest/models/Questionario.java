@@ -59,7 +59,9 @@ public class Questionario {
     }
 
     public int getNumeroDomande() {
-        return numeroDomande;
+        // Se la lista esiste, restituisce la sua dimensione reale, altrimenti
+        // restituisce il valore salvato nel campo.
+        return (elencoDomande != null && !elencoDomande.isEmpty()) ? elencoDomande.size() : numeroDomande;
     }
 
     public void setNumeroDomande(int numeroDomande) {
@@ -73,6 +75,12 @@ public class Questionario {
 
     public ArrayList<Domanda> getElencoDomande() {
         return elencoDomande;
+    }
+
+    // Serve solo internamente al Service
+    public void setElencoDomande(ArrayList<Domanda> elencoDomande) {
+        this.elencoDomande = (elencoDomande != null) ? elencoDomande : new ArrayList<>();
+        this.numeroDomande = this.elencoDomande.size();
     }
 
     public LocalDate getDataCreazione() {

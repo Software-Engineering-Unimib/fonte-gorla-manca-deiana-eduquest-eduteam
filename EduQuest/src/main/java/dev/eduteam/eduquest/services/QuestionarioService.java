@@ -14,6 +14,9 @@ public class QuestionarioService {
     @Autowired
     private QuestionarioRepository questionarioRepository;
 
+    @Autowired
+    private DomandaService domandaService;
+
     // INIZIO ZONA TEMPORANEA
 
     public ArrayList<Questionario> getQuestionari() {
@@ -22,12 +25,21 @@ public class QuestionarioService {
 
     // FINE ZONA TEMPORANEA
 
-    public Questionario getQuestionario(int ID) {
-        return questionarioRepository.getQuestionarioByID(ID);
+    public Questionario getQuestionarioCompleto(int ID) {
+        Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
+
+        // Controllo che questionario non sia null prima di usarlo
+        if (questionario != null) {
+            // Recupero le domande (che a loro volta hanno già le risposte caricate)
+            ArrayList<Domanda> domande = domandaService.getDomandeComplete(ID);
+            // "Allego" le domande al questionario prima di restituirlo
+            questionario.setElencoDomande(domande);
+        }
+        return questionario;
     }
 
     public Questionario creaQuestionario() {
-        Questionario nuovo = new Questionario("", "", new ArrayList<Domanda>());
+        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>());
         return questionarioRepository.insertQuestionario(nuovo);
     }
 
@@ -35,12 +47,9 @@ public class QuestionarioService {
         return questionarioRepository.removeQuestionario(ID);
     }
 
-    public boolean modificaNome(Questionario questionario, String nome) {
+    // Uniti i due metodi di modifica e sistemata logica in controller
+    public boolean modificaInfo(Questionario questionario, String nome, String descrizione) {
         questionario.setNome(nome);
-        return questionarioRepository.updateQuestionario(questionario);
-    }
-
-    public boolean modificaDescrizione(Questionario questionario, String descrizione) {
         questionario.setDescrizione(descrizione);
         return questionarioRepository.updateQuestionario(questionario);
     }

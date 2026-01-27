@@ -15,6 +15,37 @@ import dev.eduteam.eduquest.models.Risposta;
 @Repository
 public class DomandaRepository {
 
+    // DA VALUTARE: Dato che l'ID delle domande è univoco si potrebbe fare un metodo
+    // in overload per la ricerca con solo l'ID della domanda
+    // PER ORA li ho messi entrambi
+
+    // Aggiungi questo metodo per le operazioni in cui conosci solo l'ID della
+    // domanda
+    public Domanda getDomandaByID(int domandaID) {
+        Domanda domanda = null;
+        String query = "SELECT domandaID, tipo, testo, numeroRisposte, questionarioID_FK FROM domande WHERE domandaID = ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, domandaID);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int tipo = rs.getInt("tipo");
+                    Domanda.Type tipoEnum = Domanda.Type.values()[tipo - 1];
+                    domanda = Domanda.createDomandaOfType(tipoEnum);
+                    domanda.setID(rs.getInt("domandaID"));
+                    domanda.setTesto(rs.getString("testo"));
+                    domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return domanda;
+    }
+
     public Domanda getDomandaByID(int questionarioID, int domandaID) {
         Domanda domanda = null;
         String query = "SELECT " +
@@ -48,6 +79,8 @@ public class DomandaRepository {
         }
         return domanda;
     }
+
+    // -------------------------
 
     public ArrayList<Domanda> getDomandeByQuestionario(int questionarioID) {
         ArrayList<Domanda> elecoDomande = new ArrayList<Domanda>();
