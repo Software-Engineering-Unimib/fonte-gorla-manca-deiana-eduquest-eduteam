@@ -99,5 +99,19 @@ public class DocenteController {
         }
     }
 
-    // TODO aggiornaInsegnamento
+    @PostMapping("aggiornaInsegnamento")
+    public ResponseEntity<?> updateInsegnamento(@RequestParam(name = "id") int id, @RequestParam String nuovaMateria) {
+        try {
+            boolean successo = docenteService.aggiornaInsegnamento(id, nuovaMateria);
+            if (successo) {
+                Docente aggiornato = docenteService.getByID(id);
+                return ResponseEntity.ok(aggiornato);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Docente con ID " + id + " non trovato.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Errore durante l'aggiornamento: " + e.getMessage());
+        }
+    }
+
 }
