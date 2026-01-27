@@ -15,7 +15,7 @@ import dev.eduteam.eduquest.models.Risposta;
 @Repository
 public class DomandaRepository {
 
-    // DA VALUTARE: Dato che l'ID delle domande è univoco si potrebbe fare un metodo
+// DA VALUTARE: Dato che l'ID delle domande è univoco si potrebbe fare un metodo
     // in overload per la ricerca con solo l'ID della domanda
     // PER ORA li ho messi entrambi
 

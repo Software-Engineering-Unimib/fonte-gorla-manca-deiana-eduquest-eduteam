@@ -48,27 +48,6 @@ public class DomandaController {
         return ResponseEntity.ok(domanda);
     }
 
-    /*
-     * Non ho capito se volevi rimuovere la domanda o una risposta
-     * 
-     * @PostMapping("{questionarioID}/{domandaID}/rimuovi_risposta/{rispostaID}")
-     * public Domanda rimuoviDomanda(
-     * 
-     * @PathVariable int questionarioID,
-     * 
-     * @PathVariable int domandaID,
-     * 
-     * @PathVariable int rispostaID) {
-     * Domanda domandaModificata = getDomanda(questionarioID, domandaID);
-     * Risposta rispostaRimossa = domandaService.getRisposta(domandaModificata,
-     * rispostaID);
-     * 
-     * domandaService.rimuoviRisposta(domandaModificata, rispostaRimossa);
-     * 
-     * return domandaModificata;
-     * }
-     */
-
     @PostMapping("aggiungi")
     public ResponseEntity<Questionario> aggiungiDomanda(
             @PathVariable int questionarioID,
