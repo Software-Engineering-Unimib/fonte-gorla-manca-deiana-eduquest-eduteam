@@ -1,6 +1,5 @@
 package dev.eduteam.eduquest.repositories;
 
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,33 +17,30 @@ public class DomandaRepository {
 
     public Domanda getDomandaByID(int questionarioID, int domandaID) {
         Domanda domanda = null;
+        String query = "SELECT " +
+                "domandaID, " +
+                "tipo, " +
+                "testo, " +
+                "numeroRisposte, " +
+                "questionarioID_FK FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
 
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "domandaID, " +
-                    "testo, " +
-                    "numeroRisposte, " +
-                    "rispostaCorrettaID, " +
-                    "questionarioID_FK FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, domandaID);
             ps.setInt(2, questionarioID);
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                domanda = new Domanda("");
-                domanda.setID(rs.getInt("domandaID"));
-                domanda.setTesto(rs.getString("testo"));
-                domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Usiamo il valore numerico del tipo per creare la sottoclasse corretta
+                    // 1=MULTIPLA, 2=MULTIPLE_RISPOSTE, 3=VERO_FALSO
+                    int tipo = rs.getInt("tipo");
+                    Domanda.Type tipoEnum = Domanda.Type.values()[tipo - 1];
 
-                int rispostaCorrettaID = rs.getInt("rispostaCorrettaID");
-                if (rispostaCorrettaID > 0) {
-                    Risposta rispostaCorretta = new Risposta("");
-                    rispostaCorretta.setID(rispostaCorrettaID);
-                    domanda.setRispostaCorretta(rispostaCorretta);
-                } else {
-                    domanda.setRispostaCorretta(null);
+                    domanda = Domanda.createDomandaOfType(tipoEnum);
+                    domanda.setID(rs.getInt("domandaID"));
+                    domanda.setTesto(rs.getString("testo"));
+                    domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
                 }
             }
         } catch (Exception e) {
@@ -54,51 +50,47 @@ public class DomandaRepository {
     }
 
     public ArrayList<Domanda> getDomandeByQuestionario(int questionarioID) {
-        ArrayList<Domanda> domande = new ArrayList<Domanda>();
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "domandaID, " +
-                    "testo, " +
-                    "numeroRisposte, " +
-                    "rispostaCorrettaID, " +
-                    "questionarioID_FK FROM domande WHERE questionarioID_FK = ?";
+        ArrayList<Domanda> elecoDomande = new ArrayList<Domanda>();
+        String query = "SELECT " +
+                "domandaID, " +
+                "tipo, " +
+                "testo, " +
+                "numeroRisposte, " +
+                "questionarioID_FK FROM domande WHERE questionarioID_FK = ?";
 
-            PreparedStatement ps = conn.prepareStatement(query);
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
             ps.setInt(1, questionarioID);
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Domanda domanda = new Domanda("");
-                domanda.setID(rs.getInt("domandaID"));
-                domanda.setTesto(rs.getString("testo"));
-                domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int tipo = rs.getInt("tipo");
+                    Domanda.Type tipoEnum = Domanda.Type.values()[tipo - 1];
 
-                int rispostaCorrettaID = rs.getInt("rispostaCorrettaID");
-                if (rispostaCorrettaID > 0) {
-                    Risposta rispostaCorretta = new Risposta("");
-                    rispostaCorretta.setID(rispostaCorrettaID);
-                    domanda.setRispostaCorretta(rispostaCorretta);
-                } else {
-                    domanda.setRispostaCorretta(null);
+                    Domanda domanda = Domanda.createDomandaOfType(tipoEnum);
+                    domanda.setID(rs.getInt("domandaID"));
+                    domanda.setTesto(rs.getString("testo"));
+                    domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
+
+                    elecoDomande.add(domanda);
                 }
-
-                domande.add(domanda);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return domande;
+        return elecoDomande;
     }
 
     public Domanda insertDomanda(Domanda d, int questionarioID) {
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK) VALUES (?, ?, ?, ?)";
 
-            String query = "INSERT INTO domande (testo, numeroRisposte, rispostaCorrettaID, questionarioID_FK) VALUES (?, ?, ?, ?)";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
-            ps.setString(1, d.getTesto());
-            ps.setInt(2, d.getNumeroRisposte());
-            ps.setInt(3, d.getRispostaCorretta().getID());
+            ps.setInt(1, d.getTipoDomanda().ordinal() + 1);
+            ps.setString(2, d.getTesto());
+            ps.setInt(3, d.getNumeroRisposte());
             ps.setInt(4, questionarioID);
 
             ps.executeUpdate();
@@ -116,11 +108,11 @@ public class DomandaRepository {
 
     public boolean removeDomanda(int domandaID, int questionarioID) {
         boolean result = false;
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "DELETE FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
 
-            String query = "DELETE FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, domandaID);
             ps.setInt(2, questionarioID);
 
@@ -133,16 +125,15 @@ public class DomandaRepository {
     }
 
     public boolean updateDomanda(Domanda d) {
+        // Una volta creata la domanda, il tipo non può essere modificato
         boolean result = false;
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "UPDATE domande SET testo = ? WHERE domandaID = ?";
 
-            // Se non erro la correttezza dei dati passati al metodo è già stata verificata
-            String query = "UPDATE domande SET testo = ?,  rispostaCorrettaID = ? WHERE domandaID = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, d.getTesto());
-            ps.setInt(2, d.getRispostaCorretta().getID());
-            ps.setInt(3, d.getID());
+            ps.setInt(2, d.getID());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {

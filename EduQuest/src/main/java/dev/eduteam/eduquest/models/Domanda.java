@@ -17,15 +17,30 @@ public abstract class Domanda {
     protected int ID; // GLI ID SARANNO LEGATI ALLE DOMANDE SALVATI SUL DB
     private String testo;
     protected int numeroRisposte;
-    protected ArrayList<Risposta> elencoRisposte;
+    protected ArrayList<Risposta> elencoRisposte = new ArrayList<>();
 
-    // VARIABILI COMUNI A TUTTE LE DOMANDE
+    // METODI COMUNI A TUTTE LE DOMANDE
 
-    public int getID() { return ID; }
+    public static Domanda createDomandaOfType(Type tipoDomanda) {
+        return switch (tipoDomanda) {
+            case DOMANDA_MULTIPLA -> new DomandaMultipla("");
+            case DOMANDA_MULTIPLE_RISPOSTE -> new DomandaMultipleRisposte("");
+            case DOMANDA_VERO_FALSO -> new DomandaVeroFalso("");
+            default -> null;
+        };
+    }
 
-    public void setID(int ID) { this.ID = ID; }
+    public int getID() {
+        return ID;
+    }
 
-    public String getTesto() { return testo; }
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public String getTesto() {
+        return testo;
+    }
 
     public void setTesto(String testo) {
         if (testo == null) {
@@ -34,7 +49,9 @@ public abstract class Domanda {
         this.testo = testo;
     }
 
-    public int getNumeroRisposte() { return numeroRisposte; }
+    public int getNumeroRisposte() {
+        return numeroRisposte;
+    }
 
     public void setNumeroRisposte(int numeroRisposte) {
 
@@ -45,20 +62,16 @@ public abstract class Domanda {
         this.numeroRisposte = numeroRisposte;
     }
 
-    public ArrayList<Risposta> getElencoRisposte() { return elencoRisposte; }
+    public ArrayList<Risposta> getElencoRisposte() {
+        return elencoRisposte;
+    }
 
     public void addRisposta(Risposta risposta) {
         elencoRisposte.add(risposta);
     }
 
-    public static Domanda createDomandaOfType(Type tipoDomanda) {
-
-        return switch (tipoDomanda) {
-            case DOMANDA_MULTIPLA -> new DomandaMultipla("");
-            case DOMANDA_MULTIPLE_RISPOSTE -> new DomandaMultipleRisposte("");
-            case DOMANDA_VERO_FALSO -> new DomandaVeroFalso("");
-            default -> null;
-        };
+    public Type getTipoDomanda() {
+        return tipoDomanda;
     }
 
     public abstract void setRispostaCorretta(Risposta risposta);

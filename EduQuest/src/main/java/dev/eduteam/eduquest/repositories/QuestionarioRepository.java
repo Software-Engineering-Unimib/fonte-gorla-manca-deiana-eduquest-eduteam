@@ -20,27 +20,28 @@ public class QuestionarioRepository {
 
     public Questionario getQuestionarioByID(int id) {
         Questionario questionario = null;
+        String query = "SELECT " +
+                "questionarioID, " +
+                "nome, " +
+                "descrizione, " +
+                "numeroDomande, " +
+                "dataCreazione FROM questionari WHERE questionarioID = ?";
 
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "questionarioID, " +
-                    "nome, " +
-                    "descrizione, " +
-                    "numeroDomande, " +
-                    "dataCreazione FROM questionari WHERE questionarioID = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, id);
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                questionario = new Questionario("", "", new ArrayList<Domanda>());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    questionario = new Questionario("", "", new ArrayList<Domanda>());
 
-                questionario.setID(rs.getInt("questionarioID"));
-                questionario.setNome(rs.getString("nome"));
-                questionario.setDescrizione(rs.getString("descrizione"));
-                questionario.setNumeroDomande(rs.getInt("numeroDomande"));
-                questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+                    questionario.setID(rs.getInt("questionarioID"));
+                    questionario.setNome(rs.getString("nome"));
+                    questionario.setDescrizione(rs.getString("descrizione"));
+                    questionario.setNumeroDomande(rs.getInt("numeroDomande"));
+                    questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -49,33 +50,31 @@ public class QuestionarioRepository {
     }
 
     // MOLTO PROBABILMENTE QUESTO METODO DIVENTERA' "getQuestionariByDocente" DOPO
-    // IL MERGE
-    // QUINDI CAMBIERA'
+    // IL MERGE QUINDI CAMBIERA'
     public ArrayList<Questionario> getQuestionari() {
-
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "questionarioID, " +
-                    "nome, " +
-                    "descrizione, " +
-                    "numeroDomande, " +
-                    "dataCreazione FROM questionari";
+        String query = "SELECT " +
+                "questionarioID, " +
+                "nome, " +
+                "descrizione, " +
+                "numeroDomande, " +
+                "dataCreazione FROM questionari";
 
-            PreparedStatement ps = conn.prepareStatement(query);
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);) {
 
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
 
-            while (rs.next()) {
-                Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
+                    questionario.setID(rs.getInt("questionarioID"));
+                    questionario.setNome(rs.getString("nome"));
+                    questionario.setDescrizione(rs.getString("descrizione"));
+                    questionario.setNumeroDomande(rs.getInt("numeroDomande"));
+                    questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
 
-                questionario.setID(rs.getInt("questionarioID"));
-                questionario.setNome(rs.getString("nome"));
-                questionario.setDescrizione(rs.getString("descrizione"));
-                questionario.setNumeroDomande(rs.getInt("numeroDomande"));
-                questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
-
-                questionari.add(questionario);
+                    questionari.add(questionario);
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -84,11 +83,11 @@ public class QuestionarioRepository {
     }
 
     public Questionario insertQuestionario(Questionario questionario) {
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "INSERT INTO questionari (nome, descrizione, numeroDomande, dataCreazione) VALUES (?, ?, ?, ?)";
 
-            String query = "INSERT INTO questionari (nome, descrizione, numeroDomande, dataCreazione) VALUES (?, ?, ?, ?)";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, questionario.getNome());
             ps.setString(2, questionario.getDescrizione());
             ps.setInt(3, 0); // Numero domande inizializzato a 0
@@ -109,11 +108,11 @@ public class QuestionarioRepository {
 
     public boolean removeQuestionario(int id) {
         boolean result = false;
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "DELETE FROM questionari WHERE questionarioID = ?";
 
-            String query = "DELETE FROM questionari WHERE questionarioID = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, id);
 
             int rowsAffected = ps.executeUpdate();
@@ -128,12 +127,11 @@ public class QuestionarioRepository {
 
     public boolean updateQuestionario(Questionario questionario) {
         boolean result = false;
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "UPDATE questionari SET nome = ?, descrizione = ? WHERE questionarioID = ?";
 
-            // Se non erro la correttezza dei dati passati al metodo è già stata verificata
-            String query = "UPDATE questionari SET nome = ?, descrizione = ? WHERE questionarioID = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, questionario.getNome());
             ps.setString(2, questionario.getDescrizione());
             ps.setInt(3, questionario.getID());

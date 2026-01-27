@@ -2,7 +2,8 @@ package dev.eduteam.eduquest.models;
 
 import java.util.ArrayList;
 
-public class DomandaMultipleRisposte extends Domanda{
+// Domanda a risposta multipla con più risposte corrette
+public class DomandaMultipleRisposte extends Domanda {
 
     protected ArrayList<Risposta> risposteCorrette;
 
@@ -11,12 +12,13 @@ public class DomandaMultipleRisposte extends Domanda{
         tipoDomanda = Type.DOMANDA_MULTIPLE_RISPOSTE;
 
         setNumeroRisposte(0);
-        elencoRisposte = new ArrayList<Risposta>();
         risposteCorrette = new ArrayList<Risposta>();
         setTesto(testo);
     }
 
-    public ArrayList<Risposta> getRisposteCorrette() { return risposteCorrette; }
+    public ArrayList<Risposta> getRisposteCorrette() {
+        return risposteCorrette;
+    }
 
     @Override
     public void setRispostaCorretta(Risposta risposta) {

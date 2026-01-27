@@ -7,25 +7,25 @@ public class Questionario {
 
     // Variabili private del questionario
     private int ID; // GLI ID SARANNO LEGATI AI QUESTIONARI SALVATI SUL DB
-    //ID inizializzato nel costruttore vuoto
-    private String nome; //null
-    private String descrizione; //null
+    // ID inizializzato nel costruttore vuoto
+    private String nome; // null
+    private String descrizione; // null
 
-    private int numeroDomande; //0
-    private ArrayList<Domanda> elencoDomande; //vuota?
+    private int numeroDomande; // 0
+    private ArrayList<Domanda> elencoDomande; // vuota?
 
-    private LocalDate dataCreazione; //inizializzata di default nel costruttore senza parametri
+    private LocalDate dataCreazione; // inizializzata di default nel costruttore senza parametri
     // private Docente creatore;
 
-    //COSTRUTTORE SENZA PARAMETRI
+    // COSTRUTTORE SENZA PARAMETRI
 
     public Questionario(String nome, String descrizione, ArrayList<Domanda> domande /* , Docente docente */) {
 
         setNome(nome);
+        this.elencoDomande = (domande != null) ? domande : new ArrayList<>();
         setNumeroDomande(domande.size());
-        dataCreazione = LocalDate.now(); //questo va spostato nel costruttore senza parametri
+        dataCreazione = LocalDate.now(); // questo va spostato nel costruttore senza parametri
         // creatore = docente;
-        elencoDomande = domande;
         setDescrizione(descrizione);
     }
 
@@ -79,7 +79,9 @@ public class Questionario {
         return dataCreazione;
     }
 
-    public void setDataCreazione(LocalDate dataCreazione) { this.dataCreazione = dataCreazione; }
+    public void setDataCreazione(LocalDate dataCreazione) {
+        this.dataCreazione = dataCreazione;
+    }
 
     // AGGIUNGERE EVENTUALI GETTER PER DOCENTE
 }
