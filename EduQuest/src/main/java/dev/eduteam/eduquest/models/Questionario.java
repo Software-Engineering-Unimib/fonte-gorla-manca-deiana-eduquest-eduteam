@@ -15,7 +15,7 @@ public class Questionario {
     private ArrayList<Domanda> elencoDomande; // vuota?
 
     private LocalDate dataCreazione; // inizializzata di default nel costruttore senza parametri
-    // private Docente creatore;
+    private int docenteID; // ID del docente che ha creato il questionario
 
     // COSTRUTTORE SENZA PARAMETRI
 
@@ -27,6 +27,13 @@ public class Questionario {
         dataCreazione = LocalDate.now(); // questo va spostato nel costruttore senza parametri
         // creatore = docente;
         setDescrizione(descrizione);
+    }
+
+    // COSTRUTTORE CON PARAMETRO DOCENTE ID 
+    //per come è strutturato ora il sistema l'ho messo come costruttore a parte 
+    public Questionario(String nome, String descrizione, ArrayList<Domanda> domande, int docenteID) {
+        this(nome, descrizione, domande);
+        this.docenteID = docenteID;
     }
 
     public int getID() {
@@ -91,5 +98,12 @@ public class Questionario {
         this.dataCreazione = dataCreazione;
     }
 
-    // AGGIUNGERE EVENTUALI GETTER PER DOCENTE
+    public int getDocenteID() {
+        return docenteID;
+    }
+
+    public void setDocenteID(int docenteID) {
+        this.docenteID = docenteID;
+    }
+    
 }
