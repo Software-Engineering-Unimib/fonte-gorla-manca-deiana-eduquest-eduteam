@@ -1,122 +1,168 @@
 package dev.eduteam.eduquest.services;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import dev.eduteam.eduquest.models.Studente;
+import dev.eduteam.eduquest.repositories.StudenteRepository;
 import java.util.List;
+import java.util.ArrayList;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class StudenteServiceTest {
 
-    @Autowired
+    @Mock
+    private StudenteRepository studenteRepository;
+
+    @InjectMocks
     private StudenteService studenteService;
+
+    private Studente studente;
+
+    @BeforeEach
+    void setUp() {
+        studente = new Studente("Marco", "Verdi", "mverdi123", "mverdi@email.com", "PasswordValida1!");
+        studente.setAccountID(1);
+    }
 
     // test di registrazione Studente
     @Test
     void registraStudenteValidoTest() {
-        Studente studente = new Studente("Marco", "Verdi", "mverdi123", "mverdi@email.com", "PasswordValida1!");
-        Studente studenteRegistrato = studenteService.registraStudente(studente);
-        assertNotNull(studenteRegistrato);
-        assertEquals("Marco", studenteRegistrato.getNome());
-        assertEquals("Verdi", studenteRegistrato.getCognome());
-        assertEquals("mverdi123", studenteRegistrato.getUserName());
-        assertEquals("mverdi@email.com", studenteRegistrato.getEmail());
-        assertEquals(0.0, studenteRegistrato.getMediaPunteggio());
+        Studente nuovoStudente = new Studente("Marco", "Verdi", "mverdi123", "mverdi@email.com", "PasswordValida1!");
+        nuovoStudente.setAccountID(1);
+        nuovoStudente.setMediaPunteggio(0.0);
+        when(studenteRepository.insertStudente(any(Studente.class))).thenReturn(nuovoStudente);
+
+        Studente result = studenteService.registraStudente(studente);
+        assertNotNull(result);
+        assertEquals("Marco", result.getNome());
+        assertEquals("Verdi", result.getCognome());
+        assertEquals("mverdi123", result.getUserName());
+        assertEquals("mverdi@email.com", result.getEmail());
+        assertEquals(0.0, result.getMediaPunteggio());
+        verify(studenteRepository, times(1)).insertStudente(any(Studente.class));
     }
 
     @Test
     void registraStudenteConMediaTest() {
-        Studente studente = new Studente("Luca", "Bianchi", "lbianchi123", "lbianchi@email.com", "PasswordValida1!");
-        studente.setMediaPunteggio(8.5);
-        Studente studenteRegistrato = studenteService.registraStudente(studente);
-        assertNotNull(studenteRegistrato);
-        assertEquals(8.5, studenteRegistrato.getMediaPunteggio());
+        Studente studenteConMedia = new Studente("Luca", "Bianchi", "lbianchi123", "lbianchi@email.com", "PasswordValida1!");
+        studenteConMedia.setMediaPunteggio(8.5);
+        studenteConMedia.setAccountID(2);
+        when(studenteRepository.insertStudente(any(Studente.class))).thenReturn(studenteConMedia);
+
+        Studente result = studenteService.registraStudente(studente);
+        assertNotNull(result);
+        assertEquals(8.5, result.getMediaPunteggio());
+        verify(studenteRepository, times(1)).insertStudente(any(Studente.class));
     }
 
     // test di recupero Studente per ID
     @Test
     void getByIdValidoTest() {
-        Studente studente = new Studente("Giovanni", "Neri", "gneri123", "gneri@email.com", "PasswordValida1!");
-        Studente studenteRegistrato = studenteService.registraStudente(studente);
+        Studente studenteEsistente = new Studente("Giovanni", "Neri", "gneri123", "gneri@email.com", "PasswordValida1!");
+        studenteEsistente.setAccountID(1);
+        studenteEsistente.setMediaPunteggio(0.0);
+        when(studenteRepository.getStudenteByAccountID(1)).thenReturn(studenteEsistente);
         
-        Studente studenteRecuperato = studenteService.getById(studenteRegistrato.getAccountID());
-        assertNotNull(studenteRecuperato);
-        assertEquals("Giovanni", studenteRecuperato.getNome());
-        assertEquals("Neri", studenteRecuperato.getCognome());
-        assertEquals("gneri123", studenteRecuperato.getUserName());
-        assertEquals("gneri@email.com", studenteRecuperato.getEmail());
-        assertEquals(0.0, studenteRecuperato.getMediaPunteggio());
+        Studente result = studenteService.getById(1);
+        assertNotNull(result);
+        assertEquals("Giovanni", result.getNome());
+        assertEquals("Neri", result.getCognome());
+        assertEquals("gneri123", result.getUserName());
+        assertEquals("gneri@email.com", result.getEmail());
+        assertEquals(0.0, result.getMediaPunteggio());
+        verify(studenteRepository, times(1)).getStudenteByAccountID(1);
     }
 
     @Test
     void getByIdNonEsistenteTest() {
-        Studente studente = studenteService.getById(99999);
-        assertNull(studente);
+        when(studenteRepository.getStudenteByAccountID(99999)).thenReturn(null);
+        
+        Studente result = studenteService.getById(99999);
+        assertNull(result);
+        verify(studenteRepository, times(1)).getStudenteByAccountID(99999);
     }
 
     // test di recupero tutti gli Studenti
     @Test
     void getAllStudentiTest() {
-        List<Studente> studenti = studenteService.getAll();
-        assertNotNull(studenti);
-        assertFalse(studenti.isEmpty());
+        List<Studente> studenti = new ArrayList<>();
+        studenti.add(studente);
+        when(studenteRepository.getAllStudenti()).thenReturn(studenti);
+
+        List<Studente> result = studenteService.getAll();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        verify(studenteRepository, times(1)).getAllStudenti();
     }
 
     // test di aggiornamento Studente
     @Test
     void aggiornaStudenteNomeTest() {
-        Studente studente = new Studente("Antonio", "Rossi", "arossi123", "arossi@email.com", "PasswordValida1!");
-        Studente studenteRegistrato = studenteService.registraStudente(studente);
+        Studente studenteOriginale = new Studente("Antonio", "Rossi", "arossi123", "arossi@email.com", "PasswordValida1!");
+        studenteOriginale.setAccountID(1);
         
-        studenteRegistrato.setNome("AntonioBis");
-        boolean aggiornato = studenteService.aggiornaStudente(studenteRegistrato);
-        assertTrue(aggiornato);
-        
-        Studente studenteAggiornato = studenteService.getById(studenteRegistrato.getAccountID());
-        assertEquals("AntonioBis", studenteAggiornato.getNome());
+        studenteOriginale.setNome("AntonioBis");
+        when(studenteRepository.updateStudente(studenteOriginale)).thenReturn(true);
+
+        boolean result = studenteService.aggiornaStudente(studenteOriginale);
+        assertTrue(result);
+        assertEquals("AntonioBis", studenteOriginale.getNome());
+        verify(studenteRepository, times(1)).updateStudente(studenteOriginale);
     }
 
     @Test
     void aggiornaStudenteMediaTest() {
-        Studente studente = new Studente("Paolo", "Gialli", "pgialli123", "pgialli@email.com", "PasswordValida1!");
-        Studente studenteRegistrato = studenteService.registraStudente(studente);
+        Studente studenteOriginale = new Studente("Paolo", "Gialli", "pgialli123", "pgialli@email.com", "PasswordValida1!");
+        studenteOriginale.setAccountID(1);
         
-        studenteRegistrato.setMediaPunteggio(7.5);
-        boolean aggiornato = studenteService.aggiornaStudente(studenteRegistrato);
-        assertTrue(aggiornato);
-        
-        Studente studenteAggiornato = studenteService.getById(studenteRegistrato.getAccountID());
-        assertEquals(7.5, studenteAggiornato.getMediaPunteggio());
+        studenteOriginale.setMediaPunteggio(7.5);
+        when(studenteRepository.updateStudente(studenteOriginale)).thenReturn(true);
+
+        boolean result = studenteService.aggiornaStudente(studenteOriginale);
+        assertTrue(result);
+        assertEquals(7.5, studenteOriginale.getMediaPunteggio());
+        verify(studenteRepository, times(1)).updateStudente(studenteOriginale);
     }
 
     @Test
     void aggiornaStudenteCompleroTest() {
-        Studente studente = new Studente("Fabio", "Blu", "fblu123", "fblu@email.com", "PasswordValida1!");
-        Studente studenteRegistrato = studenteService.registraStudente(studente);
+        Studente studenteOriginale = new Studente("Fabio", "Blu", "fblu123", "fblu@email.com", "PasswordValida1!");
+        studenteOriginale.setAccountID(1);
         
-        studenteRegistrato.setNome("FabioBis");
-        studenteRegistrato.setCognome("BluBis");
-        studenteRegistrato.setEmail("fblubis@email.com");
-        studenteRegistrato.setMediaPunteggio(9.0);
+        studenteOriginale.setNome("FabioBis");
+        studenteOriginale.setCognome("BluBis");
+        studenteOriginale.setEmail("fblubis@email.com");
+        studenteOriginale.setMediaPunteggio(9.0);
         
-        boolean aggiornato = studenteService.aggiornaStudente(studenteRegistrato);
-        assertTrue(aggiornato);
-        
-        Studente studenteAggiornato = studenteService.getById(studenteRegistrato.getAccountID());
-        assertEquals("FabioBis", studenteAggiornato.getNome());
-        assertEquals("BluBis", studenteAggiornato.getCognome());
-        assertEquals("fblubis@email.com", studenteAggiornato.getEmail());
-        assertEquals(9.0, studenteAggiornato.getMediaPunteggio());
+        when(studenteRepository.updateStudente(studenteOriginale)).thenReturn(true);
+
+        boolean result = studenteService.aggiornaStudente(studenteOriginale);
+        assertTrue(result);
+        assertEquals("FabioBis", studenteOriginale.getNome());
+        assertEquals("BluBis", studenteOriginale.getCognome());
+        assertEquals("fblubis@email.com", studenteOriginale.getEmail());
+        assertEquals(9.0, studenteOriginale.getMediaPunteggio());
+        verify(studenteRepository, times(1)).updateStudente(studenteOriginale);
     }
 
     // test che verifica isDocente ritorna false
     @Test
     void studenteIsDocenteFalseTest() {
-        Studente studente = new Studente("Carlo", "Arancioni", "carancioni123", "carancioni@email.com", "PasswordValida1!");
-        Studente studenteRegistrato = studenteService.registraStudente(studente);
-        assertFalse(studenteRegistrato.isDocente());
+        Studente nuovoStudente = new Studente("Carlo", "Arancioni", "carancioni123", "carancioni@email.com", "PasswordValida1!");
+        nuovoStudente.setAccountID(1);
+        when(studenteRepository.insertStudente(any(Studente.class))).thenReturn(nuovoStudente);
+
+        Studente result = studenteService.registraStudente(studente);
+        assertFalse(result.isDocente());
+        verify(studenteRepository, times(1)).insertStudente(any(Studente.class));
     }
 }
