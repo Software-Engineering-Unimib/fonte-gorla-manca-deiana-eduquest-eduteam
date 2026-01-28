@@ -1,7 +1,9 @@
 package dev.eduteam.eduquest.services;
 
+import dev.eduteam.eduquest.models.Docente;
 import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Questionario;
+import dev.eduteam.eduquest.repositories.DocenteRepository;
 import dev.eduteam.eduquest.repositories.QuestionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,20 +15,24 @@ public class QuestionarioService {
 
     @Autowired
     private QuestionarioRepository questionarioRepository;
+    @Autowired
+    private DocenteRepository docenteRepository;
 
     @Autowired
     private DomandaService domandaService;
 
     // INIZIO ZONA TEMPORANEA
 
+    /*
     public ArrayList<Questionario> getQuestionari() {
         return questionarioRepository.getQuestionari();
     }
+    */
 
     // FINE ZONA TEMPORANEA
 
-    public Questionario getQuestionarioCompleto(int ID) {
-        Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
+    public Questionario getQuestionarioCompleto(int docenteID, int ID) {
+        Questionario questionario = questionarioRepository.getQuestionarioByID(docenteID, ID);
 
         // Controllo che questionario non sia null prima di usarlo
         if (questionario != null) {
@@ -39,7 +45,7 @@ public class QuestionarioService {
     }
 
     public Questionario creaQuestionario(int docenteID) {
-        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>(), docenteID);
+        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>(), docenteRepository.getDocenteByAccountID(docenteID));
         return questionarioRepository.insertQuestionario(nuovo);
     }
 

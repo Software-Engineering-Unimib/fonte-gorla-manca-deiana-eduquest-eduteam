@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("questionari")
+@RequestMapping("api/docente/{docenteID}/questionari")
 public class QuestionarioController {
 
     @Autowired
     private QuestionarioService questionarioService;
 
     @GetMapping()
-    public ArrayList<Questionario> getQuestionari() {
-        return questionarioService.getQuestionari();
+    public ArrayList<Questionario> getQuestionari(@PathVariable int docenteID) {
+        return questionarioService.getQuestionariByDocente(docenteID);
     }
 
     @GetMapping("{ID}")
-    public ResponseEntity<Questionario> getQuestionario(@PathVariable int ID) {
-        Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
+    public ResponseEntity<Questionario> getQuestionario(@PathVariable int docenteID, @PathVariable int ID) {
+        Questionario questionario = questionarioService.getQuestionarioCompleto(docenteID, ID);
         if (questionario != null) {
             return ResponseEntity.ok(questionario);
         } else {
@@ -47,16 +47,6 @@ public class QuestionarioController {
         }
     }
 
-    @GetMapping("docente/{docenteID}")
-    public ResponseEntity<ArrayList<Questionario>> getQuestionariDocente(@PathVariable int docenteID) {
-        ArrayList<Questionario> questionari = questionarioService.getQuestionariByDocente(docenteID);
-        if (!questionari.isEmpty()) {
-            return ResponseEntity.ok(questionari);
-        } else {
-            return ResponseEntity.noContent().build();
-        }
-    }
-
     // Post -> Delete per standard REST
     @DeleteMapping("rimuovi/{ID}")
     public ResponseEntity<Questionario> rimuoviQuestionario(@PathVariable int ID) {
@@ -71,6 +61,7 @@ public class QuestionarioController {
     // Post -> Put per standard REST
     @PutMapping("modifica/{ID}/rinomina")
     public ResponseEntity<Questionario> rinominaQuestionario(
+            @PathVariable int docenteID,
             @PathVariable int ID,
             @RequestParam(name = "nome") String nome) {
 
@@ -79,7 +70,7 @@ public class QuestionarioController {
             return ResponseEntity.badRequest().build();
         }
 
-        Questionario q = questionarioService.getQuestionarioCompleto(ID);
+        Questionario q = questionarioService.getQuestionarioCompleto(docenteID, ID);
         if (q == null) {
             return ResponseEntity.notFound().build();
         }
@@ -94,6 +85,7 @@ public class QuestionarioController {
 
     @PostMapping("modifica/{ID}/descrizione")
     public ResponseEntity<Questionario> setDescrizoneQuestionario(
+            @PathVariable int docenteID,
             @PathVariable int ID,
             @RequestParam(name = "descrizione") String descrizione) {
 
@@ -101,7 +93,7 @@ public class QuestionarioController {
         if (descrizione == null || descrizione.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        Questionario q = questionarioService.getQuestionarioCompleto(ID);
+        Questionario q = questionarioService.getQuestionarioCompleto(docenteID, ID);
         if (q == null) {
             return ResponseEntity.notFound().build();
         }

@@ -1,6 +1,7 @@
 package dev.eduteam.eduquest.repositories;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import dev.eduteam.eduquest.models.Docente;
 import dev.eduteam.eduquest.models.Domanda;
 import dev.eduteam.eduquest.models.Questionario;
 import dev.eduteam.eduquest.models.Risposta;
@@ -18,14 +19,17 @@ import java.util.ArrayList;
 @Repository
 public class QuestionarioRepository {
 
-    public Questionario getQuestionarioByID(int id) {
+    @Autowired
+    private DocenteRepository docenteRepository;
+
+    public Questionario getQuestionarioByID(int docenteID, int id) {
         Questionario questionario = null;
         String query = "SELECT " +
                 "questionarioID, " +
                 "nome, " +
                 "descrizione, " +
                 "numeroDomande, " +
-                "dataCreazione FROM questionari WHERE questionarioID = ?";
+                "dataCreazione FROM questionari WHERE questionarioID = ? AND docenteID_FK = '" + docenteID + "'";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -34,13 +38,15 @@ public class QuestionarioRepository {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    questionario = new Questionario("", "", new ArrayList<Domanda>());
+                    Docente docente = docenteRepository.getDocenteByAccountID(docenteID);
+                    questionario = new Questionario("", "", new ArrayList<Domanda>(), docente);
 
                     questionario.setID(rs.getInt("questionarioID"));
                     questionario.setNome(rs.getString("nome"));
                     questionario.setDescrizione(rs.getString("descrizione"));
                     questionario.setNumeroDomande(rs.getInt("numeroDomande"));
                     questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+                    questionario.setDocente(docente);
                 }
             }
         } catch (Exception e) {
@@ -51,27 +57,29 @@ public class QuestionarioRepository {
 
     // MOLTO PROBABILMENTE QUESTO METODO DIVENTERA' "getQuestionariByDocente" DOPO
     // IL MERGE QUINDI CAMBIERA'
-    public ArrayList<Questionario> getQuestionari() {
+    public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
         String query = "SELECT " +
                 "questionarioID, " +
                 "nome, " +
                 "descrizione, " +
                 "numeroDomande, " +
-                "dataCreazione FROM questionari";
+                "dataCreazione FROM questionari WHERE questionarioID = ? AND docenteID_FK = '" + docenteID + "'";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);) {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
+                    Docente docente = docenteRepository.getDocenteByAccountID(docenteID);
+                    Questionario questionario = new Questionario("", "", new ArrayList<Domanda>(), docente);
 
                     questionario.setID(rs.getInt("questionarioID"));
                     questionario.setNome(rs.getString("nome"));
                     questionario.setDescrizione(rs.getString("descrizione"));
                     questionario.setNumeroDomande(rs.getInt("numeroDomande"));
                     questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+                    questionario.setDocente(docente);
 
                     questionari.add(questionario);
                 }
@@ -92,7 +100,7 @@ public class QuestionarioRepository {
             ps.setString(2, questionario.getDescrizione());
             ps.setInt(3, questionario.getNumeroDomande());
             ps.setDate(4, java.sql.Date.valueOf(LocalDate.now()));
-            ps.setInt(5, questionario.getDocenteID());
+            ps.setInt(5, questionario.getDocente().getAccountID());
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -145,31 +153,6 @@ public class QuestionarioRepository {
             System.out.println(e.getMessage());
         }
         return result;
-    }
-
-    public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
-        ArrayList<Questionario> questionari = new ArrayList<>();
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT questionarioID, nome, descrizione, numeroDomande, dataCreazione, docenteID_FK FROM questionari WHERE docenteID_FK = ?";
-
-            PreparedStatement ps = conn.prepareStatement(query);
-            ps.setInt(1, docenteID);
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
-                questionario.setID(rs.getInt("questionarioID"));
-                questionario.setNome(rs.getString("nome"));
-                questionario.setDescrizione(rs.getString("descrizione"));
-                questionario.setNumeroDomande(rs.getInt("numeroDomande"));
-                questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
-                questionario.setDocenteID(rs.getInt("docenteID_FK"));
-                questionari.add(questionario);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return questionari;
     }
 
 }

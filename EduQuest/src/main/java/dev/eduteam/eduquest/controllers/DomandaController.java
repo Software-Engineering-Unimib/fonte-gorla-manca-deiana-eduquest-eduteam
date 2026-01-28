@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("questionari/{questionarioID}/domande")
+@RequestMapping("api/docente/{docenteID}/questionari/{questionarioID}/domande")
 public class DomandaController {
 
     @Autowired
@@ -25,8 +25,8 @@ public class DomandaController {
     private QuestionarioService questionarioService;
 
     @GetMapping()
-    public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int questionarioID) {
-        if (questionarioService.getQuestionarioCompleto(questionarioID) == null) {
+    public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int docenteID, @PathVariable int questionarioID) {
+        if (questionarioService.getQuestionarioCompleto(docenteID, questionarioID) == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(domandaService.getDomandeComplete(questionarioID));
@@ -34,10 +34,11 @@ public class DomandaController {
 
     @GetMapping("{domandaID}")
     public ResponseEntity<Domanda> getDomanda(
+            @PathVariable int docenteID,
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        if (questionarioService.getQuestionarioCompleto(questionarioID) == null) {
+        if (questionarioService.getQuestionarioCompleto(docenteID, questionarioID) == null) {
             return ResponseEntity.notFound().build();
         }
 
@@ -50,10 +51,11 @@ public class DomandaController {
 
     @PostMapping("aggiungi")
     public ResponseEntity<Questionario> aggiungiDomanda(
+            @PathVariable int docenteID,
             @PathVariable int questionarioID,
             @RequestParam(name = "tipo") Domanda.Type tipo) {
 
-        Questionario questionarioDaModificare = questionarioService.getQuestionarioCompleto(questionarioID);
+        Questionario questionarioDaModificare = questionarioService.getQuestionarioCompleto(docenteID, questionarioID);
         if (questionarioDaModificare == null) {
             return ResponseEntity.notFound().build();
         }
