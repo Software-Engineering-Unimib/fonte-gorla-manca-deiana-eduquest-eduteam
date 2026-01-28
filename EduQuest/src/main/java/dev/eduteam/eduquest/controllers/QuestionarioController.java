@@ -25,9 +25,9 @@ public class QuestionarioController {
         return questionarioService.getQuestionari();
     }
 
-    @GetMapping("{ID}") // si può semplificare in @GetMapping("{ID}")
+    @GetMapping("{ID}")
     public ResponseEntity<Questionario> getQuestionario(@PathVariable int ID) {
-        Questionario questionario = questionarioService.getQuestionario(ID);
+        Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         if (questionario != null) {
             return ResponseEntity.ok(questionario);
         } else {
@@ -40,10 +40,6 @@ public class QuestionarioController {
 
         Questionario questionarioCreato = questionarioService.creaQuestionario();
 
-        /*
-         * Non ho capito se questa linea serve davvero,
-         * questionarioService.getQuestionari().add(questionarioCreato);
-         */
         if (questionarioCreato != null) {
             return ResponseEntity.ok(questionarioCreato);
         } else {
@@ -51,12 +47,9 @@ public class QuestionarioController {
         }
     }
 
-    @PostMapping("rimuovi/{ID}")
+    // Post -> Delete per standard REST
+    @DeleteMapping("rimuovi/{ID}")
     public ResponseEntity<Questionario> rimuoviQuestionario(@PathVariable int ID) {
-        Questionario questionarioDaRimuovere = questionarioService.getQuestionario(ID);
-        if (questionarioDaRimuovere == null) {
-            return ResponseEntity.notFound().build();
-        }
         boolean result = questionarioService.rimuoviQuestionario(ID);
         if (result) {
             return ResponseEntity.ok().build();
@@ -65,7 +58,8 @@ public class QuestionarioController {
         }
     }
 
-    @PostMapping("modifica/{ID}/rinomina")
+    // Post -> Put per standard REST
+    @PutMapping("modifica/{ID}/rinomina")
     public ResponseEntity<Questionario> rinominaQuestionario(
             @PathVariable int ID,
             @RequestParam(name = "nome") String nome) {
@@ -75,13 +69,13 @@ public class QuestionarioController {
             return ResponseEntity.badRequest().build();
         }
 
-        Questionario questionarioDaModificare = questionarioService.getQuestionario(ID);
-        if (questionarioDaModificare == null) {
+        Questionario q = questionarioService.getQuestionarioCompleto(ID);
+        if (q == null) {
             return ResponseEntity.notFound().build();
         }
-        boolean result = questionarioService.modificaNome(questionarioDaModificare, nome);
+        boolean result = questionarioService.modificaInfo(q, nome, q.getDescrizione());
         if (result) {
-            return ResponseEntity.ok(questionarioDaModificare);
+            return ResponseEntity.ok(q);
         } else {
             return ResponseEntity.internalServerError().build();
         }
@@ -97,13 +91,13 @@ public class QuestionarioController {
         if (descrizione == null || descrizione.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        Questionario questionarioDaModificare = questionarioService.getQuestionario(ID);
-        if (questionarioDaModificare == null) {
+        Questionario q = questionarioService.getQuestionarioCompleto(ID);
+        if (q == null) {
             return ResponseEntity.notFound().build();
         }
-        boolean result = questionarioService.modificaDescrizione(questionarioDaModificare, descrizione);
+        boolean result = questionarioService.modificaInfo(q, q.getNome(), descrizione);
         if (result) {
-            return ResponseEntity.ok(questionarioDaModificare);
+            return ResponseEntity.ok(q);
         } else {
             return ResponseEntity.internalServerError().build();
         }

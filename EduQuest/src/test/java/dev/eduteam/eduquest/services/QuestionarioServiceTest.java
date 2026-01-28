@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,6 +23,9 @@ class QuestionarioServiceTest {
     @Mock
     private QuestionarioRepository questionarioRepository;
 
+    @Mock
+    private DomandaService domandaService;
+
     @InjectMocks
     private QuestionarioService questionarioService;
 
@@ -29,13 +33,7 @@ class QuestionarioServiceTest {
 
     @BeforeEach
     void setUp() {
-        ArrayList<Domanda> domande = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            Domanda d = new Domanda("Domanda " + i);
-            d.setID(i + 1);
-            domande.add(d);
-        }
-        questionario = new Questionario("Test Questionario", "Descrizione test", domande);
+        questionario = new Questionario("Test Questionario", "Descrizione test", new ArrayList<>());
         questionario.setID(1);
     }
 
@@ -52,10 +50,14 @@ class QuestionarioServiceTest {
     }
 
     @Test
-    void testGetQuestionario() {
-        when(questionarioRepository.getQuestionarioByID(1)).thenReturn(questionario);
+    void testGetQuestionarioCompleto() {
+        int id = 1;
+        ArrayList<Domanda> domandeMock = new ArrayList<>();
 
-        Questionario result = questionarioService.getQuestionario(1);
+        when(questionarioRepository.getQuestionarioByID(1)).thenReturn(questionario);
+        when(domandaService.getDomandeComplete(id)).thenReturn(domandeMock);
+
+        Questionario result = questionarioService.getQuestionarioCompleto(1);
         assertNotNull(result);
         assertEquals("Test Questionario", result.getNome());
         verify(questionarioRepository, times(1)).getQuestionarioByID(1);
@@ -83,36 +85,33 @@ class QuestionarioServiceTest {
     }
 
     @Test
-    void testModificaNome() {
+    void testModificaInfo() {
         String nuovoNome = "Nuovo Nome";
+        String nuovaDescrizione = "Nuova Descrizione";
         when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
 
-        boolean result = questionarioService.modificaNome(questionario, nuovoNome);
+        boolean result = questionarioService.modificaInfo(questionario, nuovoNome, nuovaDescrizione);
         assertTrue(result);
         assertEquals(nuovoNome, questionario.getNome());
-        verify(questionarioRepository, times(1)).updateQuestionario(questionario);
-    }
-
-    @Test
-    void testModificaNomeNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> questionarioService.modificaNome(questionario, null));
-    }
-
-    @Test
-    void testModificaDescrizione() {
-        String nuovaDescrizione = "Nuova descrizione";
-        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
-
-        boolean result = questionarioService.modificaDescrizione(questionario, nuovaDescrizione);
-        assertTrue(result);
         assertEquals(nuovaDescrizione, questionario.getDescrizione());
         verify(questionarioRepository, times(1)).updateQuestionario(questionario);
     }
 
     @Test
-    void testModificaDescrizioneNull() {
+    void testModificaInfoDescrizioneNull() {
+        String nuovoNome = "Nuovo Nome";
         assertThrows(IllegalArgumentException.class,
-                () -> questionarioService.modificaDescrizione(questionario, null));
+                () -> questionarioService.modificaInfo(questionario, nuovoNome, null));
+    }
+
+    @Test
+    void testModificaInfoNome() {
+        String nuovoNome = "Nuovo Nome";
+        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
+
+        boolean result = questionarioService.modificaInfo(questionario, nuovoNome, questionario.getDescrizione());
+        assertTrue(result);
+        assertEquals(nuovoNome, questionario.getNome());
+        verify(questionarioRepository, times(1)).updateQuestionario(questionario);
     }
 }

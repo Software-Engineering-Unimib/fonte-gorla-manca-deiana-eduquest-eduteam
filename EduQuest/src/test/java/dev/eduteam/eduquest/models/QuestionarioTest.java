@@ -16,8 +16,8 @@ class QuestionarioTest {
     @BeforeEach
     void setUp() {
         domande = new ArrayList<>();
-        domande.add(new Domanda("Qual è la capitale dell'Italia?"));
-        domande.add(new Domanda("Quanti continenti ci sono?"));
+        domande.add(new DomandaMultipla("Qual è la capitale dell'Italia?"));
+        domande.add(new DomandaMultipla("Quanti continenti ci sono?"));
         questionario = new Questionario("Geografia", "Questionario base di geografia", domande);
     }
 
@@ -50,18 +50,25 @@ class QuestionarioTest {
         questionario.setNome("Nuovo Nome");
         assertEquals("Nuovo Nome", questionario.getNome());
 
+        // Test Nome null
+        questionario.setNome(null);
+        assertNull(questionario.getNome());
+        questionario.setNome("Nome Valido");
+
         // Test Descrizione
         questionario.setDescrizione("Nuova descrizione");
         assertEquals("Nuova descrizione", questionario.getDescrizione());
 
-        // Test Numero Domande
-        questionario.setNumeroDomande(5);
-        assertEquals(5, questionario.getNumeroDomande());
+        // Test Data Creazione
+        LocalDate nuovaData = LocalDate.of(2025, 1, 15);
+        questionario.setDataCreazione(nuovaData);
+        assertEquals(nuovaData, questionario.getDataCreazione());
 
-        // Test Elenco Domande
+        // Test Elenco Domande - getNumeroDomande() ritorna la dimensione dell'elenco
         ArrayList<Domanda> elencoDomande = questionario.getElencoDomande();
         assertNotNull(elencoDomande);
         assertEquals(2, elencoDomande.size());
+        assertEquals(2, questionario.getNumeroDomande());
     }
 
     @Test
@@ -87,7 +94,7 @@ class QuestionarioTest {
         // Questionario con molte domande
         ArrayList<Domanda> molteDomande = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            molteDomande.add(new Domanda("Domanda " + (i + 1)));
+            molteDomande.add(new DomandaMultipla("Domanda " + (i + 1)));
         }
         Questionario questionarioGrande = new Questionario("Quiz Grande", "Quiz con molte domande", molteDomande);
         assertEquals(30, questionarioGrande.getNumeroDomande());

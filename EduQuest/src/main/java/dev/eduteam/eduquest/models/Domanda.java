@@ -2,27 +2,45 @@ package dev.eduteam.eduquest.models;
 
 import java.util.ArrayList;
 
-public class Domanda {
+public abstract class Domanda {
 
-    private int ID; // GLI ID SARANNO LEGATI ALLE DOMANDE SALVATI SUL DB
-    private String testo;
-
-    private int numeroRisposte;
-    private ArrayList<Risposta> elencoRisposte;
-    private Risposta rispostaCorretta;
-
-    public Domanda(String testo) {
-
-        setNumeroRisposte(0);
-        elencoRisposte = new ArrayList<Risposta>();
-        setTesto(testo);
+    public enum Type {
+        DOMANDA_MULTIPLA,
+        DOMANDA_MULTIPLE_RISPOSTE,
+        DOMANDA_VERO_FALSO
     }
 
-    public int getID() { return ID; }
+    protected Type tipoDomanda;
 
-    public void setID(int ID) { this.ID = ID; }
+    // VARIABILI COMUNI A TUTTE LE DOMANDE
 
-    public String getTesto() { return testo; }
+    protected int ID; // GLI ID SARANNO LEGATI ALLE DOMANDE SALVATI SUL DB
+    private String testo;
+    protected int numeroRisposte;
+    protected ArrayList<Risposta> elencoRisposte = new ArrayList<>();
+
+    // METODI COMUNI A TUTTE LE DOMANDE
+
+    public static Domanda createDomandaOfType(Type tipoDomanda) {
+        return switch (tipoDomanda) {
+            case DOMANDA_MULTIPLA -> new DomandaMultipla("");
+            case DOMANDA_MULTIPLE_RISPOSTE -> new DomandaMultipleRisposte("");
+            case DOMANDA_VERO_FALSO -> new DomandaVeroFalso("");
+            default -> null;
+        };
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public String getTesto() {
+        return testo;
+    }
 
     public void setTesto(String testo) {
         if (testo == null) {
@@ -31,7 +49,9 @@ public class Domanda {
         this.testo = testo;
     }
 
-    public int getNumeroRisposte() { return numeroRisposte; }
+    public int getNumeroRisposte() {
+        return numeroRisposte;
+    }
 
     public void setNumeroRisposte(int numeroRisposte) {
 
@@ -42,9 +62,17 @@ public class Domanda {
         this.numeroRisposte = numeroRisposte;
     }
 
-    public ArrayList<Risposta> getElencoRisposte() { return elencoRisposte; }
+    public ArrayList<Risposta> getElencoRisposte() {
+        return elencoRisposte;
+    }
 
-    public Risposta getRispostaCorretta() { return rispostaCorretta; }
+    public void addRisposta(Risposta risposta) {
+        elencoRisposte.add(risposta);
+    }
 
-    public void setRispostaCorretta(Risposta risposta) { rispostaCorretta = risposta; }
+    public Type getTipoDomanda() {
+        return tipoDomanda;
+    }
+
+    public abstract void setRispostaCorretta(Risposta risposta);
 }

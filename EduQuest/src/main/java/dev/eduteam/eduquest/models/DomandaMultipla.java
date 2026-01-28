@@ -1,0 +1,26 @@
+package dev.eduteam.eduquest.models;
+
+import java.util.ArrayList;
+
+//Domanda a risposta multipla con una risposta corretta
+public class DomandaMultipla extends Domanda {
+
+    protected Risposta rispostaCorretta;
+
+    public DomandaMultipla(String testo) {
+
+        tipoDomanda = Type.DOMANDA_MULTIPLA;
+
+        setNumeroRisposte(0);
+        setTesto(testo);
+    }
+
+    public Risposta getRispostaCorretta() {
+        return rispostaCorretta;
+    }
+
+    @Override
+    public void setRispostaCorretta(Risposta risposta) {
+        rispostaCorretta = risposta;
+    }
+}

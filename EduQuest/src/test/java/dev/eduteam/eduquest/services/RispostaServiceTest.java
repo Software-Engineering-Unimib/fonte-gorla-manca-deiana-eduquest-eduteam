@@ -33,16 +33,27 @@ class RispostaServiceTest {
     }
 
     @Test
-    void testGetDomande() {
+    void testGetRisposteByDomanda() {
         int domandaID = 1;
         ArrayList<Risposta> risposte = new ArrayList<>();
-        risposte.add(risposta);
+
+        Risposta r1 = new Risposta("Roma");
+        r1.setID(1);
+        Risposta r2 = new Risposta("Milano");
+        r2.setID(2);
+        Risposta r3 = new Risposta("Napoli");
+        r3.setID(3);
+
+        risposte.add(r1);
+        risposte.add(r2);
+        risposte.add(r3);
+
         when(rispostaRepository.getRisposteByDomanda(domandaID)).thenReturn(risposte);
 
-        ArrayList<Risposta> result = rispostaService.getDomande(domandaID);
+        ArrayList<Risposta> result = rispostaService.getRisposteByDomanda(domandaID);
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
+        assertEquals(3, result.size());
         verify(rispostaRepository, times(1)).getRisposteByDomanda(domandaID);
     }
 
@@ -62,13 +73,17 @@ class RispostaServiceTest {
     @Test
     void testAggiungiRisposta() {
         int domandaID = 1;
-        Risposta nuovaRisposta = new Risposta("");
+        Risposta nuovaRisposta = new Risposta("Nuova Risposta");
         nuovaRisposta.setID(2);
+        nuovaRisposta.setCorretta(false);
+
         when(rispostaRepository.insertRisposta(any(Risposta.class), eq(domandaID))).thenReturn(nuovaRisposta);
 
-        Risposta result = rispostaService.aggiungiRisposta(1, domandaID);
+        Risposta result = rispostaService.aggiungiRisposta(domandaID);
         assertNotNull(result);
         assertEquals(2, result.getID());
+        assertEquals("Nuova Risposta", result.getTesto());
+        assertFalse(result.isCorretta());
         verify(rispostaRepository, times(1)).insertRisposta(any(Risposta.class), eq(domandaID));
     }
 
@@ -76,22 +91,23 @@ class RispostaServiceTest {
     void testRimuoviRisposta() {
         int domandaID = 1;
         int rispostaID = 1;
-        when(rispostaRepository.removeRisposta(rispostaID, domandaID)).thenReturn(true);
+        when(rispostaRepository.removeRisposta(domandaID, rispostaID)).thenReturn(true);
 
-        boolean result = rispostaService.rimuoviRisposta(1, domandaID, rispostaID);
+        boolean result = rispostaService.rimuoviRisposta(domandaID, rispostaID);
+
         assertTrue(result);
-        verify(rispostaRepository, times(1)).removeRisposta(rispostaID, domandaID);
+        verify(rispostaRepository, times(1)).removeRisposta(domandaID, rispostaID);
     }
 
     @Test
     void testRimuoviRispostaFallito() {
         int domandaID = 1;
         int rispostaID = 999;
-        when(rispostaRepository.removeRisposta(rispostaID, domandaID)).thenReturn(false);
+        when(rispostaRepository.removeRisposta(domandaID, rispostaID)).thenReturn(false);
 
-        boolean result = rispostaService.rimuoviRisposta(1, domandaID, rispostaID);
+        boolean result = rispostaService.rimuoviRisposta(domandaID, rispostaID);
         assertFalse(result);
-        verify(rispostaRepository, times(1)).removeRisposta(rispostaID, domandaID);
+        verify(rispostaRepository, times(1)).removeRisposta(domandaID, rispostaID);
     }
 
     @Test
@@ -109,29 +125,5 @@ class RispostaServiceTest {
     void testModificaTestoNull() {
         assertThrows(IllegalArgumentException.class,
                 () -> rispostaService.modificaTesto(risposta, null));
-    }
-
-    @Test
-    void testGetMultipleRisposteByDomanda() {
-        int domandaID = 1;
-        ArrayList<Risposta> risposte = new ArrayList<>();
-
-        Risposta r1 = new Risposta("Roma");
-        r1.setID(1);
-        Risposta r2 = new Risposta("Milano");
-        r2.setID(2);
-        Risposta r3 = new Risposta("Napoli");
-        r3.setID(3);
-
-        risposte.add(r1);
-        risposte.add(r2);
-        risposte.add(r3);
-
-        when(rispostaRepository.getRisposteByDomanda(domandaID)).thenReturn(risposte);
-
-        ArrayList<Risposta> result = rispostaService.getDomande(domandaID);
-        assertNotNull(result);
-        assertEquals(3, result.size());
-        verify(rispostaRepository, times(1)).getRisposteByDomanda(domandaID);
     }
 }

@@ -14,22 +14,27 @@ public class RispostaRepository {
 
     public Risposta getRispostaByID(int domandaID, int rispostaID) {
         Risposta risposta = null;
+        String query = "SELECT " +
+                "rispostaID, " +
+                "testo, " +
+                "isCorretta, " +
+                "domandaID_FK FROM risposte WHERE rispostaID = ? AND domandaID_FK = ?";
 
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "rispostaID, " +
-                    "testo, " +
-                    "domandaID_FK FROM risposte WHERE rispostaID = ? AND domandaID_FK = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, rispostaID);
             ps.setInt(2, domandaID);
 
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                risposta = new Risposta("");
-                risposta.setID(rs.getInt("rispostaID"));
-                risposta.setTesto(rs.getString("testo"));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String testoDB = rs.getString("testo");
+                    risposta = new Risposta(testoDB);
+                    risposta.setID(rs.getInt("rispostaID"));
+                    // Questo booleano verrà usato dal Service per popolare i campi
+                    // 'rispostaCorretta' o 'risposteCorrette' della Domanda
+                    risposta.setCorretta(rs.getBoolean("isCorretta"));
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -39,22 +44,26 @@ public class RispostaRepository {
 
     public ArrayList<Risposta> getRisposteByDomanda(int domandaID) {
         ArrayList<Risposta> risposte = new ArrayList<Risposta>();
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            String query = "SELECT " +
-                    "rispostaID, " +
-                    "testo, " +
-                    "domandaID_FK FROM risposte WHERE domandaID_FK = ?";
+        String query = "SELECT " +
+                "rispostaID, " +
+                "testo, " +
+                "isCorretta, " +
+                "domandaID_FK FROM risposte WHERE domandaID_FK = ?";
 
-            PreparedStatement ps = conn.prepareStatement(query);
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
             ps.setInt(1, domandaID);
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Risposta risposta = new Risposta("");
-                risposta.setID(rs.getInt("rispostaID"));
-                risposta.setTesto(rs.getString("testo"));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String testoDB = rs.getString("testo");
+                    Risposta risposta = new Risposta(testoDB);
+                    risposta.setID(rs.getInt("rispostaID"));
+                    risposta.setCorretta(rs.getBoolean("isCorretta"));
 
-                risposte.add(risposta);
+                    risposte.add(risposta);
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -63,13 +72,14 @@ public class RispostaRepository {
     }
 
     public Risposta insertRisposta(Risposta r, int domandaID) {
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "INSERT INTO risposte (testo, isCorretta, domandaID_FK) VALUES (?, ?, ?)";
 
-            String query = "INSERT INTO risposte (testo, domandaID_FK) VALUES (?, ?)";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, r.getTesto());
-            ps.setInt(2, domandaID);
+            ps.setBoolean(2, r.isCorretta());
+            ps.setInt(3, domandaID);
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -86,11 +96,11 @@ public class RispostaRepository {
 
     public boolean removeRisposta(int rispostaID, int domandaID) {
         boolean result = false;
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "DELETE FROM risposte WHERE rispostaID = ? AND domandaID_FK = ?";
 
-            String query = "DELETE FROM risposte WHERE rispostaID = ? AND domandaID_FK = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, rispostaID);
             ps.setInt(2, domandaID);
 
@@ -104,13 +114,14 @@ public class RispostaRepository {
 
     public boolean updateRisposta(Risposta r) {
         boolean result = false;
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+        String query = "UPDATE risposte SET testo = ?, isCorretta = ? WHERE rispostaID = ?";
 
-            String query = "UPDATE risposte SET testo = ? WHERE rispostaID = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);) {
 
-            PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, r.getTesto());
-            ps.setInt(2, r.getID());
+            ps.setBoolean(2, r.isCorretta());
+            ps.setInt(3, r.getID());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {

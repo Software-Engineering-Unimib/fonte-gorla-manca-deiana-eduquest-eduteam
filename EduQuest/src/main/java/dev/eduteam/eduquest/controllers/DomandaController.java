@@ -24,21 +24,12 @@ public class DomandaController {
     @Autowired
     private QuestionarioService questionarioService;
 
-    @Autowired
-    private RispostaService rispostaService;
-
-    /*
-     * Non so quanoto serva tornare TUTTE le domande di tutti i questionari
-     * 
-     * @GetMapping()
-     * public ArrayList<Domanda> getDomande() {
-     * return domandaService.getDomande();
-     * }
-     */
-
     @GetMapping()
     public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int questionarioID) {
-        return ResponseEntity.ok(domandaService.getDomande(questionarioID));
+        if (questionarioService.getQuestionarioCompleto(questionarioID) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(domandaService.getDomandeComplete(questionarioID));
     }
 
     @GetMapping("{domandaID}")
@@ -46,46 +37,28 @@ public class DomandaController {
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        if (questionarioService.getQuestionario(questionarioID) == null) {
+        if (questionarioService.getQuestionarioCompleto(questionarioID) == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Domanda domanda = domandaService.getDomandaById(questionarioID, domandaID);
+        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
         if (domanda == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(domanda);
     }
 
-    /*
-     * Non ho capito se volevi rimuovere la domanda o una risposta
-     * 
-     * @PostMapping("{questionarioID}/{domandaID}/rimuovi_risposta/{rispostaID}")
-     * public Domanda rimuoviDomanda(
-     * 
-     * @PathVariable int questionarioID,
-     * 
-     * @PathVariable int domandaID,
-     * 
-     * @PathVariable int rispostaID) {
-     * Domanda domandaModificata = getDomanda(questionarioID, domandaID);
-     * Risposta rispostaRimossa = domandaService.getRisposta(domandaModificata,
-     * rispostaID);
-     * 
-     * domandaService.rimuoviRisposta(domandaModificata, rispostaRimossa);
-     * 
-     * return domandaModificata;
-     * }
-     */
-
     @PostMapping("aggiungi")
-    public ResponseEntity<Questionario> aggiungiDomanda(@PathVariable int questionarioID) {
-        Questionario questionarioDaModificare = questionarioService.getQuestionario(questionarioID);
+    public ResponseEntity<Questionario> aggiungiDomanda(
+            @PathVariable int questionarioID,
+            @RequestParam(name = "tipo") Domanda.Type tipo) {
+
+        Questionario questionarioDaModificare = questionarioService.getQuestionarioCompleto(questionarioID);
         if (questionarioDaModificare == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Domanda domandaAggiunta = domandaService.aggiungiDomanda(questionarioID);
+        Domanda domandaAggiunta = domandaService.aggiungiDomanda(questionarioID, tipo);
         if (domandaAggiunta != null) {
             return ResponseEntity.ok(questionarioDaModificare);
         } else {
@@ -94,15 +67,13 @@ public class DomandaController {
     }
 
     @PostMapping("rimuovi/{domandaID}")
-    public ResponseEntity<Questionario> rimuoviDomanda(@PathVariable int questionarioID, @PathVariable int domandaID) {
-        Questionario questionarioDaModificare = questionarioService.getQuestionario(questionarioID);
-        if (questionarioDaModificare == null) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Questionario> rimuoviDomanda(
+            @PathVariable int questionarioID,
+            @PathVariable int domandaID) {
 
         boolean rimosso = domandaService.rimuoviDomanda(questionarioID, domandaID);
         if (rimosso) {
-            return ResponseEntity.ok(questionarioDaModificare);
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -110,33 +81,29 @@ public class DomandaController {
 
     @PostMapping("modifica/{domandaID}/testo")
     public ResponseEntity<Domanda> setTestoDomanda(
-            @PathVariable int questionarioID,
             @PathVariable int domandaID,
             @RequestParam(name = "testo") String testo) {
 
-        Domanda domandaModificata = domandaService.getDomandaById(questionarioID, domandaID);
-        if (domandaModificata != null) {
-            domandaService.modificaTesto(domandaModificata, testo);
-            return ResponseEntity.ok(domandaModificata);
+        boolean successo = domandaService.modificaTesto(domandaID, testo);
+
+        if (successo) {
+            return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("modifica/{domandaID}/risposta_corretta/{rispostaID}")
     public ResponseEntity<Domanda> setRispostaCorretta(
-            @PathVariable int questionarioID,
             @PathVariable int domandaID,
             @PathVariable int rispostaID) {
 
-        Domanda domandaDaModificare = domandaService.getDomandaById(questionarioID, domandaID);
-        Risposta rispostaCorretta = rispostaService.getRispostaById(domandaID, rispostaID);
+        boolean successo = domandaService.setRispostaCorretta(domandaID, rispostaID);
 
-        if (domandaDaModificare != null && rispostaCorretta != null) {
-            domandaService.modificaRispostaCorretta(domandaDaModificare, rispostaCorretta);
-            return ResponseEntity.ok(domandaDaModificare);
+        if (successo) {
+            return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
