@@ -69,7 +69,7 @@ class QuestionarioServiceTest {
         nuovoQuestionario.setID(2);
         when(questionarioRepository.insertQuestionario(any(Questionario.class))).thenReturn(nuovoQuestionario);
 
-        Questionario result = questionarioService.creaQuestionario();
+        Questionario result = questionarioService.creaQuestionario(0);
         assertNotNull(result);
         assertEquals(2, result.getID());
         verify(questionarioRepository, times(1)).insertQuestionario(any(Questionario.class));
@@ -113,5 +113,52 @@ class QuestionarioServiceTest {
         assertTrue(result);
         assertEquals(nuovoNome, questionario.getNome());
         verify(questionarioRepository, times(1)).updateQuestionario(questionario);
+    }
+
+    @Test
+    void testCreaQuestionarioConDocenteID() {
+        int docenteID = 5;
+        Questionario nuovoQuestionario = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<>(), docenteID);
+        nuovoQuestionario.setID(3);
+        
+        when(questionarioRepository.insertQuestionario(any(Questionario.class))).thenReturn(nuovoQuestionario);
+
+        Questionario result = questionarioService.creaQuestionario(docenteID);
+        assertNotNull(result);
+        assertEquals(3, result.getID());
+        assertEquals(docenteID, result.getDocenteID());
+        verify(questionarioRepository, times(1)).insertQuestionario(any(Questionario.class));
+    }
+
+    @Test
+    void testGetQuestionariByDocente() {
+        int docenteID = 5;
+        ArrayList<Questionario> questionariDocente = new ArrayList<>();
+        Questionario q1 = new Questionario("Questionario 1", "Descrizione 1", new ArrayList<>(), docenteID);
+        q1.setID(1);
+        Questionario q2 = new Questionario("Questionario 2", "Descrizione 2", new ArrayList<>(), docenteID);
+        q2.setID(2);
+        questionariDocente.add(q1);
+        questionariDocente.add(q2);
+
+        when(questionarioRepository.getQuestionariByDocente(docenteID)).thenReturn(questionariDocente);
+
+        ArrayList<Questionario> result = questionarioService.getQuestionariByDocente(docenteID);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(docenteID, result.get(0).getDocenteID());
+        assertEquals(docenteID, result.get(1).getDocenteID());
+        verify(questionarioRepository, times(1)).getQuestionariByDocente(docenteID);
+    }
+
+    @Test
+    void testGetQuestionariByDocenteVuoto() {
+        int docenteID = 99;
+        when(questionarioRepository.getQuestionariByDocente(docenteID)).thenReturn(new ArrayList<>());
+
+        ArrayList<Questionario> result = questionarioService.getQuestionariByDocente(docenteID);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(questionarioRepository, times(1)).getQuestionariByDocente(docenteID);
     }
 }

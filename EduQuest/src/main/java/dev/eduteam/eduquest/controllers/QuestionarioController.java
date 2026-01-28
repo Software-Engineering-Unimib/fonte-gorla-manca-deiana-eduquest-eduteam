@@ -36,14 +36,24 @@ public class QuestionarioController {
     }
 
     @PostMapping("crea")
-    public ResponseEntity<Questionario> creaQuestionario() {
+    public ResponseEntity<Questionario> creaQuestionario(@RequestParam int docenteID) {
 
-        Questionario questionarioCreato = questionarioService.creaQuestionario();
+        Questionario questionarioCreato = questionarioService.creaQuestionario(docenteID);
 
         if (questionarioCreato != null) {
-            return ResponseEntity.ok(questionarioCreato);
+            return ResponseEntity.status(201).body(questionarioCreato);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("docente/{docenteID}")
+    public ResponseEntity<ArrayList<Questionario>> getQuestionariDocente(@PathVariable int docenteID) {
+        ArrayList<Questionario> questionari = questionarioService.getQuestionariByDocente(docenteID);
+        if (!questionari.isEmpty()) {
+            return ResponseEntity.ok(questionari);
+        } else {
+            return ResponseEntity.noContent().build();
         }
     }
 

@@ -83,15 +83,16 @@ public class QuestionarioRepository {
     }
 
     public Questionario insertQuestionario(Questionario questionario) {
-        String query = "INSERT INTO questionari (nome, descrizione, numeroDomande, dataCreazione) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO questionari (nome, descrizione, numeroDomande, dataCreazione, docenteID_FK) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, questionario.getNome());
             ps.setString(2, questionario.getDescrizione());
-            ps.setInt(3, 0); // Numero domande inizializzato a 0
+            ps.setInt(3, questionario.getNumeroDomande());
             ps.setDate(4, java.sql.Date.valueOf(LocalDate.now()));
+            ps.setInt(5, questionario.getDocenteID());
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -144,6 +145,31 @@ public class QuestionarioRepository {
             System.out.println(e.getMessage());
         }
         return result;
+    }
+
+    public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
+        ArrayList<Questionario> questionari = new ArrayList<>();
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
+            String query = "SELECT questionarioID, nome, descrizione, numeroDomande, dataCreazione, docenteID_FK FROM questionari WHERE docenteID_FK = ?";
+
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, docenteID);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Questionario questionario = new Questionario("", "", new ArrayList<Domanda>());
+                questionario.setID(rs.getInt("questionarioID"));
+                questionario.setNome(rs.getString("nome"));
+                questionario.setDescrizione(rs.getString("descrizione"));
+                questionario.setNumeroDomande(rs.getInt("numeroDomande"));
+                questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+                questionario.setDocenteID(rs.getInt("docenteID_FK"));
+                questionari.add(questionario);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return questionari;
     }
 
 }

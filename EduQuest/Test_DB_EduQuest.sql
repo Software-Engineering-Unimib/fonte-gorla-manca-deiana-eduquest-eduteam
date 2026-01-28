@@ -34,7 +34,9 @@ CREATE TABLE questionari (
     descrizione VARCHAR(500) NOT NULL,
     numeroDomande INTEGER NOT NULL,
     dataCreazione DATE NOT NULL,
-    PRIMARY KEY(questionarioID)
+    docenteID_FK INTEGER NOT NULL,
+    PRIMARY KEY(questionarioID),
+    CONSTRAINT FK_DocenteQuestionario FOREIGN KEY (docenteID_FK) REFERENCES accounts(accountID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 
 CREATE TABLE domande (
@@ -73,8 +75,8 @@ VALUES
     (2, NULL);
 
 -- Dati di test Questionari
-INSERT INTO questionari (nome, descrizione, numeroDomande, dataCreazione)
+INSERT INTO questionari (nome, descrizione, numeroDomande, dataCreazione, docenteID_FK)
 VALUES 
-    ('Matematica', 'Prova di matematica', 5, '2001-09-11'),
-    ('Italiano', 'Prova di italiano', 3, '2004-06-05'),
-    ('Simbolismo', 'La nebbia agli irti colli piovigginando sale', 1, '2026-01-24');
+    ('Matematica', 'Prova di matematica', 5, '2001-09-11', 2),
+    ('Italiano', 'Prova di italiano', 3, '2004-06-05', 2),
+    ('Simbolismo', 'La nebbia agli irti colli piovigginando sale', 1, '2026-01-24', 2);

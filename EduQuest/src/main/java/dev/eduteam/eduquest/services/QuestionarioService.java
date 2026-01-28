@@ -38,8 +38,8 @@ public class QuestionarioService {
         return questionario;
     }
 
-    public Questionario creaQuestionario() {
-        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>());
+    public Questionario creaQuestionario(int docenteID) {
+        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>(), docenteID);
         return questionarioRepository.insertQuestionario(nuovo);
     }
 
@@ -52,6 +52,10 @@ public class QuestionarioService {
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
         return questionarioRepository.updateQuestionario(questionario);
+    }
+
+    public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
+        return questionarioRepository.getQuestionariByDocente(docenteID);
     }
 
 }
