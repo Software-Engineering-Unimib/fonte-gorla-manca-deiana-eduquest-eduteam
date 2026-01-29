@@ -1,4 +1,8 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.services.accounts;
+
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.accounts.Studente;
 
 public class AccountFactory {
 

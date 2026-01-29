@@ -3,6 +3,12 @@ package dev.eduteam.eduquest.models;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.DomandaMultipla;
+import dev.eduteam.eduquest.models.questionari.DomandaMultipleRisposte;
+import dev.eduteam.eduquest.models.questionari.DomandaVeroFalso;
+import dev.eduteam.eduquest.models.questionari.Risposta;
+
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;

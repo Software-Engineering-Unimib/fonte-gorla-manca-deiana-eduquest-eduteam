@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.repositories;
+package dev.eduteam.eduquest.repositories.accounts;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +9,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import dev.eduteam.eduquest.models.Studente;
+import dev.eduteam.eduquest.models.accounts.Studente;
+import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 
 @Repository
 public class StudenteRepository {

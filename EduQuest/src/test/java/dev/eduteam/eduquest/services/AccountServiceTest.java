@@ -10,11 +10,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.eduteam.eduquest.models.Account;
-import dev.eduteam.eduquest.models.AccountFactory;
-import dev.eduteam.eduquest.models.Docente;
-import dev.eduteam.eduquest.models.Studente;
-import dev.eduteam.eduquest.repositories.AccountRepository;
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.accounts.Studente;
+import dev.eduteam.eduquest.repositories.accounts.AccountRepository;
+import dev.eduteam.eduquest.services.accounts.AccountFactory;
+import dev.eduteam.eduquest.services.accounts.AccountService;
+import dev.eduteam.eduquest.services.accounts.DocenteService;
+import dev.eduteam.eduquest.services.accounts.StudenteService;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTest {
@@ -40,7 +43,7 @@ public class AccountServiceTest {
                 account.setAccountID(1);
         }
 
-        //test di registrazione account
+        // test di registrazione account
 
         @Test
         void creazioneAccountStudenteValidoTest() {
@@ -192,7 +195,8 @@ public class AccountServiceTest {
                                 "PwVali1!",
                                 false);
                 // pw caso limite 20 caratteri
-                Studente studente2 = new Studente("Mario", "Rossi", "mrossi123", "mrossi234@email.com", "PasswordValidaaaaa1!");
+                Studente studente2 = new Studente("Mario", "Rossi", "mrossi123", "mrossi234@email.com",
+                                "PasswordValidaaaaa1!");
                 studente2.setAccountID(2);
                 when(studenteService.registraStudente(any(Studente.class))).thenReturn(studente2);
                 Account accountMaxPw = accountService.registraAccount("Mario", "Rossi", "mrossi123",
@@ -209,7 +213,7 @@ public class AccountServiceTest {
                 assertNotNull(accountMaxPw);
         }
 
-        //test di aggiornamento account
+        // test di aggiornamento account
         @Test
         void aggiornaAccountSuccessoTest() {
                 Studente accountEsistente = new Studente("pinco", "pallo", "PincoPallino1",
@@ -305,7 +309,6 @@ public class AccountServiceTest {
                 verify(studenteService, times(1)).aggiornaStudente(any(Studente.class));
         }
 
-        
         @Test
         void aggiornaAccountPasswordAttualErratTest() {
                 when(accountRepository.getAccountByUserName("PincoPallino1")).thenReturn(null);
@@ -374,7 +377,7 @@ public class AccountServiceTest {
                 assertEquals("La nuova password non rispetta i requisiti di sicurezza.", e4.getMessage());
         }
 
-        //test di registraAccount con username o email già esistenti
+        // test di registraAccount con username o email già esistenti
 
         @Test
         void registraAccountUserNameGiaEsistenteTest() {
@@ -425,7 +428,7 @@ public class AccountServiceTest {
                 assertEquals("L'email 'pincopallo@prova.edu' è già associata a un account.", e.getMessage());
         }
 
-        //test di cancellazione account
+        // test di cancellazione account
 
         @Test
         void eliminaAccountValidoTest() {

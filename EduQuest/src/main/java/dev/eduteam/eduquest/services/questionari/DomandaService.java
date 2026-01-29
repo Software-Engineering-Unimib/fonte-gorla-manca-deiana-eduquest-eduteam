@@ -1,10 +1,10 @@
-package dev.eduteam.eduquest.services;
+package dev.eduteam.eduquest.services.questionari;
 
-import dev.eduteam.eduquest.models.Domanda;
-import dev.eduteam.eduquest.models.Questionario;
-import dev.eduteam.eduquest.models.Risposta;
-import dev.eduteam.eduquest.repositories.DomandaRepository;
-import dev.eduteam.eduquest.repositories.RispostaRepository;
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Risposta;
+import dev.eduteam.eduquest.repositories.questionari.DomandaRepository;
+import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

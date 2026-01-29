@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.models.accounts;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -74,23 +74,4 @@ public abstract class Account {
 
     public abstract boolean isDocente();
 
-    @Override
-    public String toString() {
-        return "Account -> " + userName + " (" + (isDocente() ? "Docente" : "Studente") + ")";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Account))
-            return false;
-        Account other = (Account) o;
-        return userName != null && userName.equals(other.userName);
-    }
-
-    @Override
-    public int hashCode() {
-        return userName != null ? userName.hashCode() : 0;
-    }
 }

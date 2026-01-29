@@ -10,8 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.eduteam.eduquest.models.Docente;
-import dev.eduteam.eduquest.repositories.DocenteRepository;
+import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
+import dev.eduteam.eduquest.services.accounts.DocenteService;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -51,7 +53,8 @@ public class DocenteServiceTest {
 
     @Test
     void registraDocenteConInsegnamentoTest() {
-        Docente docenteConMateria = new Docente("Luca", "Bianchi", "lbianchi123", "lbianchi@email.com", "PasswordValida1!");
+        Docente docenteConMateria = new Docente("Luca", "Bianchi", "lbianchi123", "lbianchi@email.com",
+                "PasswordValida1!");
         docenteConMateria.setInsegnamento("Matematica");
         docenteConMateria.setAccountID(2);
         when(docenteRepository.insertDocente(any(Docente.class))).thenReturn(docenteConMateria);
@@ -69,7 +72,7 @@ public class DocenteServiceTest {
         docenteConMateria.setInsegnamento("Italiano");
         docenteConMateria.setAccountID(1);
         when(docenteRepository.getDocenteByAccountID(1)).thenReturn(docenteConMateria);
-        
+
         Docente result = docenteService.getByID(1);
         assertNotNull(result);
         assertEquals("Giovanni", result.getNome());
@@ -83,7 +86,7 @@ public class DocenteServiceTest {
     @Test
     void getByIDNonEsistenteTest() {
         when(docenteRepository.getDocenteByAccountID(99999)).thenReturn(null);
-        
+
         Docente result = docenteService.getByID(99999);
         assertNull(result);
         verify(docenteRepository, times(1)).getDocenteByAccountID(99999);
@@ -109,7 +112,7 @@ public class DocenteServiceTest {
         Docente docenteOriginale = new Docente("Antonio", "Rossi", "arossi123", "arossi@email.com", "PasswordValida1!");
         docenteOriginale.setInsegnamento("Scienze");
         docenteOriginale.setAccountID(1);
-        
+
         docenteOriginale.setNome("AntonioBis");
         when(docenteRepository.updateDocente(docenteOriginale)).thenReturn(true);
 
@@ -121,10 +124,11 @@ public class DocenteServiceTest {
 
     @Test
     void aggiornaDocenteInsegnamentoTest() {
-        Docente docenteOriginale = new Docente("Paolo", "Gialli", "pgialli123", "pgialli@email.com", "PasswordValida1!");
+        Docente docenteOriginale = new Docente("Paolo", "Gialli", "pgialli123", "pgialli@email.com",
+                "PasswordValida1!");
         docenteOriginale.setInsegnamento("Storia");
         docenteOriginale.setAccountID(1);
-        
+
         docenteOriginale.setInsegnamento("Geografia");
         when(docenteRepository.updateDocente(docenteOriginale)).thenReturn(true);
 
@@ -139,12 +143,12 @@ public class DocenteServiceTest {
         Docente docenteOriginale = new Docente("Fabio", "Blu", "fblu123", "fblu@email.com", "PasswordValida1!");
         docenteOriginale.setInsegnamento("Fisica");
         docenteOriginale.setAccountID(1);
-        
+
         docenteOriginale.setNome("FabioBis");
         docenteOriginale.setCognome("BluBis");
         docenteOriginale.setEmail("fblubis@email.com");
         docenteOriginale.setInsegnamento("Chimica");
-        
+
         when(docenteRepository.updateDocente(docenteOriginale)).thenReturn(true);
 
         boolean result = docenteService.aggiornaDocente(docenteOriginale);
@@ -164,7 +168,7 @@ public class DocenteServiceTest {
         docenteOriginale.setAccountID(1);
         when(docenteRepository.getDocenteByAccountID(1)).thenReturn(docenteOriginale);
         when(docenteRepository.updateDocente(any(Docente.class))).thenReturn(true);
-        
+
         boolean result = docenteService.aggiornaInsegnamento(1, "Filosofia");
         assertTrue(result);
         assertEquals("Filosofia", docenteOriginale.getInsegnamento());
@@ -175,7 +179,7 @@ public class DocenteServiceTest {
     @Test
     void aggiornaInsegnamentoDocenteNonEsistenteTest() {
         when(docenteRepository.getDocenteByAccountID(99999)).thenReturn(null);
-        
+
         boolean result = docenteService.aggiornaInsegnamento(99999, "Matematica");
         assertFalse(result);
         verify(docenteRepository, times(1)).getDocenteByAccountID(99999);
@@ -184,7 +188,8 @@ public class DocenteServiceTest {
     // test che verifica isDocente ritorna true
     @Test
     void docenteIsDocenteTrueTest() {
-        Docente nuovoDocente = new Docente("Carlo", "Arancioni", "carancioni123", "carancioni@email.com", "PasswordValida1!");
+        Docente nuovoDocente = new Docente("Carlo", "Arancioni", "carancioni123", "carancioni@email.com",
+                "PasswordValida1!");
         nuovoDocente.setAccountID(1);
         when(docenteRepository.insertDocente(any(Docente.class))).thenReturn(nuovoDocente);
 

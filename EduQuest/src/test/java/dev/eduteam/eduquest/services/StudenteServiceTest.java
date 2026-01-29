@@ -10,8 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.eduteam.eduquest.models.Studente;
-import dev.eduteam.eduquest.repositories.StudenteRepository;
+import dev.eduteam.eduquest.models.accounts.Studente;
+import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
+import dev.eduteam.eduquest.services.accounts.StudenteService;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -52,7 +54,8 @@ public class StudenteServiceTest {
 
     @Test
     void registraStudenteConMediaTest() {
-        Studente studenteConMedia = new Studente("Luca", "Bianchi", "lbianchi123", "lbianchi@email.com", "PasswordValida1!");
+        Studente studenteConMedia = new Studente("Luca", "Bianchi", "lbianchi123", "lbianchi@email.com",
+                "PasswordValida1!");
         studenteConMedia.setMediaPunteggio(8.5);
         studenteConMedia.setAccountID(2);
         when(studenteRepository.insertStudente(any(Studente.class))).thenReturn(studenteConMedia);
@@ -66,11 +69,12 @@ public class StudenteServiceTest {
     // test di recupero Studente per ID
     @Test
     void getByIdValidoTest() {
-        Studente studenteEsistente = new Studente("Giovanni", "Neri", "gneri123", "gneri@email.com", "PasswordValida1!");
+        Studente studenteEsistente = new Studente("Giovanni", "Neri", "gneri123", "gneri@email.com",
+                "PasswordValida1!");
         studenteEsistente.setAccountID(1);
         studenteEsistente.setMediaPunteggio(0.0);
         when(studenteRepository.getStudenteByAccountID(1)).thenReturn(studenteEsistente);
-        
+
         Studente result = studenteService.getById(1);
         assertNotNull(result);
         assertEquals("Giovanni", result.getNome());
@@ -84,7 +88,7 @@ public class StudenteServiceTest {
     @Test
     void getByIdNonEsistenteTest() {
         when(studenteRepository.getStudenteByAccountID(99999)).thenReturn(null);
-        
+
         Studente result = studenteService.getById(99999);
         assertNull(result);
         verify(studenteRepository, times(1)).getStudenteByAccountID(99999);
@@ -107,9 +111,10 @@ public class StudenteServiceTest {
     // test di aggiornamento Studente
     @Test
     void aggiornaStudenteNomeTest() {
-        Studente studenteOriginale = new Studente("Antonio", "Rossi", "arossi123", "arossi@email.com", "PasswordValida1!");
+        Studente studenteOriginale = new Studente("Antonio", "Rossi", "arossi123", "arossi@email.com",
+                "PasswordValida1!");
         studenteOriginale.setAccountID(1);
-        
+
         studenteOriginale.setNome("AntonioBis");
         when(studenteRepository.updateStudente(studenteOriginale)).thenReturn(true);
 
@@ -121,9 +126,10 @@ public class StudenteServiceTest {
 
     @Test
     void aggiornaStudenteMediaTest() {
-        Studente studenteOriginale = new Studente("Paolo", "Gialli", "pgialli123", "pgialli@email.com", "PasswordValida1!");
+        Studente studenteOriginale = new Studente("Paolo", "Gialli", "pgialli123", "pgialli@email.com",
+                "PasswordValida1!");
         studenteOriginale.setAccountID(1);
-        
+
         studenteOriginale.setMediaPunteggio(7.5);
         when(studenteRepository.updateStudente(studenteOriginale)).thenReturn(true);
 
@@ -137,12 +143,12 @@ public class StudenteServiceTest {
     void aggiornaStudenteCompleroTest() {
         Studente studenteOriginale = new Studente("Fabio", "Blu", "fblu123", "fblu@email.com", "PasswordValida1!");
         studenteOriginale.setAccountID(1);
-        
+
         studenteOriginale.setNome("FabioBis");
         studenteOriginale.setCognome("BluBis");
         studenteOriginale.setEmail("fblubis@email.com");
         studenteOriginale.setMediaPunteggio(9.0);
-        
+
         when(studenteRepository.updateStudente(studenteOriginale)).thenReturn(true);
 
         boolean result = studenteService.aggiornaStudente(studenteOriginale);
@@ -157,7 +163,8 @@ public class StudenteServiceTest {
     // test che verifica isDocente ritorna false
     @Test
     void studenteIsDocenteFalseTest() {
-        Studente nuovoStudente = new Studente("Carlo", "Arancioni", "carancioni123", "carancioni@email.com", "PasswordValida1!");
+        Studente nuovoStudente = new Studente("Carlo", "Arancioni", "carancioni123", "carancioni@email.com",
+                "PasswordValida1!");
         nuovoStudente.setAccountID(1);
         when(studenteRepository.insertStudente(any(Studente.class))).thenReturn(nuovoStudente);
 

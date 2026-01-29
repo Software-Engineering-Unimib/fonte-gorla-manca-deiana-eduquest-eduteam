@@ -1,14 +1,14 @@
-package dev.eduteam.eduquest.services;
+package dev.eduteam.eduquest.services.accounts;
 
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import dev.eduteam.eduquest.models.Account;
-import dev.eduteam.eduquest.models.AccountFactory;
-import dev.eduteam.eduquest.models.Docente;
-import dev.eduteam.eduquest.models.Studente;
-import dev.eduteam.eduquest.repositories.AccountRepository;
+
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.accounts.Studente;
+import dev.eduteam.eduquest.repositories.accounts.AccountRepository;
 
 @Service
 public class AccountService {

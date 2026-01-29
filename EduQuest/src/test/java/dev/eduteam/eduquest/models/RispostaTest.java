@@ -3,6 +3,8 @@ package dev.eduteam.eduquest.models;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.eduteam.eduquest.models.questionari.Risposta;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RispostaTest {

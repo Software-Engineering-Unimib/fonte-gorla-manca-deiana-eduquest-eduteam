@@ -1,11 +1,11 @@
-package dev.eduteam.eduquest.controllers;
+package dev.eduteam.eduquest.controllers.questionari;
 
-import dev.eduteam.eduquest.models.Domanda;
-import dev.eduteam.eduquest.models.Questionario;
-import dev.eduteam.eduquest.models.Risposta;
-import dev.eduteam.eduquest.services.DomandaService;
-import dev.eduteam.eduquest.services.QuestionarioService;
-import dev.eduteam.eduquest.services.RispostaService;
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Risposta;
+import dev.eduteam.eduquest.services.questionari.DomandaService;
+import dev.eduteam.eduquest.services.questionari.QuestionarioService;
+import dev.eduteam.eduquest.services.questionari.RispostaService;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,8 @@ public class DomandaController {
     private QuestionarioService questionarioService;
 
     @GetMapping()
-    public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int docenteID, @PathVariable int questionarioID) {
+    public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int docenteID,
+            @PathVariable int questionarioID) {
         if (questionarioService.getQuestionarioCompleto(docenteID, questionarioID) == null) {
             return ResponseEntity.notFound().build();
         }

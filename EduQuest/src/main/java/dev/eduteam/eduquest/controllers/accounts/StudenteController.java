@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.controllers;
+package dev.eduteam.eduquest.controllers.accounts;
 
 import java.util.List;
 import java.util.Map;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.eduteam.eduquest.models.Account;
-import dev.eduteam.eduquest.models.Studente;
-import dev.eduteam.eduquest.services.AccountService;
-import dev.eduteam.eduquest.services.StudenteService;
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.models.accounts.Studente;
+import dev.eduteam.eduquest.services.accounts.AccountService;
+import dev.eduteam.eduquest.services.accounts.StudenteService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -99,4 +99,5 @@ public class StudenteController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Errore: " + e.getMessage());
         }
     }
+    // TODO aggiungere updateMediaPunteggio
 }

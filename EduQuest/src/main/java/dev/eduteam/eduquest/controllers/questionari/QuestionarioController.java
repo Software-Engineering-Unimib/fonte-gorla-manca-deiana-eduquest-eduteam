@@ -1,9 +1,9 @@
-package dev.eduteam.eduquest.controllers;
+package dev.eduteam.eduquest.controllers.questionari;
 
-import dev.eduteam.eduquest.models.Domanda;
-import dev.eduteam.eduquest.models.Questionario;
-import dev.eduteam.eduquest.services.DomandaService;
-import dev.eduteam.eduquest.services.QuestionarioService;
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.services.questionari.DomandaService;
+import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class QuestionarioController {
     private QuestionarioService questionarioService;
 
     @GetMapping()
-    public ArrayList<Questionario> getQuestionari(@PathVariable int docenteID) {
+    public ArrayList<Questionario> getQuestionariByDocente(@PathVariable int docenteID) {
         return questionarioService.getQuestionariByDocente(docenteID);
     }
 

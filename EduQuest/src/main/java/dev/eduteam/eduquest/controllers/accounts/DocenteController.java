@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.controllers;
+package dev.eduteam.eduquest.controllers.accounts;
 
 import java.util.List;
 import java.util.Map;
@@ -9,10 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.eduteam.eduquest.models.Account;
-import dev.eduteam.eduquest.models.Docente;
-import dev.eduteam.eduquest.services.AccountService;
-import dev.eduteam.eduquest.services.DocenteService;
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.services.accounts.AccountService;
+import dev.eduteam.eduquest.services.accounts.DocenteService;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

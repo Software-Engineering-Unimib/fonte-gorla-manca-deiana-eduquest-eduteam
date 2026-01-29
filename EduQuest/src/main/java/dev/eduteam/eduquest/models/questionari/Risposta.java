@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.models.questionari;
 
 public class Risposta {
 

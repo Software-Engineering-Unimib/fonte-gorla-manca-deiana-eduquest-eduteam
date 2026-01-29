@@ -3,6 +3,11 @@ package dev.eduteam.eduquest.models;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.DomandaMultipla;
+import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.accounts.Docente;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -12,13 +17,15 @@ class QuestionarioTest {
 
     private Questionario questionario;
     private ArrayList<Domanda> domande;
+    private Docente docente;
 
     @BeforeEach
     void setUp() {
         domande = new ArrayList<>();
         domande.add(new DomandaMultipla("Qual è la capitale dell'Italia?"));
         domande.add(new DomandaMultipla("Quanti continenti ci sono?"));
-        questionario = new Questionario("Geografia", "Questionario base di geografia", domande);
+        docente = new Docente();
+        questionario = new Questionario("Geografia", "Questionario base di geografia", domande, docente);
     }
 
     @Test
@@ -87,7 +94,7 @@ class QuestionarioTest {
     void testCostruttoriEdgeCases() {
         // Questionario con domande vuote
         ArrayList<Domanda> domandeVuota = new ArrayList<>();
-        Questionario questionarioVuoto = new Questionario("Quiz Vuoto", "Un quiz senza domande", domandeVuota);
+        Questionario questionarioVuoto = new Questionario("Quiz Vuoto", "Un quiz senza domande", domandeVuota, new Docente());
         assertEquals(0, questionarioVuoto.getNumeroDomande());
         assertTrue(questionarioVuoto.getElencoDomande().isEmpty());
 
@@ -96,7 +103,7 @@ class QuestionarioTest {
         for (int i = 0; i < 30; i++) {
             molteDomande.add(new DomandaMultipla("Domanda " + (i + 1)));
         }
-        Questionario questionarioGrande = new Questionario("Quiz Grande", "Quiz con molte domande", molteDomande);
+        Questionario questionarioGrande = new Questionario("Quiz Grande", "Quiz con molte domande", molteDomande, new Docente());
         assertEquals(30, questionarioGrande.getNumeroDomande());
         assertEquals(30, questionarioGrande.getElencoDomande().size());
     }

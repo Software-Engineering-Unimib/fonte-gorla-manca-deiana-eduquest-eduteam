@@ -1,9 +1,10 @@
 package dev.eduteam.eduquest.services;
 
-import dev.eduteam.eduquest.models.Domanda;
-import dev.eduteam.eduquest.models.Risposta;
-import dev.eduteam.eduquest.repositories.DomandaRepository;
-import dev.eduteam.eduquest.repositories.RispostaRepository;
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Risposta;
+import dev.eduteam.eduquest.repositories.questionari.DomandaRepository;
+import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
+import dev.eduteam.eduquest.services.questionari.DomandaService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

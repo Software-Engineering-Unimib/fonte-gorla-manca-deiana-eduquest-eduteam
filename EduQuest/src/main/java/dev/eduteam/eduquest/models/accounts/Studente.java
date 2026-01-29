@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.models.accounts;
 
 public class Studente extends Account {
 

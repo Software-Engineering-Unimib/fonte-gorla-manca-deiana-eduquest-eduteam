@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.repositories;
+package dev.eduteam.eduquest.repositories.questionari;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,14 +8,15 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Repository;
 
-import dev.eduteam.eduquest.models.Domanda;
-import dev.eduteam.eduquest.models.Questionario;
-import dev.eduteam.eduquest.models.Risposta;
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Risposta;
+import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 
 @Repository
 public class DomandaRepository {
 
-// DA VALUTARE: Dato che l'ID delle domande è univoco si potrebbe fare un metodo
+    // DA VALUTARE: Dato che l'ID delle domande è univoco si potrebbe fare un metodo
     // in overload per la ricerca con solo l'ID della domanda
     // PER ORA li ho messi entrambi
 

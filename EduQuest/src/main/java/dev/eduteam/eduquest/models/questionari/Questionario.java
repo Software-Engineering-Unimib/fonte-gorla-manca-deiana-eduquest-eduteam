@@ -1,7 +1,9 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.models.questionari;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+
+import dev.eduteam.eduquest.models.accounts.Docente;
 
 public class Questionario {
 
@@ -17,15 +19,12 @@ public class Questionario {
     private LocalDate dataCreazione; // inizializzata di default nel costruttore senza parametri
     private Docente docenteCreatore; // ID del docente che ha creato il questionario
 
-    // COSTRUTTORE SENZA PARAMETRI
-
-    public Questionario(String nome, String descrizione, ArrayList<Domanda> domande ,Docente docente) {
-
+    public Questionario(String nome, String descrizione, ArrayList<Domanda> domande, Docente docente) {
         setNome(nome);
         this.elencoDomande = (domande != null) ? domande : new ArrayList<>();
         setNumeroDomande(domande.size());
-        dataCreazione = LocalDate.now(); // questo va spostato nel costruttore senza parametri
-        docenteCreatore = docente;
+        setDataCreazione(LocalDate.now());
+        setDocente(docente);
         setDescrizione(descrizione);
     }
 
@@ -98,5 +97,5 @@ public class Questionario {
     public void setDocente(Docente docente) {
         docenteCreatore = docente;
     }
-    
+
 }

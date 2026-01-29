@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.repositories;
+package dev.eduteam.eduquest.repositories.accounts;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,8 +6,9 @@ import java.sql.ResultSet;
 
 import org.springframework.stereotype.Repository;
 
-import dev.eduteam.eduquest.models.Account;
-import dev.eduteam.eduquest.models.AccountFactory;
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.repositories.ConnectionSingleton;
+import dev.eduteam.eduquest.services.accounts.AccountFactory;
 
 @Repository
 public class AccountRepository {

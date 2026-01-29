@@ -1,12 +1,12 @@
-package dev.eduteam.eduquest.services;
+package dev.eduteam.eduquest.services.accounts;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import dev.eduteam.eduquest.models.Docente;
-import dev.eduteam.eduquest.repositories.DocenteRepository;
+import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 
 @Service
 public class DocenteService {
