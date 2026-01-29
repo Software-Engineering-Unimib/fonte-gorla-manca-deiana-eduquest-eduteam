@@ -60,6 +60,40 @@ CREATE TABLE risposte (
 ALTER TABLE domande
 ADD CONSTRAINT FK_RispostaCorretta FOREIGN KEY (rispostaCorrettaID) REFERENCES risposte(rispostaID) ON DELETE SET NULL ON UPDATE CASCADE;
 
+-- Tabella principale per l'oggetto Compilazione
+CREATE TABLE compilazioni (
+    compilazioneID INTEGER AUTO_INCREMENT,
+    studenteID_FK INTEGER NOT NULL,
+    questionarioID_FK INTEGER NOT NULL,
+    completato BOOLEAN DEFAULT FALSE, -- Mappa il boolean completato
+    punteggio INTEGER DEFAULT 0,      -- Mappa int punteggio
+    numeroDomande INTEGER,            -- Mappa int numeroDomande (anche se ridondante rispetto a questionari)
+    PRIMARY KEY(compilazioneID),
+    
+    -- Vincoli di integrità referenziale
+    CONSTRAINT FK_StudenteCompilazione 
+        FOREIGN KEY (studenteID_FK) REFERENCES studenti(accountID_FK) 
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_QuestionarioCompilazione 
+        FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) 
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = INNODB;
+
+-- Tabella di giunzione per mappare l'array Risposta[] risposte
+CREATE TABLE compilazioni_risposte (
+    compilazioneID_FK INTEGER NOT NULL,
+    rispostaID_FK INTEGER NOT NULL,
+    
+    PRIMARY KEY(compilazioneID_FK, rispostaID_FK),
+    
+    CONSTRAINT FK_CompilazioneRif 
+        FOREIGN KEY (compilazioneID_FK) REFERENCES compilazioni(compilazioneID) 
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_RispostaSelezionata 
+        FOREIGN KEY (rispostaID_FK) REFERENCES risposte(rispostaID) 
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = INNODB;
+
 -- Dati di test Account
 INSERT INTO accounts (nome, cognome, userName, email, password, tipo)
 VALUES 

@@ -1,14 +1,10 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
-import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
-import dev.eduteam.eduquest.services.questionari.DomandaService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,7 +23,7 @@ public class QuestionarioController {
 
     @GetMapping("{ID}")
     public ResponseEntity<Questionario> getQuestionario(@PathVariable int docenteID, @PathVariable int ID) {
-        Questionario questionario = questionarioService.getQuestionarioCompleto(docenteID, ID);
+        Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         if (questionario != null) {
             return ResponseEntity.ok(questionario);
         } else {
@@ -70,7 +66,7 @@ public class QuestionarioController {
             return ResponseEntity.badRequest().build();
         }
 
-        Questionario q = questionarioService.getQuestionarioCompleto(docenteID, ID);
+        Questionario q = questionarioService.getQuestionarioCompleto(ID);
         if (q == null) {
             return ResponseEntity.notFound().build();
         }
@@ -93,7 +89,7 @@ public class QuestionarioController {
         if (descrizione == null || descrizione.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        Questionario q = questionarioService.getQuestionarioCompleto(docenteID, ID);
+        Questionario q = questionarioService.getQuestionarioCompleto(ID);
         if (q == null) {
             return ResponseEntity.notFound().build();
         }

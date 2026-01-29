@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import dev.eduteam.eduquest.models.accounts.Account;
 import dev.eduteam.eduquest.models.accounts.Studente;
+import dev.eduteam.eduquest.models.questionari.Compilazione;
+import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.services.accounts.AccountService;
 import dev.eduteam.eduquest.services.accounts.StudenteService;
+import dev.eduteam.eduquest.services.questionari.CompilazioneService;
+import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +33,12 @@ public class StudenteController {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private QuestionarioService questionarioService;
+
+    @Autowired
+    private CompilazioneService compilazioneService;
 
     @GetMapping("listaStudenti")
     public List<Studente> getAll() {
@@ -100,4 +110,26 @@ public class StudenteController {
         }
     }
     // TODO aggiungere updateMediaPunteggio
+
+    // verrà mostrato allo studente una simil-galleria di questionari
+    @GetMapping("{studenteID}/questionari")
+    public ResponseEntity<List<Questionario>> mostraQuestionariDisponibili(/* @PathVariable int studenteID, */) {
+        List<Questionario> questionari = questionarioService.getQuestionari();
+        if (questionari.isEmpty()) {
+            return ResponseEntity.internalServerError().build();
+        } else {
+            return ResponseEntity.ok(questionari);
+        }
+    }
+
+    @GetMapping("{studenteID}/compila/{questionarioID}")
+    public ResponseEntity<Questionario> compilaQuestionario(@PathVariable int studenteID,
+            @PathVariable int questionarioID) {
+        Compilazione c = compilazioneService.creaCompilazione(studenteID, questionarioID);
+        if (c != null) {
+            return ResponseEntity.ok(questionarioService.getQuestionarioCompleto(questionarioID));
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

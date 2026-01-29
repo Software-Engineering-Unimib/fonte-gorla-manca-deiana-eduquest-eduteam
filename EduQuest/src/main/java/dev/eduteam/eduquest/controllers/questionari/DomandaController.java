@@ -2,12 +2,10 @@ package dev.eduteam.eduquest.controllers.questionari;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
-import dev.eduteam.eduquest.models.questionari.Risposta;
+
 import dev.eduteam.eduquest.services.questionari.DomandaService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
-import dev.eduteam.eduquest.services.questionari.RispostaService;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +23,8 @@ public class DomandaController {
     private QuestionarioService questionarioService;
 
     @GetMapping()
-    public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int docenteID,
-            @PathVariable int questionarioID) {
-        if (questionarioService.getQuestionarioCompleto(docenteID, questionarioID) == null) {
+    public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int questionarioID) {
+        if (questionarioService.getQuestionarioCompleto(questionarioID) == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(domandaService.getDomandeComplete(questionarioID));
@@ -39,7 +36,7 @@ public class DomandaController {
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        if (questionarioService.getQuestionarioCompleto(docenteID, questionarioID) == null) {
+        if (questionarioService.getQuestionarioCompleto(questionarioID) == null) {
             return ResponseEntity.notFound().build();
         }
 
@@ -56,7 +53,7 @@ public class DomandaController {
             @PathVariable int questionarioID,
             @RequestParam(name = "tipo") Domanda.Type tipo) {
 
-        Questionario questionarioDaModificare = questionarioService.getQuestionarioCompleto(docenteID, questionarioID);
+        Questionario questionarioDaModificare = questionarioService.getQuestionarioCompleto(questionarioID);
         if (questionarioDaModificare == null) {
             return ResponseEntity.notFound().build();
         }

@@ -1,6 +1,5 @@
 package dev.eduteam.eduquest.services.questionari;
 
-import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
@@ -22,18 +21,14 @@ public class QuestionarioService {
     @Autowired
     private DomandaService domandaService;
 
-    // INIZIO ZONA TEMPORANEA
+    // Aggiunto per permettere allo studente di controllare i questionari senza l'ID
+    // del docente
+    public ArrayList<Questionario> getQuestionari() {
+        return questionarioRepository.getQuestionari();
+    }
 
-    /*
-     * public ArrayList<Questionario> getQuestionari() {
-     * return questionarioRepository.getQuestionari();
-     * }
-     */
-
-    // FINE ZONA TEMPORANEA
-
-    public Questionario getQuestionarioCompleto(int docenteID, int ID) {
-        Questionario questionario = questionarioRepository.getQuestionarioByID(docenteID, ID);
+    public Questionario getQuestionarioCompleto(int ID) {
+        Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
 
         // Controllo che questionario non sia null prima di usarlo
         if (questionario != null) {

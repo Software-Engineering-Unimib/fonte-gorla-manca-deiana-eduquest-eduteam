@@ -65,14 +65,13 @@ class QuestionarioServiceTest {
         int id = 1;
         ArrayList<Domanda> domandeMock = new ArrayList<>();
 
-        int docenteID = 1;
-        when(questionarioRepository.getQuestionarioByID(docenteID, id)).thenReturn(questionario);
+        when(questionarioRepository.getQuestionarioByID(id)).thenReturn(questionario);
         when(domandaService.getDomandeComplete(id)).thenReturn(domandeMock);
 
-        Questionario result = questionarioService.getQuestionarioCompleto(docenteID, id);
+        Questionario result = questionarioService.getQuestionarioCompleto(id);
         assertNotNull(result);
         assertEquals("Test Questionario", result.getNome());
-        verify(questionarioRepository, times(1)).getQuestionarioByID(docenteID, id);
+        verify(questionarioRepository, times(1)).getQuestionarioByID(id);
     }
 
     @Test
@@ -132,7 +131,8 @@ class QuestionarioServiceTest {
         int docenteID = 5;
         Docente d = new Docente();
         d.setAccountID(docenteID);
-        Questionario nuovoQuestionario = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<>(), d);
+        Questionario nuovoQuestionario = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<>(),
+                d);
         nuovoQuestionario.setID(3);
 
         when(questionarioRepository.insertQuestionario(any(Questionario.class))).thenReturn(nuovoQuestionario);

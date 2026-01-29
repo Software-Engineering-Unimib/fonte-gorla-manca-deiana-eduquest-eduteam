@@ -26,14 +26,50 @@ public class QuestionarioRepository {
     @Autowired
     private DocenteRepository docenteRepository;
 
-    public Questionario getQuestionarioByID(int docenteID, int id) {
+    // Aggiunto per permettere allo studente di controllare i questionari senza l'ID
+    // del docente
+    public ArrayList<Questionario> getQuestionari() {
+        ArrayList<Questionario> questionari = new ArrayList<Questionario>();
+        String query = "SELECT " +
+                "questionarioID, " +
+                "nome, " +
+                "descrizione, " +
+                "numeroDomande, " +
+                "dataCreazione, " +
+                "docenteID_FK FROM questionari";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);) {
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Questionario questionario = new Questionario("", "", new ArrayList<Domanda>(), null);
+
+                    questionario.setID(rs.getInt("questionarioID"));
+                    questionario.setNome(rs.getString("nome"));
+                    questionario.setDescrizione(rs.getString("descrizione"));
+                    questionario.setNumeroDomande(rs.getInt("numeroDomande"));
+                    questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+                    questionario.setDocente(docenteRepository.getDocenteByAccountID(rs.getInt("docenteID_FK")));
+
+                    questionari.add(questionario);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return questionari;
+    }
+
+    // la Primary key di un questionario è questionarioID, NON SERVE IL DOCENTE
+    public Questionario getQuestionarioByID(int id) {
         Questionario questionario = null;
         String query = "SELECT " +
                 "questionarioID, " +
                 "nome, " +
                 "descrizione, " +
                 "numeroDomande, " +
-                "dataCreazione FROM questionari WHERE questionarioID = ? AND docenteID_FK = '" + docenteID + "'";
+                "dataCreazione FROM questionari WHERE questionarioID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -42,15 +78,14 @@ public class QuestionarioRepository {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Docente docente = docenteRepository.getDocenteByAccountID(docenteID);
-                    questionario = new Questionario("", "", new ArrayList<Domanda>(), docente);
+                    questionario = new Questionario("", "", new ArrayList<Domanda>(), null);
 
                     questionario.setID(rs.getInt("questionarioID"));
                     questionario.setNome(rs.getString("nome"));
                     questionario.setDescrizione(rs.getString("descrizione"));
                     questionario.setNumeroDomande(rs.getInt("numeroDomande"));
                     questionario.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
-                    questionario.setDocente(docente);
+                    questionario.setDocente(docenteRepository.getDocenteByAccountID(rs.getInt("docenteID_FK")));
                 }
             }
         } catch (Exception e) {
