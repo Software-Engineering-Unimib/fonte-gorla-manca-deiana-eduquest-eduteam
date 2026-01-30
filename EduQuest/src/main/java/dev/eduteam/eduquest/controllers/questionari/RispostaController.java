@@ -10,11 +10,13 @@ import dev.eduteam.eduquest.services.questionari.RispostaService;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@RestController
+@Controller
 @RequestMapping("questionari/{questionarioID}/domande/{domandaID}/risposte")
 public class RispostaController {
 
@@ -25,28 +27,37 @@ public class RispostaController {
     private DomandaService domandaService;
 
     @GetMapping()
-    public ResponseEntity<ArrayList<Risposta>> getRisposte(
+    public String getRisposte(
+            Model model,
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
         Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
-        if (domanda == null) {
-            return ResponseEntity.notFound().build();
+        if (domanda != null) {
+            ArrayList<Risposta> risposte = rispostaService.getRisposteByDomanda(domandaID);
+
+            model.addAttribute("domanda", domanda);
+            model.addAttribute("risposte", risposte);
         }
-        return ResponseEntity.ok(domanda.getElencoRisposte());
+        return "lista-risposte";
     }
 
     @GetMapping("{rispostaID}")
-    public ResponseEntity<Risposta> getRisposta(
+    public String getRisposta(
+            Model model,
             @PathVariable int questionarioID,
             @PathVariable int domandaID,
             @PathVariable int rispostaID) {
 
-        Risposta risposta = rispostaService.getRispostaById(domandaID, rispostaID);
-        if (risposta == null) {
-            return ResponseEntity.notFound().build();
+        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
+        if (domanda != null) {
+            Risposta risposta = rispostaService.getRispostaById(domandaID, rispostaID);
+            if (risposta != null) {
+                model.addAttribute("domanda", domanda);
+                model.addAttribute("risposta", risposta);
+            }
         }
-        return ResponseEntity.ok(risposta);
+        return "singola-risposta";
     }
 
     @PostMapping("aggiungi")

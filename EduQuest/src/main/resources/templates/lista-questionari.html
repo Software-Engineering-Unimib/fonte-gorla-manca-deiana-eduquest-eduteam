@@ -1,0 +1,10 @@
+<h1>
+    <b>Questionari del docente
+        <span th:text="${docente.getNome()} "></span>
+        <span th:text="${docente.getCognome()}"></span>
+    </b>
+</h1>
+
+<ul>
+    <li th:each="q : ${questionari}" th:text="${q.nome}"></li>
+</ul>

@@ -1,38 +1,57 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
+import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.services.accounts.DocenteService;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@RestController
+@Controller
 @RequestMapping("api/docente/{docenteID}/questionari")
 public class QuestionarioController {
 
     @Autowired
     private QuestionarioService questionarioService;
 
+    @Autowired
+    private DocenteService docenteService;
+
     @GetMapping()
-    public ArrayList<Questionario> getQuestionariByDocente(@PathVariable int docenteID) {
-        return questionarioService.getQuestionariByDocente(docenteID);
+    public String getQuestionariByDocente(
+            Model model,
+            @PathVariable int docenteID) {
+
+        ArrayList<Questionario> questionari =  questionarioService.getQuestionariByDocente(docenteID);
+        Docente docente = docenteService.getByID(docenteID);
+
+        model.addAttribute("docente", docente);
+        model.addAttribute("questionari", questionari);
+
+        return "lista-questionari";
     }
 
     @GetMapping("{ID}")
-    public ResponseEntity<Questionario> getQuestionario(@PathVariable int docenteID, @PathVariable int ID) {
+    public String getQuestionario(
+            Model model,
+            @PathVariable int docenteID,
+            @PathVariable int ID) {
         Questionario questionario = questionarioService.getQuestionarioCompleto(docenteID, ID);
         if (questionario != null) {
-            return ResponseEntity.ok(questionario);
+            model.addAttribute("questionario", questionario);
         } else {
-            return ResponseEntity.notFound().build();
         }
+        return "singolo-questionario";
     }
 
     @PostMapping("crea")

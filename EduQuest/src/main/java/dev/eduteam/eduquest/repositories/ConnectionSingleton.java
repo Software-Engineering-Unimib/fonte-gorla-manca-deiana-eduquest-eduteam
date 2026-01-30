@@ -28,7 +28,7 @@ public class ConnectionSingleton {
         // Forse si può utilizzare un file di configurazione application.properties -GD
         ds.setUser("root");
         ds.setPassword("nicksql");
-        ds.setDatabaseName("TestEduQuest");
+        ds.setDatabaseName("Test_EduQuest");
         ds.setUseSSL(false);
         ds.setAllowPublicKeyRetrieval(true);
 

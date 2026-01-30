@@ -10,11 +10,13 @@ import dev.eduteam.eduquest.services.questionari.RispostaService;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@RestController
+@Controller
 @RequestMapping("api/docente/{docenteID}/questionari/{questionarioID}/domande")
 public class DomandaController {
 
@@ -25,29 +27,39 @@ public class DomandaController {
     private QuestionarioService questionarioService;
 
     @GetMapping()
-    public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int docenteID,
+    public String getDomande(
+            Model model,
+            @PathVariable int docenteID,
             @PathVariable int questionarioID) {
-        if (questionarioService.getQuestionarioCompleto(docenteID, questionarioID) == null) {
-            return ResponseEntity.notFound().build();
+        Questionario questionario = questionarioService.getQuestionarioCompleto(docenteID, questionarioID);
+        if (questionario != null) {
+
+            ArrayList<Domanda> domande = domandaService.getDomandeComplete(questionarioID);
+
+            model.addAttribute("questionario", questionario);
+            model.addAttribute("domande", domande);
         }
-        return ResponseEntity.ok(domandaService.getDomandeComplete(questionarioID));
+        return "lista-domande";
     }
 
     @GetMapping("{domandaID}")
-    public ResponseEntity<Domanda> getDomanda(
+    public String getDomanda(
+            Model model,
             @PathVariable int docenteID,
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        if (questionarioService.getQuestionarioCompleto(docenteID, questionarioID) == null) {
-            return ResponseEntity.notFound().build();
+        Questionario questionario = questionarioService.getQuestionarioCompleto(docenteID, questionarioID);
+
+        if (questionario != null) {
+            Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
+            if (domanda != null) {
+                model.addAttribute("questionario", questionario);
+                model.addAttribute("domanda", domanda);
+            }
         }
 
-        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
-        if (domanda == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(domanda);
+        return "singola-domanda";
     }
 
     @PostMapping("aggiungi")
