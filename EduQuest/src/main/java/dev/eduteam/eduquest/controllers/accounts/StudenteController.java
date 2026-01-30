@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.eduteam.eduquest.models.accounts.Account;
 import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compilazione;
+import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.services.accounts.AccountService;
 import dev.eduteam.eduquest.services.accounts.StudenteService;
@@ -122,14 +123,30 @@ public class StudenteController {
         }
     }
 
+    // Dovrebbe inizializzare la compilazione e mostrare la prima domanda del
+    // questionario
     @GetMapping("{studenteID}/compila/{questionarioID}")
-    public ResponseEntity<Questionario> compilaQuestionario(@PathVariable int studenteID,
+    public ResponseEntity<Domanda> compilaQuestionario(@PathVariable int studenteID,
             @PathVariable int questionarioID) {
         Compilazione c = compilazioneService.creaCompilazione(studenteID, questionarioID);
         if (c != null) {
-            return ResponseEntity.ok(questionarioService.getQuestionarioCompleto(questionarioID));
+            Questionario q = questionarioService.getQuestionarioCompleto(questionarioID);
+            return ResponseEntity.ok(q.getElencoDomande().getFirst());
         } else {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    // Memorizza la risposta alla domanda e mostra la domanda successiva
+    @GetMapping("{studenteID}/compila/{questionarioID}/{compilazioneID}/{domandaID}")
+    public ResponseEntity<Domanda> rispondiDomanda(
+            @PathVariable int questionarioID, @PathVariable int compilazioneID,
+            @PathVariable int domandaID, @RequestParam int rispostaID) {
+        if (compilazioneService.inserisciRispostaComp(compilazioneID, domandaID, rispostaID)) {
+            return ResponseEntity.ok(questionarioService.getDomandaSuccessiva(questionarioID, domandaID));
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 }

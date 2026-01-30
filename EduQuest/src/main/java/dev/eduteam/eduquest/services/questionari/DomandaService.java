@@ -77,7 +77,7 @@ public class DomandaService {
         Domanda domanda = domandaRepository.getDomandaByID(domandaID);
         if (domanda == null)
             return false;
-        Risposta rispostaTarget = rispostaRepository.getRispostaByID(domandaID, rispostaID);
+        Risposta rispostaTarget = rispostaRepository.getRispostaByID(rispostaID);
         if (rispostaTarget == null)
             return false;
 

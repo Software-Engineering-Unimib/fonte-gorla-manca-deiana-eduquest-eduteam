@@ -29,8 +29,8 @@ public class RispostaService {
         return rispostaRepository.getRisposteByDomanda(domandaID);
     }
 
-    public Risposta getRispostaById(int domandaID, int rispostaID) {
-        return rispostaRepository.getRispostaByID(domandaID, rispostaID);
+    public Risposta getRispostaById(int rispostaID) {
+        return rispostaRepository.getRispostaByID(rispostaID);
     }
 
     public Risposta aggiungiRisposta(int domandaID) {

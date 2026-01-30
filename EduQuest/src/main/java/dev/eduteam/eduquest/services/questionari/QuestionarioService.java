@@ -5,6 +5,7 @@ import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,23 @@ public class QuestionarioService {
 
     public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
         return questionarioRepository.getQuestionariByDocente(docenteID);
+    }
+
+    public Domanda getDomandaSuccessiva(int questionarioID, int domandaID) {
+        Questionario q = questionarioRepository.getQuestionarioByID(questionarioID);
+        ArrayList<Domanda> elenco = q.getElencoDomande();
+        for (int i = 0; i < elenco.size(); i++) {
+            if (elenco.get(i).getID() == domandaID) {
+                if (i + 1 < elenco.size()) {
+                    return elenco.get(i + 1);
+                }
+                // Trovata, ma era l'ultima: non c'è una successiva
+                return null;
+            }
+        }
+        // Si potrebbe definire un'eccezione specifica per distinguere
+        // tra non c'è e ID non valido
+        return null;
     }
 
 }

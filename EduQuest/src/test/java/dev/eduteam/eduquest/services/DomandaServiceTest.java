@@ -117,7 +117,7 @@ class DomandaServiceTest {
         elenco.add(r);
 
         when(domandaRepository.getDomandaByID(domandaID)).thenReturn(domanda);
-        when(rispostaRepository.getRispostaByID(domandaID, rispostaID)).thenReturn(r);
+        when(rispostaRepository.getRispostaByID(rispostaID)).thenReturn(r);
         when(rispostaRepository.getRisposteByDomanda(domandaID)).thenReturn(elenco);
         when(rispostaRepository.updateRisposta(any(Risposta.class))).thenReturn(true);
 
@@ -143,7 +143,7 @@ class DomandaServiceTest {
         int rispostaID = 99;
         when(domandaRepository.getDomandaByID(domandaID)).thenReturn(domanda);
         // Se la risposta non esiste nel DB
-        when(rispostaRepository.getRispostaByID(domandaID, rispostaID)).thenReturn(null);
+        when(rispostaRepository.getRispostaByID(rispostaID)).thenReturn(null);
 
         boolean result = domandaService.setRispostaCorretta(domandaID, rispostaID);
         assertFalse(result);
@@ -166,7 +166,7 @@ class DomandaServiceTest {
         opzioni.add(falso);
 
         when(domandaRepository.getDomandaByID(10)).thenReturn(domandaVF);
-        when(rispostaRepository.getRispostaByID(10, 1)).thenReturn(vero);
+        when(rispostaRepository.getRispostaByID(1)).thenReturn(vero);
         when(rispostaRepository.getRisposteByDomanda(10)).thenReturn(opzioni);
         when(rispostaRepository.updateRisposta(any(Risposta.class))).thenReturn(true);
 

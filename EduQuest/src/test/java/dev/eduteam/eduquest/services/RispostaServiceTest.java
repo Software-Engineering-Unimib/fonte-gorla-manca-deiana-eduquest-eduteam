@@ -60,15 +60,14 @@ class RispostaServiceTest {
 
     @Test
     void testGetRispostaById() {
-        int domandaID = 1;
         int rispostaID = 1;
-        when(rispostaRepository.getRispostaByID(domandaID, rispostaID)).thenReturn(risposta);
+        when(rispostaRepository.getRispostaByID(rispostaID)).thenReturn(risposta);
 
-        Risposta result = rispostaService.getRispostaById(domandaID, rispostaID);
+        Risposta result = rispostaService.getRispostaById(rispostaID);
         assertNotNull(result);
         assertEquals("Roma", result.getTesto());
         assertEquals(1, result.getID());
-        verify(rispostaRepository, times(1)).getRispostaByID(domandaID, rispostaID);
+        verify(rispostaRepository, times(1)).getRispostaByID(rispostaID);
     }
 
     @Test

@@ -42,7 +42,7 @@ public class RispostaController {
             @PathVariable int domandaID,
             @PathVariable int rispostaID) {
 
-        Risposta risposta = rispostaService.getRispostaById(domandaID, rispostaID);
+        Risposta risposta = rispostaService.getRispostaById(rispostaID);
         if (risposta == null) {
             return ResponseEntity.notFound().build();
         }
@@ -91,7 +91,7 @@ public class RispostaController {
             return ResponseEntity.badRequest().build();
         }
 
-        Risposta rispostaDaModificare = rispostaService.getRispostaById(domandaID, rispostaID);
+        Risposta rispostaDaModificare = rispostaService.getRispostaById(rispostaID);
         if (rispostaDaModificare == null)
             return ResponseEntity.notFound().build();
 

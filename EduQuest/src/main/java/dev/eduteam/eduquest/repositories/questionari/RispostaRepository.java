@@ -13,19 +13,20 @@ import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 @Repository
 public class RispostaRepository {
 
-    public Risposta getRispostaByID(int domandaID, int rispostaID) {
+    // Non è necessario domandaID perchè la primary ket di risposte è solo
+    // rispostaID
+    public Risposta getRispostaByID(int rispostaID) {
         Risposta risposta = null;
         String query = "SELECT " +
                 "rispostaID, " +
                 "testo, " +
                 "isCorretta, " +
-                "domandaID_FK FROM risposte WHERE rispostaID = ? AND domandaID_FK = ?";
+                "domandaID_FK FROM risposte WHERE rispostaID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setInt(1, rispostaID);
-            ps.setInt(2, domandaID);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
