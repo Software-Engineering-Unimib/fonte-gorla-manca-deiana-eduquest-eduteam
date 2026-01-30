@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -29,7 +30,10 @@ public class CompilazioneRepository {
 
     public Compilazione getCompilazioneByID(int compilazioneID) {
         Compilazione compilazione = null;
-        String query = "SELECT compilazioneID, studenteID_FK, questionarioID_FK, completato, punteggio, numeroDomande FROM compilazioni WHERE compilazioneID = ?";
+        String query = "SELECT " +
+                "compilazioneID, studenteID_FK, " +
+                "questionarioID_FK, completato, punteggio, " +
+                "numeroDomande FROM compilazioni WHERE compilazioneID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -55,9 +59,8 @@ public class CompilazioneRepository {
     }
 
     public Risposta[] getRisposteCompilazione(int compilazioneID, int numeroDomande) {
-        Risposta[] risposte = new Risposta[numeroDomande];
+        List<Risposta> listaRisposte = new ArrayList<>();
         String query = "SELECT " +
-                "compilazioneID_FK, " +
                 "rispostaID_FK FROM compilazioni_risposte WHERE compilazioneID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
@@ -66,18 +69,56 @@ public class CompilazioneRepository {
             ps.setInt(1, compilazioneID);
 
             try (ResultSet rs = ps.executeQuery()) {
-                int i = 0;
                 while (rs.next()) {
                     Risposta risposta = rispostaRepository.getRispostaByID(rs.getInt("rispostaID_FK"));
-                    risposte[i] = risposta;
-                    i++;
+                    if (risposta != null) {
+                        listaRisposte.add(risposta);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Errore nel recupero risposte compilazione " + e.getMessage());
+        }
+
+        // Lista -> array
+        Risposta[] arrayRisposte = new Risposta[numeroDomande];
+        for (int i = 0; i < listaRisposte.size() && i < numeroDomande; i++) {
+            arrayRisposte[i] = listaRisposte.get(i);
+        }
+        return arrayRisposte;
+
+    }
+
+    public ArrayList<Compilazione> getCompilazioniCompletate(int studenteID) {
+        ArrayList<Compilazione> elencoCompilazioni = new ArrayList<Compilazione>();
+        String query = "SELECT " +
+                "compilazioneID, studenteID_FK, " +
+                "questionarioID_FK, completato, punteggio, " +
+                "numeroDomande FROM compilazioni WHERE studenteID_FK = ? AND completato = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);) {
+
+            ps.setInt(1, studenteID);
+            ps.setBoolean(2, true);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Compilazione compilazione = new Compilazione(null, null);
+
+                    compilazione.setID(rs.getInt("compilazioneID"));
+                    compilazione.setStudente(studenteRepository.getStudenteByAccountID(rs.getInt("studenteID_FK")));
+                    compilazione.setQuestionario(
+                            questionarioRepository.getQuestionarioByID(rs.getInt("questionarioID_FK")));
+                    compilazione.setCompletato(rs.getBoolean("completato"));
+                    compilazione.setPunteggio(rs.getInt("punteggio"));
+
+                    elencoCompilazioni.add(compilazione);
                 }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return risposte;
-
+        return elencoCompilazioni;
     }
 
     public Compilazione insertCompilazione(Compilazione compilazione) {
@@ -100,8 +141,27 @@ public class CompilazioneRepository {
             }
             return compilazione;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Errore inserimento compilazione: " + e.getMessage());
             return null;
+        }
+    }
+
+    public boolean salvaRisposta(int compilazioneID, int rispostaID) {
+        String query = "INSERT INTO compilazioni_risposte (compilazioneID_FK, rispostaID_FK) VALUES (?, ?)";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, compilazioneID);
+            ps.setInt(2, rispostaID);
+
+            ps.executeUpdate();
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            System.out.println("Errore salvataggio risposta: " + e.getMessage());
+            return false;
         }
     }
 

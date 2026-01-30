@@ -1,5 +1,6 @@
 package dev.eduteam.eduquest.controllers.accounts;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -131,6 +132,7 @@ public class StudenteController {
         Compilazione c = compilazioneService.creaCompilazione(studenteID, questionarioID);
         if (c != null) {
             Questionario q = questionarioService.getQuestionarioCompleto(questionarioID);
+            // sistemare caso in cui il questionario è vuoto -> non posso compilarlo
             return ResponseEntity.ok(q.getElencoDomande().getFirst());
         } else {
             return ResponseEntity.internalServerError().build();
@@ -139,14 +141,24 @@ public class StudenteController {
 
     // Memorizza la risposta alla domanda e mostra la domanda successiva
     @GetMapping("{studenteID}/compila/{questionarioID}/{compilazioneID}/{domandaID}")
-    public ResponseEntity<Domanda> rispondiDomanda(
+    public ResponseEntity<?> rispondiDomanda(
             @PathVariable int questionarioID, @PathVariable int compilazioneID,
             @PathVariable int domandaID, @RequestParam int rispostaID) {
-        if (compilazioneService.inserisciRispostaComp(compilazioneID, domandaID, rispostaID)) {
-            return ResponseEntity.ok(questionarioService.getDomandaSuccessiva(questionarioID, domandaID));
-        } else {
-            return ResponseEntity.internalServerError().build();
+        if (!compilazioneService.inserisciRispostaComp(compilazioneID, domandaID, rispostaID)) {
+            return ResponseEntity.internalServerError().body("Errore durante il salvataggio della risposta");
         }
+        Domanda d = questionarioService.getDomandaSuccessiva(questionarioID, domandaID);
+        if (d != null)
+            return ResponseEntity.ok(d);
+        return ResponseEntity.ok("Questionario completato");
+    }
+
+    // Torna le compilazione completate dallo studente
+    @GetMapping("{studenteID}/compilazioni")
+    public ResponseEntity<ArrayList<Compilazione>> getCompilazioniByStudente(@PathVariable int studenteID) {
+        // va bene anche una lista vuota, ad es. se lo studente non ha ancora
+        // compilato alcun questionario
+        return ResponseEntity.ok(compilazioneService.getCompilazioniCompletate(studenteID));
     }
 
 }

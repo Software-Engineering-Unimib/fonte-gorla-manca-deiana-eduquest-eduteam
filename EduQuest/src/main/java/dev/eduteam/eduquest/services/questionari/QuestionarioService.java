@@ -28,6 +28,10 @@ public class QuestionarioService {
         return questionarioRepository.getQuestionari();
     }
 
+    public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
+        return questionarioRepository.getQuestionariByDocente(docenteID);
+    }
+
     public Questionario getQuestionarioCompleto(int ID) {
         Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
 
@@ -56,10 +60,6 @@ public class QuestionarioService {
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
         return questionarioRepository.updateQuestionario(questionario);
-    }
-
-    public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
-        return questionarioRepository.getQuestionariByDocente(docenteID);
     }
 
     public Domanda getDomandaSuccessiva(int questionarioID, int domandaID) {

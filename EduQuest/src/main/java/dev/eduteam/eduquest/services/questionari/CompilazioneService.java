@@ -29,12 +29,6 @@ public class CompilazioneService {
     @Autowired
     private RispostaRepository rispostaRepository;
 
-    public Compilazione creaCompilazione(int studenteID, int questionarioID) {
-        Compilazione compilazione = new Compilazione(studenteRepository.getStudenteByAccountID(studenteID),
-                questionarioRepository.getQuestionarioByID(questionarioID));
-        return compilazioneRepository.insertCompilazione(compilazione);
-    }
-
     public boolean inserisciRispostaComp(int compilazioneID, int domandaID, int rispostaID) {
         Compilazione compilazione = compilazioneRepository.getCompilazioneByID(compilazioneID);
         popolaCompilazione(compilazione);
@@ -46,12 +40,26 @@ public class CompilazioneService {
         for (int i = 0; i < risposte.length; i++) {
             if (risposte[i] == null) {
                 risposte[i] = risposta;
-                return true;
+                if (compilazioneRepository.salvaRisposta(compilazioneID, rispostaID))
+                    return true;
+                return false;
             }
         }
         return false;
 
     }
+
+    public ArrayList<Compilazione> getCompilazioniCompletate(int studenteID) {
+        return compilazioneRepository.getCompilazioniCompletate(studenteID);
+    }
+
+    public Compilazione creaCompilazione(int studenteID, int questionarioID) {
+        Compilazione compilazione = new Compilazione(studenteRepository.getStudenteByAccountID(studenteID),
+                questionarioRepository.getQuestionarioByID(questionarioID));
+        return compilazioneRepository.insertCompilazione(compilazione);
+    }
+
+    // Metodi private
 
     private void popolaCompilazione(Compilazione c) {
         Risposta[] r1 = c.getRisposte();
