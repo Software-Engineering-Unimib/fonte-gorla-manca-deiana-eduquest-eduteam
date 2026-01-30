@@ -40,8 +40,12 @@ public class CompilazioneService {
         for (int i = 0; i < risposte.length; i++) {
             if (risposte[i] == null) {
                 risposte[i] = risposta;
+                // controllo se è corretta e setto il punteggio
+                if (risposta.isCorretta()) {
+                    compilazione.setPunteggio(compilazione.getPunteggio() + 1);
+                }
                 if (compilazioneRepository.salvaRisposta(compilazioneID, rispostaID))
-                    return true;
+                    return compilazioneRepository.aggiornaPunteggio(compilazioneID, compilazione.getPunteggio());
                 return false;
             }
         }

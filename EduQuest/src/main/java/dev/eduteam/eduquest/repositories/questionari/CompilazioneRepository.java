@@ -155,12 +155,24 @@ public class CompilazioneRepository {
             ps.setInt(1, compilazioneID);
             ps.setInt(2, rispostaID);
 
-            ps.executeUpdate();
-
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
         } catch (Exception e) {
             System.out.println("Errore salvataggio risposta: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean aggiornaPunteggio(int compilazioneID, int nuovPunteggio) {
+        String query = "UPDATE compilazioni SET punteggio = ? WHERE compilazioneID = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, nuovPunteggio);
+            ps.setInt(2, compilazioneID);
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Errore aggiornamento punteggio: " + e.getMessage());
             return false;
         }
     }
