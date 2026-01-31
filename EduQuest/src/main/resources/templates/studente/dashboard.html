@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Dashboard Studente')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="dashboard">
+            <header class="dashboard-header">
+                <h1>Dashboard Studente</h1>
+                <p>Benvenuto, <span th:text="${user.nome + ' ' + user.cognome}"></span>!</p>
+            </header>
+            
+            <section th:replace="~{fragments/profile-card :: profileCard(${user}, false)}"></section>
+            
+            <section class="dashboard-section">
+                <h3>📊 Le Tue Statistiche</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" th:text="${questionariCompletati != null ? questionariCompletati : 0}">0</span>
+                        <span class="stat-label">Questionari Completati</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" th:text="${user.mediaVoto}">0.0</span>
+                        <span class="stat-label">Media Voto</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="dashboard-section">
+                <h3>📋 Questionari Disponibili</h3>
+                
+                <div th:if="${questionariDisponibili == null or questionariDisponibili.empty}" class="empty-state">
+                    <p>Non ci sono questionari disponibili al momento.</p>
+                </div>
+                
+                <div th:if="${questionariDisponibili != null and !questionariDisponibili.empty}" class="questionari-list">
+                    <div th:each="q : ${questionariDisponibili}" class="questionario-card">
+                        <h4 th:text="${q.nome}">Nome Questionario</h4>
+                        <p th:text="${q.descrizione}">Descrizione</p>
+                        <div class="card-meta">
+                            <span>📝 <span th:text="${q.numDomande}"></span> domande</span>
+                            <span>👨‍🏫 <span th:text="${q.docente.cognome}"></span></span>
+                        </div>
+                        <div class="card-actions">
+                            <a th:href="@{/studente/questionari/{id}/inizia(id=${q.questionarioID})}" class="btn btn-primary btn-sm">Inizia</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Dashboard Docente')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="dashboard">
+            <header class="dashboard-header">
+                <h1>Dashboard Docente</h1>
+                <p>Benvenuto, <span th:text="${user.nome + ' ' + user.cognome}"></span>!</p>
+            </header>
+            
+            <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section>
+            
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h3>📋 I Tuoi Questionari</h3>
+                    <a th:href="@{/docente/questionari/nuovo}" class="btn btn-primary">+ Nuovo Questionario</a>
+                </div>
+                
+                <div th:if="${questionari == null or questionari.empty}" class="empty-state">
+                    <p>Non hai ancora creato nessun questionario.</p>
+                    <a th:href="@{/docente/questionari/nuovo}" class="btn btn-primary">Crea il tuo primo questionario</a>
+                </div>
+                
+                <div th:if="${questionari != null and !questionari.empty}" class="questionari-list">
+                    <div th:each="q : ${questionari}" class="questionario-card">
+                        <h4 th:text="${q.nome}">Nome Questionario</h4>
+                        <p th:text="${q.descrizione}">Descrizione</p>
+                        <div class="card-meta">
+                            <span>📝 <span th:text="${q.numDomande}"></span> domande</span>
+                            <span>📅 <span th:text="${q.dataCreazione}"></span></span>
+                        </div>
+                        <div class="card-actions">
+                            <a th:href="@{/docente/questionari/{id}(id=${q.questionarioID})}" class="btn btn-sm">Visualizza</a>
+                            <a th:href="@{/docente/questionari/{id}/modifica(id=${q.questionarioID})}" class="btn btn-sm btn-secondary">Modifica</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
