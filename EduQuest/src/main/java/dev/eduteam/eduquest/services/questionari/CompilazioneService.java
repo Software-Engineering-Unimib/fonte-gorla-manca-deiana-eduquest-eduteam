@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compilazione;
-import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.CompilazioneRepository;
@@ -82,4 +82,18 @@ public class CompilazioneService {
         return false;
     }
 
+    public boolean chiudiCompilazione(int studenteID, int compilazioneID) {
+        Compilazione c = compilazioneRepository.getCompilazioneByID(compilazioneID);
+        Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
+
+        double mediaAttuale = studente.getMediaPunteggio();
+        int totCompilazioni = compilazioneRepository.getCompilazioniCompletate(studenteID).size();
+        int punteggioCompilazione = c.getPunteggio();
+        double nuovaMedia = ((mediaAttuale * totCompilazioni) + punteggioCompilazione) / (totCompilazioni + 1);
+
+        studente.setMediaPunteggio(nuovaMedia);
+        c.setCompletato(true);
+        return (studenteRepository.updateStudente(studente)
+                && compilazioneRepository.upateStatusCompilazione(compilazioneID, true));
+    }
 }

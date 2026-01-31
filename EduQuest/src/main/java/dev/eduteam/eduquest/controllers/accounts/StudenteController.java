@@ -111,7 +111,6 @@ public class StudenteController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Errore: " + e.getMessage());
         }
     }
-    // TODO aggiungere updateMediaPunteggio
 
     // verrà mostrato allo studente una simil-galleria di questionari
     @GetMapping("{studenteID}/questionari")
@@ -141,7 +140,7 @@ public class StudenteController {
 
     // Memorizza la risposta alla domanda e mostra la domanda successiva
     @GetMapping("{studenteID}/compila/{questionarioID}/{compilazioneID}/{domandaID}")
-    public ResponseEntity<?> rispondiDomanda(
+    public ResponseEntity<?> rispondiDomanda(@PathVariable int studenteID,
             @PathVariable int questionarioID, @PathVariable int compilazioneID,
             @PathVariable int domandaID, @RequestParam int rispostaID) {
         if (!compilazioneService.inserisciRispostaComp(compilazioneID, domandaID, rispostaID)) {
@@ -150,7 +149,12 @@ public class StudenteController {
         Domanda d = questionarioService.getDomandaSuccessiva(questionarioID, domandaID);
         if (d != null)
             return ResponseEntity.ok(d);
-        return ResponseEntity.ok("Questionario completato");
+        // questionario completato: aggiornamento automatico media studente e status
+        // compilazione
+        if (compilazioneService.chiudiCompilazione(studenteID, compilazioneID)) {
+            return ResponseEntity.ok("Questionario completato");
+        }
+        return ResponseEntity.internalServerError().body("Errore durante la chiusura della compilazione");
     }
 
     // Torna le compilazione completate dallo studente
@@ -161,4 +165,6 @@ public class StudenteController {
         return ResponseEntity.ok(compilazioneService.getCompilazioniCompletate(studenteID));
     }
 
+    // TODO implementare la funzione di ripresa di un questionario lasciato in
+    // sospeso
 }

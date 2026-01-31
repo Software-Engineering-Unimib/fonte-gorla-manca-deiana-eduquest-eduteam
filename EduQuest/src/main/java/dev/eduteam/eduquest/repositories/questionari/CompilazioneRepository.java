@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.questionari.Compilazione;
-import dev.eduteam.eduquest.models.questionari.Domanda;
-import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
@@ -177,4 +175,18 @@ public class CompilazioneRepository {
         }
     }
 
+    public boolean upateStatusCompilazione(int compilazioneID, boolean isCompletato) {
+        String query = "UPDATE compilazioni SET completato = ? WHERE compilazioneID = ? ";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setBoolean(1, isCompletato);
+            ps.setInt(2, compilazioneID);
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Errore aggiornamento status compilazione: " + e.getMessage());
+            return false;
+        }
+    }
 }
