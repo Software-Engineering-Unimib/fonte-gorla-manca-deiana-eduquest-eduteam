@@ -1,12 +1,10 @@
 package dev.eduteam.eduquest.services.questionari;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
-import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.questionari.DomandaRepository;
 import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;

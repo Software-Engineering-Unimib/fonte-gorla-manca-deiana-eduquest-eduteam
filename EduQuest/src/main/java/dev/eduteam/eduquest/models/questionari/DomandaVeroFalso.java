@@ -1,7 +1,5 @@
 package dev.eduteam.eduquest.models.questionari;
 
-import java.util.ArrayList;
-
 public class DomandaVeroFalso extends Domanda {
     // private final Risposta vero;
     // private final Risposta falso;

@@ -1,16 +1,10 @@
 package dev.eduteam.eduquest.repositories.questionari;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
-
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
-import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
-import dev.eduteam.eduquest.services.questionari.DomandaService;
-import dev.eduteam.eduquest.services.questionari.QuestionarioService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

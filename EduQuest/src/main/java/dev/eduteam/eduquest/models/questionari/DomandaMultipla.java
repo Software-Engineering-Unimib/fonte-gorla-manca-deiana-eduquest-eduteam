@@ -1,7 +1,5 @@
 package dev.eduteam.eduquest.models.questionari;
 
-import java.util.ArrayList;
-
 //Domanda a risposta multipla con una risposta corretta
 public class DomandaMultipla extends Domanda {
 

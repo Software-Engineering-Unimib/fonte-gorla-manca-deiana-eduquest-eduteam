@@ -1,13 +1,10 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
-import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
-import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 import dev.eduteam.eduquest.services.questionari.RispostaService;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

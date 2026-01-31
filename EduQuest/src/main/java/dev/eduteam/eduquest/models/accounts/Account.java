@@ -1,6 +1,6 @@
 package dev.eduteam.eduquest.models.accounts;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+// import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class Account {
     protected int accountID;

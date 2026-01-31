@@ -1,6 +1,5 @@
 package dev.eduteam.eduquest.services.questionari;
 
-import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 

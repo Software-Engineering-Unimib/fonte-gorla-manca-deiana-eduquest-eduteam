@@ -3,14 +3,11 @@ package dev.eduteam.eduquest.repositories.questionari;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
-import dev.eduteam.eduquest.models.questionari.Questionario;
-import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 
 @Repository
