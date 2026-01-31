@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Registrati')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="form-container">
+            <h2>Registrati</h2>
+            
+            <!-- Messaggio di errore -->
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            
+            <form th:action="@{/register}" method="post" class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" name="nome" required 
+                               placeholder="Mario" th:value="${nome}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cognome">Cognome</label>
+                        <input type="text" id="cognome" name="cognome" required 
+                               placeholder="Rossi" th:value="${cognome}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userName">Username</label>
+                    <input type="text" id="userName" name="userName" required 
+                           placeholder="mario.rossi" th:value="${userName}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="mario.rossi@email.com" th:value="${email}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Minimo 8 caratteri, una maiuscola, un numero, un simbolo">
+                    <small class="form-hint">La password deve contenere: 8-20 caratteri, almeno una maiuscola, un numero e un simbolo</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confermaPassword">Conferma Password</label>
+                    <input type="password" id="confermaPassword" name="confermaPassword" required 
+                           placeholder="Ripeti la password">
+                </div>
+                
+                <div class="form-group">
+                    <label>Tipo Account</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="isDocente" value="false" checked>
+                            <span>🎓 Studente</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="isDocente" value="true">
+                            <span>📚 Docente</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Registrati</button>
+            </form>
+            
+            <p class="form-footer">
+                Hai già un account? <a th:href="@{/login}">Accedi</a>
+            </p>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
