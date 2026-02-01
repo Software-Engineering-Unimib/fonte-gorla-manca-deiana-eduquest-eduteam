@@ -2,6 +2,7 @@ package dev.eduteam.eduquest.services.questionari;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 
@@ -15,6 +16,7 @@ public class QuestionarioService {
 
     @Autowired
     private QuestionarioRepository questionarioRepository;
+
     @Autowired
     private DocenteRepository docenteRepository;
 
@@ -44,9 +46,9 @@ public class QuestionarioService {
         return questionario;
     }
 
-    public Questionario creaQuestionario(int docenteID) {
+    public Questionario creaQuestionario(int docenteID, Difficulty livelloDiff) {
         Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>(),
-                docenteRepository.getDocenteByAccountID(docenteID));
+                docenteRepository.getDocenteByAccountID(docenteID), livelloDiff);
         return questionarioRepository.insertQuestionario(nuovo);
     }
 
@@ -55,14 +57,18 @@ public class QuestionarioService {
     }
 
     // Uniti i due metodi di modifica e sistemata logica in controller
-    public boolean modificaInfo(Questionario questionario, String nome, String descrizione) {
+    public boolean modificaInfo(Questionario questionario, String nome, String descrizione, Difficulty livelloDiff) {
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
+        questionario.setLivelloDiff(livelloDiff);
         return questionarioRepository.updateQuestionario(questionario);
     }
 
     public Domanda getDomandaSuccessiva(int questionarioID, int domandaID) {
-        Questionario q = questionarioRepository.getQuestionarioByID(questionarioID);
+        Questionario q = getQuestionarioCompleto(questionarioID);
+        if (q == null || q.getElencoDomande() == null)
+            return null;
+
         ArrayList<Domanda> elenco = q.getElencoDomande();
         for (int i = 0; i < elenco.size(); i++) {
             if (elenco.get(i).getID() == domandaID) {

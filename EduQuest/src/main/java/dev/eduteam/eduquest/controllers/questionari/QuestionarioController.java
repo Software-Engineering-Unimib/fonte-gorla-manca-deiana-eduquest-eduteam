@@ -1,6 +1,7 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
 import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,11 @@ public class QuestionarioController {
     }
 
     @PostMapping("crea")
-    public ResponseEntity<Questionario> creaQuestionario(@RequestParam int docenteID) {
+    public ResponseEntity<Questionario> creaQuestionario(
+            @PathVariable int docenteID,
+            @RequestParam Difficulty difficolta) { // potremmo mettere @RequestParam(defaultValue = "Medio")
 
-        Questionario questionarioCreato = questionarioService.creaQuestionario(docenteID);
+        Questionario questionarioCreato = questionarioService.creaQuestionario(docenteID, difficolta);
 
         if (questionarioCreato != null) {
             return ResponseEntity.status(201).body(questionarioCreato);
@@ -48,52 +51,31 @@ public class QuestionarioController {
     public ResponseEntity<Questionario> rimuoviQuestionario(@PathVariable int ID) {
         boolean result = questionarioService.rimuoviQuestionario(ID);
         if (result) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // Post -> Put per standard REST
-    @PutMapping("modifica/{ID}/rinomina")
-    public ResponseEntity<Questionario> rinominaQuestionario(
-            @PathVariable int docenteID,
-            @PathVariable int ID,
-            @RequestParam(name = "nome") String nome) {
-
-        // Validazione del nome - non nullo o vuoto
-        if (nome == null || nome.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Questionario q = questionarioService.getQuestionarioCompleto(ID);
-        if (q == null) {
-            return ResponseEntity.notFound().build();
-        }
-        boolean result = questionarioService.modificaInfo(q, nome, q.getDescrizione());
-        if (result) {
-            return ResponseEntity.ok(q);
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
-
-    }
-
-    @PostMapping("modifica/{ID}/descrizione")
+    // Post -> Put per standard REST, unificato metodo modifica
+    @PutMapping("modifica/{ID}")
     public ResponseEntity<Questionario> setDescrizoneQuestionario(
-            @PathVariable int docenteID,
             @PathVariable int ID,
-            @RequestParam(name = "descrizione") String descrizione) {
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String descrizione,
+            @RequestParam(required = false) Difficulty difficolta) {
 
-        // Validazione della descrizione - non nulla o vuota
-        if (descrizione == null || descrizione.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
         Questionario q = questionarioService.getQuestionarioCompleto(ID);
         if (q == null) {
             return ResponseEntity.notFound().build();
         }
-        boolean result = questionarioService.modificaInfo(q, q.getNome(), descrizione);
+
+        // Validazione input - se un parametro non inviato, manteniamo valore attuale
+        String nuovoNome = (nome != null && !nome.trim().isEmpty()) ? nome : q.getNome();
+        String nuovaDesc = (descrizione != null && !descrizione.trim().isEmpty()) ? descrizione : q.getDescrizione();
+        Difficulty nuovaDiff = (difficolta != null) ? difficolta : q.getLivelloDifficulty();
+
+        boolean result = questionarioService.modificaInfo(q, nuovoNome, nuovaDesc, nuovaDiff);
         if (result) {
             return ResponseEntity.ok(q);
         } else {
