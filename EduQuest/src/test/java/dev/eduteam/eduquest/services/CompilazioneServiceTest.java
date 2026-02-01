@@ -63,7 +63,8 @@ class CompilazioneServiceTest {
                 domande.add(d1);
                 domande.add(d2);
                 domande.add(d3);
-                questionario = new Questionario("Test Questionario", "Descrizione", domande, docente);
+                questionario = new Questionario("Test Questionario", "Descrizione", domande, docente,
+                                Questionario.Difficulty.Facile);
                 questionario.setID(1);
 
                 compilazione = new Compilazione(studente, questionario);

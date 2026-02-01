@@ -2,6 +2,7 @@ package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
@@ -43,7 +44,9 @@ class QuestionarioServiceTest {
     void setUp() {
         docente = new Docente();
         docente.setAccountID(1);
-        questionario = new Questionario("Test Questionario", "Descrizione test", new ArrayList<>(), docente);
+        docente.setInsegnamento("Informatica");
+        questionario = new Questionario("Test Questionario", "Descrizione test", new ArrayList<>(), docente,
+                Difficulty.Medio);
         questionario.setID(1);
     }
 
@@ -71,19 +74,24 @@ class QuestionarioServiceTest {
         Questionario result = questionarioService.getQuestionarioCompleto(id);
         assertNotNull(result);
         assertEquals("Test Questionario", result.getNome());
+        assertEquals("Informatica", result.getMateria());
         verify(questionarioRepository, times(1)).getQuestionarioByID(id);
     }
 
     @Test
     void testCreaQuestionario() {
-        Questionario nuovoQuestionario = new Questionario("", "", new ArrayList<>(), new Docente());
-        nuovoQuestionario.setID(2);
-        when(questionarioRepository.insertQuestionario(any(Questionario.class))).thenReturn(nuovoQuestionario);
+        int docenteID = 1;
+        Difficulty diffTest = Difficulty.Difficile;
+        when(docenteRepository.getDocenteByAccountID(docenteID)).thenReturn(docente);
+        when(questionarioRepository.insertQuestionario(any(Questionario.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        Questionario result = questionarioService.creaQuestionario(0);
+        Questionario result = questionarioService.creaQuestionario(docenteID, diffTest);
+
         assertNotNull(result);
-        assertEquals(2, result.getID());
-        verify(questionarioRepository, times(1)).insertQuestionario(any(Questionario.class));
+        assertEquals(diffTest, result.getLivelloDifficulty());
+        assertEquals("Informatica", result.getMateria());
+        verify(docenteRepository).getDocenteByAccountID(docenteID);
+        verify(questionarioRepository).insertQuestionario(any(Questionario.class));
     }
 
     @Test
@@ -99,31 +107,21 @@ class QuestionarioServiceTest {
     void testModificaInfo() {
         String nuovoNome = "Nuovo Nome";
         String nuovaDescrizione = "Nuova Descrizione";
+        Difficulty nuovaDiff = Difficulty.Facile;
         when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
 
-        boolean result = questionarioService.modificaInfo(questionario, nuovoNome, nuovaDescrizione);
+        boolean result = questionarioService.modificaInfo(questionario, nuovoNome, nuovaDescrizione, nuovaDiff);
         assertTrue(result);
         assertEquals(nuovoNome, questionario.getNome());
         assertEquals(nuovaDescrizione, questionario.getDescrizione());
+        assertEquals(nuovaDiff, questionario.getLivelloDifficulty());
         verify(questionarioRepository, times(1)).updateQuestionario(questionario);
     }
 
     @Test
     void testModificaInfoDescrizioneNull() {
-        String nuovoNome = "Nuovo Nome";
         assertThrows(IllegalArgumentException.class,
-                () -> questionarioService.modificaInfo(questionario, nuovoNome, null));
-    }
-
-    @Test
-    void testModificaInfoNome() {
-        String nuovoNome = "Nuovo Nome";
-        when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
-
-        boolean result = questionarioService.modificaInfo(questionario, nuovoNome, questionario.getDescrizione());
-        assertTrue(result);
-        assertEquals(nuovoNome, questionario.getNome());
-        verify(questionarioRepository, times(1)).updateQuestionario(questionario);
+                () -> questionarioService.modificaInfo(questionario, "Nome", null, Difficulty.Medio));
     }
 
     @Test
@@ -131,16 +129,19 @@ class QuestionarioServiceTest {
         int docenteID = 5;
         Docente d = new Docente();
         d.setAccountID(docenteID);
+        d.setInsegnamento("Matematica");
         Questionario nuovoQuestionario = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<>(),
-                d);
+                d, Difficulty.Difficile);
         nuovoQuestionario.setID(3);
 
+        when(docenteRepository.getDocenteByAccountID(docenteID)).thenReturn(d);
         when(questionarioRepository.insertQuestionario(any(Questionario.class))).thenReturn(nuovoQuestionario);
 
-        Questionario result = questionarioService.creaQuestionario(docenteID);
+        Questionario result = questionarioService.creaQuestionario(docenteID, Difficulty.Facile);
         assertNotNull(result);
         assertEquals(3, result.getID());
         assertEquals(docenteID, result.getDocente().getAccountID());
+        verify(docenteRepository, times(1)).getDocenteByAccountID(docenteID);
         verify(questionarioRepository, times(1)).insertQuestionario(any(Questionario.class));
     }
 
@@ -150,11 +151,11 @@ class QuestionarioServiceTest {
         ArrayList<Questionario> questionariDocente = new ArrayList<>();
         Docente d1 = new Docente();
         d1.setAccountID(docenteID);
-        Questionario q1 = new Questionario("Questionario 1", "Descrizione 1", new ArrayList<>(), d1);
+        Questionario q1 = new Questionario("Questionario 1", "Descrizione 1", new ArrayList<>(), d1, Difficulty.Medio);
         q1.setID(1);
         Docente d2 = new Docente();
         d2.setAccountID(docenteID);
-        Questionario q2 = new Questionario("Questionario 2", "Descrizione 2", new ArrayList<>(), d2);
+        Questionario q2 = new Questionario("Questionario 2", "Descrizione 2", new ArrayList<>(), d2, Difficulty.Facile);
         q2.setID(2);
         questionariDocente.add(q1);
         questionariDocente.add(q2);
