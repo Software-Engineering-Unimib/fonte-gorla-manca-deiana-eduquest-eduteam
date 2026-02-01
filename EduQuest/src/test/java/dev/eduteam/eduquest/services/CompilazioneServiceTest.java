@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import dev.eduteam.eduquest.services.questionari.CompitinoService;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.accounts.Studente;
@@ -36,6 +37,9 @@ class CompilazioneServiceTest {
 
         @Mock
         private RispostaRepository rispostaRepository;
+
+        @Mock
+        private CompitinoService compitinoService;
 
         @InjectMocks
         private CompilazioneService compilazioneService;
@@ -80,6 +84,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(studente);
                 when(questionarioRepository.getQuestionarioByID(1))
                                 .thenReturn(questionario);
+                when(compitinoService.isCompilabileByStudente(1, 1)).thenReturn(true);
                 when(compilazioneRepository.insertCompilazione(any(Compilazione.class)))
                                 .thenReturn(compilazione);
 

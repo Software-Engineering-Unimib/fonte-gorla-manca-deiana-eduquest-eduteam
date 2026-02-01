@@ -29,6 +29,9 @@ public class CompilazioneService {
     @Autowired
     private RispostaRepository rispostaRepository;
 
+    @Autowired
+    private CompitinoService compitinoService;
+
     public boolean inserisciRispostaComp(int compilazioneID, int domandaID, int rispostaID) {
         Compilazione compilazione = compilazioneRepository.getCompilazioneByID(compilazioneID);
         popolaCompilazione(compilazione);
@@ -58,6 +61,10 @@ public class CompilazioneService {
     }
 
     public Compilazione creaCompilazione(int studenteID, int questionarioID) {
+        // controllo per vedere se lo studente può fare la compilazione del compitino
+        if (!compitinoService.isCompilabileByStudente(studenteID, questionarioID)) {
+            return null;
+        }
         Compilazione compilazione = new Compilazione(studenteRepository.getStudenteByAccountID(studenteID),
                 questionarioRepository.getQuestionarioByID(questionarioID));
         return compilazioneRepository.insertCompilazione(compilazione);

@@ -1,4 +1,4 @@
-CREATE DATABASE Test_EduQuest;
+CREATE DATABASE IF NOT EXISTS Test_EduQuest;
 USE Test_EduQuest;
 -- Tabelle Account
 CREATE TABLE accounts (
@@ -36,6 +36,13 @@ CREATE TABLE questionari (
     PRIMARY KEY(questionarioID),
     CONSTRAINT FK_DocenteQuestionario FOREIGN KEY (docenteID_FK) REFERENCES accounts(accountID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
+CREATE TABLE compitini (
+    questionarioID_FK INTEGER NOT NULL,
+    dataFine DATE NOT NULL,
+    tentativiMax INTEGER DEFAULT 1,
+    PRIMARY KEY (questionarioID_FK),
+    CONSTRAINT FK_QuestionarioCompitino FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = INNODB;
 CREATE TABLE domande (
     domandaID INTEGER auto_increment,
     testo VARCHAR(500) NOT NULL,
@@ -48,6 +55,7 @@ CREATE TABLE domande (
 CREATE TABLE risposte (
     rispostaID INTEGER auto_increment,
     testo VARCHAR(500) NOT NULL,
+    isCorretta BOOLEAN DEFAULT FALSE,
     domandaID_FK INTEGER,
     PRIMARY KEY (rispostaID),
     CONSTRAINT FK_DomandaDiOrigine FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -80,23 +88,21 @@ CREATE TABLE compilazioni_risposte (
     CONSTRAINT FK_RispostaSelezionata FOREIGN KEY (rispostaID_FK) REFERENCES risposte(rispostaID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 -- Dati di test Account
-INSERT INTO accounts (nome, cognome, userName, email, password, tipo)
-VALUES (
-        'pinco',
-        'pallo',
-        'PincoPallino1',
-        'PincoPallo@prova.edu',
-        'PasswordValida1!',
-        'Studente'
-    ),
+INSERT INTO accounts (nome, cognome, userName, email, password, tipo) VALUES 
     (
-        'Franco',
-        'Rossi',
-        'FrancoRossi2',
-        'FrancoRossi@prova.edu',
-        'PasswordValida2!',
-        'Docente'
-    ),
+        'Pinco', 
+        'Pallo', 
+        'PincoPallino1', 
+        'pincopallo@prova.edu', 
+        'PasswordValida1!', 
+        'Studente'),
+    (
+        'Franco', 
+        'Rossi', 
+        'FrancoRossi2', 
+        'francorossi@prova.edu', 
+        'PasswordValida2!', 
+        'Docente');
     (
         'Maria',
         'Verdi',
@@ -156,14 +162,21 @@ VALUES (
         '2026-02-01',
         2
     );
+
+INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax) VALUES 
+    (3, '2026-02-28', 1), -- Scade a fine mese, 1 solo tentativo
+    (4, '2026-03-15', 3);
 -- Domande
-INSERT INTO risposte (testo, domandaID_FK)
-VALUES ('180°', 1),
-    ('90°', 1),
-    ('360°', 1),
-    ('Canti di Castelvecchio', 2),
-    ('Myricae', 2),
-    ('Alcyone', 2);
+INSERT INTO domande (testo, numeroRisposte, questionarioID_FK) VALUES 
+('Qual è la somma degli angoli interni di un triangolo?', 3, 1), -- ID 1
+('In quale raccolta si trova la poesia "X Agosto"?', 3, 3);
+INSERT INTO risposte (testo, isCorretta, domandaID_FK)
+VALUES ('180°', TRUE, 1),
+    ('90°', FALSE, 1),
+    ('360°', FALSE, 1),
+    ('Canti di Castelvecchio', FALSE, 2),
+    ('Myricae', TRUE, 2),
+    ('Alcyone', FALSE, 2);
 UPDATE domande
 SET rispostaCorrettaID = 1
 WHERE domandaID = 1;

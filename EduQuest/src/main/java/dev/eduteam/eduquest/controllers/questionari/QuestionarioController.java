@@ -1,13 +1,16 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
+import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
+import dev.eduteam.eduquest.services.questionari.CompitinoService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @RestController
@@ -16,6 +19,9 @@ public class QuestionarioController {
 
     @Autowired
     private QuestionarioService questionarioService;
+
+    @Autowired
+    private CompitinoService compitinoService;
 
     @GetMapping()
     public ArrayList<Questionario> getQuestionariByDocente(@PathVariable int docenteID) {
@@ -41,6 +47,20 @@ public class QuestionarioController {
 
         if (questionarioCreato != null) {
             return ResponseEntity.status(201).body(questionarioCreato);
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("creaCompitino")
+    public ResponseEntity<?> creaCompitino(@PathVariable int docenteID,
+            @RequestParam Difficulty difficolta,
+            @RequestParam String dataFine, // Formato YYYY-MM-DD
+            @RequestParam int tentativi) {
+        LocalDate scadenza = LocalDate.parse(dataFine);
+        Compitino compitino = compitinoService.creaCompitino(docenteID, difficolta, scadenza, tentativi);
+        if (compitino != null) {
+            return ResponseEntity.status(201).body(compitino);
         } else {
             return ResponseEntity.internalServerError().build();
         }

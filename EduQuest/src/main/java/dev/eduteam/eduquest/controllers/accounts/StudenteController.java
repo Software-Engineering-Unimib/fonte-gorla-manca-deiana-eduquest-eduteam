@@ -126,15 +126,18 @@ public class StudenteController {
     // Dovrebbe inizializzare la compilazione e mostrare la prima domanda del
     // questionario
     @GetMapping("{studenteID}/compila/{questionarioID}")
-    public ResponseEntity<Domanda> compilaQuestionario(@PathVariable int studenteID,
+    public ResponseEntity<?> compilaQuestionario(@PathVariable int studenteID,
             @PathVariable int questionarioID) {
         Compilazione c = compilazioneService.creaCompilazione(studenteID, questionarioID);
         if (c != null) {
             Questionario q = questionarioService.getQuestionarioCompleto(questionarioID);
-            // sistemare caso in cui il questionario è vuoto -> non posso compilarlo
+            if (q.getElencoDomande().isEmpty()) {
+                return ResponseEntity.badRequest().body("Il questionario non ha domande.");
+            }
             return ResponseEntity.ok(q.getElencoDomande().getFirst());
         } else {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Accesso negato: Tentativi esauriti o tempo scaduto per questo compitino.");
         }
     }
 
