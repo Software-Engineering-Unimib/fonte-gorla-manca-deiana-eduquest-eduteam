@@ -1,4 +1,5 @@
-CREATE DATABASE IF NOT EXISTS Test_EduQuest;
+DROP DATABASE IF EXISTS Test_EduQuest;
+CREATE DATABASE Test_EduQuest;
 USE Test_EduQuest;
 -- Tabelle Account
 CREATE TABLE accounts (
@@ -45,9 +46,12 @@ CREATE TABLE compitini (
 ) ENGINE = INNODB;
 CREATE TABLE domande (
     domandaID INTEGER auto_increment,
+    -- ad ogni intero di tipo corrisponderà una tipologia di domanda, 
+    -- sono state lasciate "posizioni vuote" per possibili successive implementazioni
+    tipo TINYINT(8) NOT NULL,
+    -- 1-Multipla, 2=Multipla-Risposta, 3=Vero/Falso
     testo VARCHAR(500) NOT NULL,
     numeroRisposte INTEGER NOT NULL,
-    rispostaCorrettaID INTEGER,
     questionarioID_FK INTEGER,
     PRIMARY KEY(domandaID),
     CONSTRAINT FK_QuestionarioDiOrigine FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -60,9 +64,7 @@ CREATE TABLE risposte (
     PRIMARY KEY (rispostaID),
     CONSTRAINT FK_DomandaDiOrigine FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
-ALTER TABLE domande
-ADD CONSTRAINT FK_RispostaCorretta FOREIGN KEY (rispostaCorrettaID) REFERENCES risposte(rispostaID) ON DELETE
-SET NULL ON UPDATE CASCADE;
+
 -- Tabella principale per l'oggetto Compilazione
 CREATE TABLE compilazioni (
     compilazioneID INTEGER AUTO_INCREMENT,
@@ -102,7 +104,7 @@ INSERT INTO accounts (nome, cognome, userName, email, password, tipo) VALUES
         'FrancoRossi2', 
         'francorossi@prova.edu', 
         'PasswordValida2!', 
-        'Docente');
+        'Docente'),
     (
         'Maria',
         'Verdi',
@@ -141,7 +143,7 @@ VALUES (
         'Prova di comprensione',
         'Italiano',
         'Medio',
-        0,
+        1,
         '2025-06-05',
         2
     ),
@@ -153,12 +155,12 @@ VALUES (
         1,
         '2026-01-24',
         3
-    ) (
+    ), (
         'Algebra Lineare',
         'Matrici e sistemi',
         'Matematica',
         'Difficile',
-        0,
+        1,
         '2026-02-01',
         2
     );
@@ -167,22 +169,16 @@ INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax) VALUES
     (3, '2026-02-28', 1), -- Scade a fine mese, 1 solo tentativo
     (4, '2026-03-15', 3);
 -- Domande
-INSERT INTO domande (testo, numeroRisposte, questionarioID_FK) VALUES 
-('Qual è la somma degli angoli interni di un triangolo?', 3, 1), -- ID 1
-('In quale raccolta si trova la poesia "X Agosto"?', 3, 3);
+INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK) VALUES 
+(1, 'Somma angoli interni triangolo?', 3, 1), -- ID 1 (Quest 1)
+(1, 'Chi ha scritto i Promessi Sposi?', 2, 2),  -- ID 2 (Quest 2)
+(1, 'In che raccolta è "X Agosto"?', 3, 3),    -- ID 3 (Quest 3)
+(3, 'Una matrice quadrata è sempre invertibile?', 2, 4);
 INSERT INTO risposte (testo, isCorretta, domandaID_FK)
-VALUES ('180°', TRUE, 1),
-    ('90°', FALSE, 1),
-    ('360°', FALSE, 1),
-    ('Canti di Castelvecchio', FALSE, 2),
-    ('Myricae', TRUE, 2),
-    ('Alcyone', FALSE, 2);
-UPDATE domande
-SET rispostaCorrettaID = 1
-WHERE domandaID = 1;
-UPDATE domande
-SET rispostaCorrettaID = 4
-WHERE domandaID = 2;
+VALUES ('180°', TRUE, 1), ('90°', FALSE, 1), ('360°', FALSE, 1), -- Risposte per Domanda 1
+('Manzoni', TRUE, 2), ('Dante', FALSE, 2),               -- Risposte per Domanda 2
+('Myricae', TRUE, 3), ('Alcyone', FALSE, 3), ('Canti', FALSE, 3), -- Risposte per Domanda 3
+('Vero', FALSE, 4), ('Falso', TRUE, 4);                  -- Risposte per Domanda 4
 -- Compilazioni
 INSERT INTO compilazioni (
         studenteID_FK,
