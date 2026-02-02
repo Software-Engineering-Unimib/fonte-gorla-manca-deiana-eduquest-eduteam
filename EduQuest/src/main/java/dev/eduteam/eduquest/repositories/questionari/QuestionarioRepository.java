@@ -20,6 +20,9 @@ public class QuestionarioRepository {
     @Autowired
     private DocenteRepository docenteRepository;
 
+    @Autowired
+    private DomandaRepository domandaRepository;
+
     // Aggiunto per permettere allo studente di controllare i questionari senza l'ID
     // del docente
     public ArrayList<Questionario> getQuestionari() {
@@ -37,7 +40,8 @@ public class QuestionarioRepository {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Questionario questionario = new Questionario("", "", new ArrayList<Domanda>(), null);
+                    ArrayList<Domanda> domande = domandaRepository.getDomandeByQuestionario(rs.getInt("questionarioID"));
+                    Questionario questionario = new Questionario("", "", domande, null);
 
                     questionario.setID(rs.getInt("questionarioID"));
                     questionario.setNome(rs.getString("nome"));
@@ -63,7 +67,8 @@ public class QuestionarioRepository {
                 "nome, " +
                 "descrizione, " +
                 "numeroDomande, " +
-                "dataCreazione FROM questionari WHERE questionarioID = ?";
+                "dataCreazione, " +
+                "docenteID_FK FROM questionari WHERE questionarioID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {

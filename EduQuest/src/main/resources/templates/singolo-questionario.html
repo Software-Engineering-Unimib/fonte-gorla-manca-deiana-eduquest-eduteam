@@ -1,1 +1,48 @@
-<h1><b th:text="${questionario.nome}"></b></h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Questionario')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="questionario">
+        <header class="questionario-header">
+            <h1>Questionario "<span th:text="${questionario.nome}"></span>"</h1>
+        </header>
+
+        <!--
+        <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> -->
+
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h3>
+                            📝 <span th:text="${questionario.descrizione}"></span>
+                            📅 <span th:text="${questionario.dataCreazione}"></span>
+                        </h3>
+
+                    </div>
+
+                    <div th:if="${questionario == null}" class="empty-state">
+                        <p>Questionario non trovato</p>
+                    </div>
+
+                    <div th:if="${questionario != null}" class="questionari-list">
+                        <div th:each="d : ${domande}" class="questionario-card">
+                            <h4>Domanda <span th:text="${domande.indexOf(d) + 1}"></span></h4>
+                            <p th:text="${d.testo}">Testo Domanda</p>
+                            <div class="card-meta">
+                                <span>📝 <span th:text="${d.numeroRisposte}"></span> risposte</span>
+                            </div>
+                            <div class="card-actions">
+                                <a th:href="@{/docente/questionari/{id}(id=${questionario.ID})}" class="btn btn-sm">Visualizza</a>
+                                <a th:href="@{/docente/questionari/{id}/modifica(id=${questionario.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+        </body>
+        </html>

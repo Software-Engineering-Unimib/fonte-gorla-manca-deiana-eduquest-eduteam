@@ -1,10 +1,13 @@
 package dev.eduteam.eduquest.controllers.web;
 
+import dev.eduteam.eduquest.models.accounts.Account;
 import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.services.accounts.DocenteService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @Controller
-@RequestMapping("api/docente/{docenteID}/questionari")
+@RequestMapping("docente/dashboard/")
 public class QuestionarioControllerWeb {
 
     @Autowired
@@ -23,7 +26,7 @@ public class QuestionarioControllerWeb {
     @Autowired
     private DocenteService docenteService;
 
-    @GetMapping()
+    @GetMapping("/questionari")
     public String getQuestionariByDocente(
             Model model,
             @PathVariable int docenteID) {
@@ -39,13 +42,29 @@ public class QuestionarioControllerWeb {
 
     @GetMapping("{ID}")
     public String getQuestionario(
+            HttpSession session,
             Model model,
-            @PathVariable int docenteID,
             @PathVariable int ID) {
+
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (!user.isDocente()) {
+            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+        }
+
+        Docente docente = (Docente) user;
         Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         if (questionario != null) {
+            ArrayList<Domanda> domande = questionario.getElencoDomande();
+
+            model.addAttribute("user", docente);
             model.addAttribute("questionario", questionario);
-        } else {
+            model.addAttribute("domande", domande);
+            System.out.println(domande.isEmpty());
         }
         return "singolo-questionario";
     }

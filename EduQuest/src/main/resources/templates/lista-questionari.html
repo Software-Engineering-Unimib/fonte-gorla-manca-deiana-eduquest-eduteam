@@ -1,10 +1,39 @@
-<h1>
-    <b>Questionari del docente
-        <span th:text="${docente.getNome()} "></span>
-        <span th:text="${docente.getCognome()}"></span>
-    </b>
-</h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Home')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
-<ul>
-    <li th:each="q : ${questionari}" th:text="${q.nome}"></li>
-</ul>
+<main class="container">
+    <section class="hero">
+        <h1>Benvenuto su EduQuest</h1>
+        <p>La piattaforma per creare e svolgere questionari educativi</p>
+
+        <div class="hero-buttons" th:if="${session.user == null}">
+            <a th:href="@{/register}" class="btn btn-primary">Inizia Ora</a>
+            <a th:href="@{/login}" class="btn btn-secondary">Accedi</a>
+        </div>
+        <div class="hero-buttons" th:if="${session.user != null}">
+            <a th:href="@{/dashboard}" class="btn btn-primary">Vai alla Dashboard</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <h3>📚 Per i Docenti</h3>
+            <p>Crea questionari personalizzati con domande a risposta multipla, vero/falso e risposte multiple.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🎓 Per gli Studenti</h3>
+            <p>Svolgi i questionari assegnati e monitora i tuoi progressi nel tempo.</p>
+        </div>
+        <div class="feature-card">
+            <h3>📊 Statistiche</h3>
+            <p>Visualizza risultati e medie per monitorare l'apprendimento.</p>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

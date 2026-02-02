@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("api/docente/{docenteID}/questionari")
+@RequestMapping("rest/docente/{docenteID}/questionari")
 public class QuestionarioController {
 
     @Autowired
