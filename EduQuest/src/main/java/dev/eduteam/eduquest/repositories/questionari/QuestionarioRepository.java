@@ -1,6 +1,7 @@
 package dev.eduteam.eduquest.repositories.questionari;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
@@ -19,17 +20,33 @@ import java.util.ArrayList;
 public class QuestionarioRepository {
 
     @Autowired
-    private DocenteRepository docenteRepository;
+    protected DocenteRepository docenteRepository; // p protected per permettere alle extension di accedervi
 
     // NOTA: si potrebbe ottimizzare modificano le query in modo che facciano JOIN,
     // riduce #chiamate alla repo
 
-    // Helper method per mappare il ResultSet all'oggetto (evita ripetizioni di
-    // codice)
-    private Questionario mapResultSetToQuestionario(ResultSet rs) throws Exception {
+    // Helper method polimorfico: per mappare il ResultSet al Questionario o
+    // Compitino
+    protected Questionario mapResultSetToQuestionario(ResultSet rs) throws Exception {
         Docente docente = docenteRepository.getDocenteByAccountID(rs.getInt("docenteID_FK"));
         Difficulty diff = Difficulty.valueOf(rs.getString("livelloDiff"));
 
+        // Se dataFine non è null -> Compitino
+        if (rs.getObject("dataFine") != null) {
+            Compitino c = new Compitino(
+                    rs.getString("nome"),
+                    rs.getString("descrizione"),
+                    new ArrayList<Domanda>(),
+                    docente,
+                    diff,
+                    rs.getDate("dataFine").toLocalDate(),
+                    rs.getInt("tentativiMax"));
+            c.setID(rs.getInt("questionarioID"));
+            c.setNumeroDomande(rs.getInt("numeroDomande"));
+            c.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
+            return c;
+        } // Aggiungere implementazione esercitazione
+          // Altrimenti è un questionario
         Questionario q = new Questionario(
                 rs.getString("nome"),
                 rs.getString("descrizione"),
@@ -46,15 +63,9 @@ public class QuestionarioRepository {
     // del docente
     public ArrayList<Questionario> getQuestionari() {
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
-        String query = "SELECT " +
-                "questionarioID, " +
-                "nome, " +
-                "descrizione, " +
-                "materia, " +
-                "livelloDiff, " +
-                "numeroDomande, " +
-                "dataCreazione, " +
-                "docenteID_FK FROM questionari";
+        // LEFT JOIN per prendere i dati di entrambi
+        String query = "SELECT q.*, c.dataFine, c.tentativiMax FROM questionari q " +
+                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);
@@ -72,15 +83,8 @@ public class QuestionarioRepository {
     // la Primary key di un questionario è questionarioID, NON SERVE IL DOCENTE
     public Questionario getQuestionarioByID(int id) {
         Questionario questionario = null;
-        String query = "SELECT " +
-                "questionarioID, " +
-                "nome, " +
-                "descrizione, " +
-                "materia, " +
-                "livelloDiff, " +
-                "numeroDomande, " +
-                "dataCreazione, " +
-                "docenteID_FK FROM questionari WHERE questionarioID = ?";
+        String query = "SELECT q.*, c.dataFine, c.tentativiMax FROM questionari q " +
+                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {

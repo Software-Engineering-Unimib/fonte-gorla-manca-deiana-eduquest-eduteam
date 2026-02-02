@@ -1,5 +1,6 @@
 package dev.eduteam.eduquest.services.questionari;
 
+import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
@@ -26,6 +27,7 @@ public class QuestionarioService {
     // Aggiunto per permettere allo studente di controllare i questionari senza l'ID
     // del docente
     public ArrayList<Questionario> getQuestionari() {
+        // Restituisce una lista mista di Questionario e Compitini
         return questionarioRepository.getQuestionari();
     }
 
@@ -34,6 +36,8 @@ public class QuestionarioService {
     }
 
     public Questionario getQuestionarioCompleto(int ID) {
+        // Grazie alla LEFT JOIN nel repo, 'questionario' potrebbe essere un'istanza di
+        // Compitino
         Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
 
         // Controllo che questionario non sia null prima di usarlo
@@ -47,12 +51,16 @@ public class QuestionarioService {
     }
 
     public Questionario creaQuestionario(int docenteID, Difficulty livelloDiff) {
-        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>(),
-                docenteRepository.getDocenteByAccountID(docenteID), livelloDiff);
+        Docente d = docenteRepository.getDocenteByAccountID(docenteID);
+        if (d == null)
+            return null;
+        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione",
+                new ArrayList<Domanda>(), d, livelloDiff);
         return questionarioRepository.insertQuestionario(nuovo);
     }
 
     public boolean rimuoviQuestionario(int ID) {
+        // Il CASCADE sul DB cancellerà anche eventuali righe in 'compitini'
         return questionarioRepository.removeQuestionario(ID);
     }
 

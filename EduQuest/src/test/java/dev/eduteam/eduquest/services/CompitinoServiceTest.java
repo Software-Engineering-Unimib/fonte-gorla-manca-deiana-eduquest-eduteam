@@ -21,6 +21,8 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,39 +60,34 @@ class CompitinoServiceTest {
     @Test
     void testGetCompitinoCompleto() {
         int id = 1;
-        when(compitinoRepository.getCompitinoByID(id)).thenReturn(compitino);
+        when(compitinoRepository.getQuestionarioByID(id)).thenReturn(compitino);
         when(domandaService.getDomandeComplete(id)).thenReturn(new ArrayList<>());
 
         Compitino result = compitinoService.getCompitinoCompleto(id);
 
         assertNotNull(result);
         assertEquals(id, result.getID());
-        verify(compitinoRepository).getCompitinoByID(id);
+        assertTrue(result instanceof Compitino);
+        verify(compitinoRepository).getQuestionarioByID(id);
         verify(domandaService).getDomandeComplete(id);
     }
 
     @Test
     void testCreaCompitinoSuccesso() {
         int docenteID = 1;
-        LocalDate scadenza = LocalDate.now().plusDays(5);
+        LocalDate scadenza = LocalDate.now().plusDays(10);
         int tentativi = 3;
 
         when(docenteRepository.getDocenteByAccountID(docenteID)).thenReturn(docente);
-        // Mock inserimento base (ritorna un oggetto con ID)
-        Questionario qBase = new Questionario("QBase","Descrizione base", new ArrayList<>(), docente, Difficulty.Difficile);
-        qBase.setID(10);
-        when(questionarioRepository.insertQuestionario(any(Compitino.class))).thenReturn(qBase);
-        // Mock inserimento dettagli specifici
-        when(compitinoRepository.insertDettagliCompitino(any(Compitino.class), eq(10))).thenReturn(true);
+        when(compitinoRepository.insertCompitino(any(Compitino.class))).thenReturn(compitino);
 
         Compitino result = compitinoService.creaCompitino(docenteID, Difficulty.Difficile, scadenza, tentativi);
 
         assertNotNull(result);
-        assertEquals(10, result.getID());
+        assertEquals(1, result.getID());
         assertEquals(scadenza, result.getDataFine());
         verify(docenteRepository).getDocenteByAccountID(docenteID);
-        verify(questionarioRepository).insertQuestionario(any(Compitino.class));
-        verify(compitinoRepository).insertDettagliCompitino(any(Compitino.class), eq(10));
+        verify(compitinoRepository).insertCompitino(any(Compitino.class));
     }
 
     @Test
@@ -108,7 +105,7 @@ class CompitinoServiceTest {
         int studenteID = 1;
         int compitinoID = 1;
 
-        when(compitinoRepository.getCompitinoByID(compitinoID)).thenReturn(compitino);
+        when(compitinoRepository.getQuestionarioByID(compitinoID)).thenReturn(compitino);
         when(compitinoRepository.countTentativi(studenteID, compitinoID)).thenReturn(0);
 
         boolean result = compitinoService.isCompilabileByStudente(studenteID, compitinoID);
@@ -123,7 +120,7 @@ class CompitinoServiceTest {
         // Impostiamo una data passata
         compitino.setDataFine(LocalDate.now().minusDays(1));
 
-        when(compitinoRepository.getCompitinoByID(compitinoID)).thenReturn(compitino);
+        when(compitinoRepository.getQuestionarioByID(compitinoID)).thenReturn(compitino);
 
         boolean result = compitinoService.isCompilabileByStudente(studenteID, compitinoID);
 
@@ -137,7 +134,7 @@ class CompitinoServiceTest {
         int studenteID = 1;
         int compitinoID = 1;
         // Il compitino nel setUp ha tentativiMax = 2
-        when(compitinoRepository.getCompitinoByID(compitinoID)).thenReturn(compitino);
+        when(compitinoRepository.getQuestionarioByID(compitinoID)).thenReturn(compitino);
         when(compitinoRepository.countTentativi(studenteID, compitinoID)).thenReturn(2);
 
         boolean result = compitinoService.isCompilabileByStudente(studenteID, compitinoID);

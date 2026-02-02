@@ -25,16 +25,15 @@ public class CompitinoService {
     @Autowired
     private DocenteRepository docenteRepository;
 
-    @Autowired
-    private QuestionarioRepository questionarioRepository;
-
     // Recupera un compitino completo di domande e dettagli extra
     public Compitino getCompitinoCompleto(int id) {
-        Compitino c = compitinoRepository.getCompitinoByID(id);
-        if (c != null) {
+        Questionario q = compitinoRepository.getQuestionarioByID(id);
+        if (q instanceof Compitino) {
+            Compitino c = (Compitino) q;
             c.setElencoDomande(domandaService.getDomandeComplete(id));
+            return c;
         }
-        return c;
+        return null;
     }
 
     public Compitino creaCompitino(int docenteID, Difficulty diff, LocalDate dataFine, int tentativi) {
@@ -43,35 +42,23 @@ public class CompitinoService {
             return null;
         Compitino nuovo = new Compitino("Nuovo Compitino", "Descrizione", new ArrayList<>(),
                 docente, diff, dataFine, tentativi);
-
-        Questionario qBase = questionarioRepository.insertQuestionario(nuovo);
-
-        if (qBase != null && qBase.getID() > 0) {
-
-            boolean successo = compitinoRepository.insertDettagliCompitino(nuovo, qBase.getID());
-            if (successo) {
-                nuovo.setID(qBase.getID());
-                return nuovo;
-            }
-        }
-        return null;
+        // CompitinoRepository gestisce internamente la doppia insert
+        return compitinoRepository.insertCompitino(nuovo);
     }
 
     public boolean isCompilabileByStudente(int studenteID, int compitinoID) {
-        Compitino c = compitinoRepository.getCompitinoByID(compitinoID);
-        if (c == null)
+        Questionario q = compitinoRepository.getQuestionarioByID(compitinoID);
+        if (!(q instanceof Compitino))
             return false;
+        Compitino c = (Compitino) q;
 
+        // Controllo scadenza
         if (LocalDate.now().isAfter(c.getDataFine())) {
             return false;
         }
 
+        // Controllo tentativi
         int tentativiFatti = compitinoRepository.countTentativi(studenteID, compitinoID);
-        if (tentativiFatti >= c.getTentativiMax()) {
-            return false;
-        }
-
-        return true;
-
+        return tentativiFatti < c.getTentativiMax();
     }
 }

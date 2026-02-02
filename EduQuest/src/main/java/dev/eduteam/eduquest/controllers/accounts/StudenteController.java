@@ -112,10 +112,12 @@ public class StudenteController {
         }
     }
 
-    // verrà mostrato allo studente una simil-galleria di questionari
+    // Verrà mostrato allo studente una simil-galleria di questionari
     @GetMapping("{studenteID}/questionari")
     public ResponseEntity<List<Questionario>> mostraQuestionariDisponibili(/* @PathVariable int studenteID, */) {
         List<Questionario> questionari = questionarioService.getQuestionari();
+        // TODO Aggiungere metodo che prende la lista e la filtra togliendo i compitini
+        // non più compilabili
         if (questionari.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         } else {
