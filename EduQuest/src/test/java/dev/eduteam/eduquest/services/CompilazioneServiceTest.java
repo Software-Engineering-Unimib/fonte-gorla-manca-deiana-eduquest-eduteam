@@ -236,4 +236,35 @@ class CompilazioneServiceTest {
                 boolean risultato = compilazioneService.chiudiCompilazione(1, 1);
                 assertFalse(risultato);
         }
+
+        @Test
+        void testRiprendiCompilazioneSuccess() {
+                Risposta[] risposte = new Risposta[3];
+                risposte[0] = risposta;
+
+                when(compilazioneRepository.getCompilazioneInCorso(1, 1))
+                                .thenReturn(compilazione);
+                when(compilazioneRepository.getRisposteCompilazione(1, 3))
+                                .thenReturn(risposte);
+
+                Compilazione risultato = compilazioneService.riprendiCompilazione(1, 1);
+
+                assertNotNull(risultato);
+                assertNotNull(risultato.getRisposte());
+                assertEquals(risposta, risultato.getRisposte()[0]);
+                verify(compilazioneRepository, times(1)).getCompilazioneInCorso(1, 1);
+                verify(compilazioneRepository, times(1)).getRisposteCompilazione(1, 3);
+        }
+
+        @Test
+        void testRiprendiCompilazioneReturnsNullWhenNoInCorso() {
+                when(compilazioneRepository.getCompilazioneInCorso(1, 1))
+                                .thenReturn(null);
+
+                Compilazione risultato = compilazioneService.riprendiCompilazione(1, 1);
+
+                assertNull(risultato);
+                verify(compilazioneRepository, times(1)).getCompilazioneInCorso(1, 1);
+                verify(compilazioneRepository, never()).getRisposteCompilazione(anyInt(), anyInt());
+        }
 }

@@ -168,6 +168,18 @@ public class StudenteController {
         return ResponseEntity.ok(compilazioneService.getCompilazioniCompletate(studenteID));
     }
 
-    // TODO implementare la funzione di ripresa di un questionario lasciato in
-    // sospeso
+    @GetMapping("{studenteID}/riprendi/{questionarioID}")
+    public ResponseEntity<?> riprendiCompilazione(
+            @PathVariable int studenteID,
+            @PathVariable int questionarioID) {
+
+        Compilazione c = compilazioneService.riprendiCompilazione(studenteID, questionarioID);
+
+        if (c != null) {
+            return ResponseEntity.ok(c);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Nessuna compilazione in corso trovata per questo questionario.");
+    }
 }

@@ -190,4 +190,21 @@ public class CompilazioneRepository {
             return false;
         }
     }
+
+    public Compilazione getCompilazioneInCorso(int studenteID, int questionarioID) {
+        String query = "SELECT * FROM compilazioni WHERE studenteID_FK = ? AND questionarioID_FK = ? AND completato = false LIMIT 1";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, studenteID);
+            ps.setInt(2, questionarioID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToCompilazione(rs);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore, nessuna compilazione in corso: " + e.getMessage());
+        }
+        return null;
+    }
 }

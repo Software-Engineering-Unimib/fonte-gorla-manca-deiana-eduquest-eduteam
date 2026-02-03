@@ -79,7 +79,12 @@ class CompitinoServiceTest {
         int tentativi = 3;
 
         when(docenteRepository.getDocenteByAccountID(docenteID)).thenReturn(docente);
-        when(compitinoRepository.insertCompitino(any(Compitino.class))).thenReturn(compitino);
+        when(compitinoRepository.insertCompitino(any(Compitino.class)))
+                .thenAnswer(invocation -> {
+                    Compitino arg = invocation.getArgument(0);
+                    arg.setID(1);
+                    return arg;
+                });
 
         Compitino result = compitinoService.creaCompitino(docenteID, Difficulty.Difficile, scadenza, tentativi);
 

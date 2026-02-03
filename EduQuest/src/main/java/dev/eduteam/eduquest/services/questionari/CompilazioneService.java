@@ -103,4 +103,13 @@ public class CompilazioneService {
         return (studenteRepository.updateStudente(studente)
                 && compilazioneRepository.upateStatusCompilazione(compilazioneID, true));
     }
+
+    public Compilazione riprendiCompilazione(int studenteID, int questionarioID) {
+        Compilazione c = compilazioneRepository.getCompilazioneInCorso(studenteID, questionarioID);
+        if (c != null) {
+            // devo caricare le risposte salvate fino ad ora
+            popolaCompilazione(c);
+        }
+        return c;
+    }
 }
