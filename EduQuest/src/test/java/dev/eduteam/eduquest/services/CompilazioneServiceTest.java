@@ -167,7 +167,7 @@ class CompilazioneServiceTest {
                 ArrayList<Compilazione> compilazioni = new ArrayList<>();
                 compilazioni.add(compilazione);
 
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
 
                 ArrayList<Compilazione> risultato = compilazioneService.getCompilazioniCompletate(1);
@@ -179,7 +179,7 @@ class CompilazioneServiceTest {
 
         @Test
         void testGetCompilazioniCompletateEmpty() {
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(new ArrayList<>());
 
                 ArrayList<Compilazione> risultato = compilazioneService.getCompilazioniCompletate(1);
@@ -200,7 +200,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))
                                 .thenReturn(true);
@@ -226,7 +226,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))
                                 .thenReturn(true);
@@ -242,7 +242,7 @@ class CompilazioneServiceTest {
                 Risposta[] risposte = new Risposta[3];
                 risposte[0] = risposta;
 
-                when(compilazioneRepository.getCompilazioneInCorso(1, 1))
+                when(compilazioneRepository.getCompilazioneInSospeso(1, 1))
                                 .thenReturn(compilazione);
                 when(compilazioneRepository.getRisposteCompilazione(1, 3))
                                 .thenReturn(risposte);
@@ -252,19 +252,19 @@ class CompilazioneServiceTest {
                 assertNotNull(risultato);
                 assertNotNull(risultato.getRisposte());
                 assertEquals(risposta, risultato.getRisposte()[0]);
-                verify(compilazioneRepository, times(1)).getCompilazioneInCorso(1, 1);
+                verify(compilazioneRepository, times(1)).getCompilazioneInSospeso(1, 1);
                 verify(compilazioneRepository, times(1)).getRisposteCompilazione(1, 3);
         }
 
         @Test
         void testRiprendiCompilazioneReturnsNullWhenNoInCorso() {
-                when(compilazioneRepository.getCompilazioneInCorso(1, 1))
+                when(compilazioneRepository.getCompilazioneInSospeso(1, 1))
                                 .thenReturn(null);
 
                 Compilazione risultato = compilazioneService.riprendiCompilazione(1, 1);
 
                 assertNull(risultato);
-                verify(compilazioneRepository, times(1)).getCompilazioneInCorso(1, 1);
+                verify(compilazioneRepository, times(1)).getCompilazioneInSospeso(1, 1);
                 verify(compilazioneRepository, never()).getRisposteCompilazione(anyInt(), anyInt());
         }
 }

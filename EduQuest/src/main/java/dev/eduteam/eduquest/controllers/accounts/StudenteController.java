@@ -137,7 +137,7 @@ public class StudenteController {
             return ResponseEntity.ok(q.getElencoDomande().getFirst());
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Accesso negato: Tentativi esauriti o tempo scaduto per questo compitino.");
+                    .body("Accesso negato: Tentativi esauriti.");
         }
     }
 
@@ -168,15 +168,30 @@ public class StudenteController {
         return ResponseEntity.ok(compilazioneService.getCompilazioniCompletate(studenteID));
     }
 
+    // Torna le compilazioni lasciare in sospeso
+    @GetMapping("{studenteID}/riprendi")
+    public ResponseEntity<ArrayList<Compilazione>> getCompilazioniInSospeso(@PathVariable int studenteID) {
+        return ResponseEntity.ok(compilazioneService.getCompilazioniInSospeso(studenteID));
+    }
+
+    // TODO sistemare in modo che ricominci dalla prima domanda senza risposta
     @GetMapping("{studenteID}/riprendi/{questionarioID}")
+    // ->
+    // @GetMapping("{studenteID}/compila/{questionarioID}/{compilazioneID}/{domandaID}")
     public ResponseEntity<?> riprendiCompilazione(
             @PathVariable int studenteID,
             @PathVariable int questionarioID) {
 
         Compilazione c = compilazioneService.riprendiCompilazione(studenteID, questionarioID);
-
         if (c != null) {
-            return ResponseEntity.ok(c);
+            Domanda d = questionarioService.getDomandaInSospeso(questionarioID, c.getRisposte());
+            if (d != null)
+                return ResponseEntity.ok(d);
+            // se d == null allora lo student ha risposto a tutte le domande
+            if (compilazioneService.chiudiCompilazione(studenteID, c.getID())) {
+                return ResponseEntity.ok("Questionario completato");
+            }
+            return ResponseEntity.internalServerError().body("Errore durante la chiusura della compilazione");
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

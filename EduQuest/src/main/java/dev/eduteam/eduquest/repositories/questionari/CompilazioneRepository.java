@@ -97,7 +97,7 @@ public class CompilazioneRepository {
 
     }
 
-    public ArrayList<Compilazione> getCompilazioniCompletate(int studenteID) {
+    public ArrayList<Compilazione> getCompilazioniStatus(int studenteID, boolean status) {
         ArrayList<Compilazione> elencoCompilazioni = new ArrayList<Compilazione>();
         String query = "SELECT " +
                 "compilazioneID, studenteID_FK, " +
@@ -107,7 +107,7 @@ public class CompilazioneRepository {
                 PreparedStatement ps = conn.prepareStatement(query);) {
 
             ps.setInt(1, studenteID);
-            ps.setBoolean(2, true);
+            ps.setBoolean(2, status);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -191,7 +191,7 @@ public class CompilazioneRepository {
         }
     }
 
-    public Compilazione getCompilazioneInCorso(int studenteID, int questionarioID) {
+    public Compilazione getCompilazioneInSospeso(int studenteID, int questionarioID) {
         String query = "SELECT * FROM compilazioni WHERE studenteID_FK = ? AND questionarioID_FK = ? AND completato = false LIMIT 1";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -203,7 +203,7 @@ public class CompilazioneRepository {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Errore, nessuna compilazione in corso: " + e.getMessage());
+            System.err.println("Errore, nessuna compilazione in sospeso: " + e.getMessage());
         }
         return null;
     }

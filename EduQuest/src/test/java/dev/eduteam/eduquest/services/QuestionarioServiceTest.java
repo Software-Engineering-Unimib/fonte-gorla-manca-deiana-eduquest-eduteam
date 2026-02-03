@@ -4,6 +4,7 @@ import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
+import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
@@ -241,5 +242,81 @@ class QuestionarioServiceTest {
         assertEquals(qNormale.getID(), result.get(0).getID());
         verify(questionarioRepository, times(1)).getQuestionari();
         verify(compitinoService, times(1)).isCompilabileByStudente(studenteID, c.getID());
+    }
+
+    @Test
+    void testGetDomandaInSospeso_InMetà() {
+        int id = 1;
+        ArrayList<Domanda> domande = new ArrayList<>();
+        Domanda d1 = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_MULTIPLA);
+        d1.setID(11);
+        d1.setTesto("Domanda 1");
+        Domanda d2 = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_MULTIPLA);
+        d2.setID(12);
+        d2.setTesto("Domanda 2");
+
+        domande.add(d1);
+        domande.add(d2);
+        questionario.setElencoDomande(domande);
+
+        when(questionarioRepository.getQuestionarioByID(id)).thenReturn(questionario);
+        when(domandaService.getDomandeComplete(id)).thenReturn(domande);
+
+        Risposta[] risposteDate = new Risposta[3];
+        Risposta r1 = new Risposta("Roma");
+        r1.setID(501);
+        risposteDate[0] = r1;
+        risposteDate[1] = null; // In sospeso
+        Domanda result = questionarioService.getDomandaInSospeso(id, risposteDate);
+
+        assertNotNull(result);
+        assertEquals(12, result.getID()); // Deve restituire la seconda domanda
+        assertEquals("Domanda 2", result.getTesto());
+    }
+
+    @Test
+    void testGetDomandaInSospeso_TutteCompletate() {
+        int id = 1;
+        ArrayList<Domanda> domande = new ArrayList<>();
+        Domanda d1 = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_VERO_FALSO);
+        d1.setID(13);
+        d1.setTesto("Domanda 1");
+        domande.add(d1);
+        questionario.setElencoDomande(domande);
+
+        when(questionarioRepository.getQuestionarioByID(id)).thenReturn(questionario);
+        when(domandaService.getDomandeComplete(id)).thenReturn(domande);
+
+        // Tutte le domande hanno una risposta
+        Risposta r1 = new Risposta("Vero");
+        Risposta[] risposteDate = new Risposta[1];
+        risposteDate[0] = r1;
+
+        Domanda result = questionarioService.getDomandaInSospeso(id, risposteDate);
+
+        assertNull(result); // Non ci sono domande in sospeso
+    }
+
+    @Test
+    void testGetDomandaInSospeso_ArrayVuoto() {
+        int id = 1;
+        ArrayList<Domanda> domande = new ArrayList<>();
+        Domanda d1 = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_MULTIPLA);
+        d1.setID(14);
+        d1.setTesto("Domanda 1");
+        domande.add(d1);
+        questionario.setElencoDomande(domande);
+
+        when(questionarioRepository.getQuestionarioByID(id)).thenReturn(questionario);
+        when(domandaService.getDomandeComplete(id)).thenReturn(domande);
+
+        // Lo studente ha appena iniziato: l'array contiene null
+        Risposta[] risposteDate = new Risposta[1];
+        risposteDate[0] = null;
+
+        Domanda result = questionarioService.getDomandaInSospeso(id, risposteDate);
+
+        assertNotNull(result);
+        assertEquals(14, result.getID());
     }
 }

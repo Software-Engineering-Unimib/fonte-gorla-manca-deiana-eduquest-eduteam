@@ -1,10 +1,12 @@
 package dev.eduteam.eduquest.services.questionari;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.questionari.Compilazione;
 import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
+import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 
@@ -106,6 +108,23 @@ public class QuestionarioService {
         }
         // Si potrebbe definire un'eccezione specifica per distinguere
         // tra non c'è e ID non valido
+        return null;
+    }
+
+    public Domanda getDomandaInSospeso(int questionarioID, Risposta[] risposte) {
+        int index = 0;
+        Questionario q = getQuestionarioCompleto(questionarioID);
+        if (q == null || q.getElencoDomande() == null)
+            return null;
+
+        // Deve trovare la prossima domanda a cui non ho ancora dato risposta e tornarla
+        while (index < risposte.length && index < q.getNumeroDomande() && risposte[index] != null) {
+            index++;
+        }
+        // Escludiamo il caso in cui non ho domanda da compilare
+        if (index < q.getNumeroDomande()) {
+            return q.getElencoDomande().get(index);
+        }
         return null;
     }
 

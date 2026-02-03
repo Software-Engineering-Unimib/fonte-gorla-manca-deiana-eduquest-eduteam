@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compilazione;
+import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.CompilazioneRepository;
@@ -57,7 +58,7 @@ public class CompilazioneService {
     }
 
     public ArrayList<Compilazione> getCompilazioniCompletate(int studenteID) {
-        return compilazioneRepository.getCompilazioniCompletate(studenteID);
+        return compilazioneRepository.getCompilazioniStatus(studenteID, true);
     }
 
     public Compilazione creaCompilazione(int studenteID, int questionarioID) {
@@ -94,7 +95,7 @@ public class CompilazioneService {
         Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
 
         double mediaAttuale = studente.getMediaPunteggio();
-        int totCompilazioni = compilazioneRepository.getCompilazioniCompletate(studenteID).size();
+        int totCompilazioni = compilazioneRepository.getCompilazioniStatus(studenteID, true).size();
         int punteggioCompilazione = c.getPunteggio();
         double nuovaMedia = ((mediaAttuale * totCompilazioni) + punteggioCompilazione) / (totCompilazioni + 1);
 
@@ -104,8 +105,12 @@ public class CompilazioneService {
                 && compilazioneRepository.upateStatusCompilazione(compilazioneID, true));
     }
 
+    public ArrayList<Compilazione> getCompilazioniInSospeso(int studenteID) {
+        return compilazioneRepository.getCompilazioniStatus(studenteID, false);
+    }
+
     public Compilazione riprendiCompilazione(int studenteID, int questionarioID) {
-        Compilazione c = compilazioneRepository.getCompilazioneInCorso(studenteID, questionarioID);
+        Compilazione c = compilazioneRepository.getCompilazioneInSospeso(studenteID, questionarioID);
         if (c != null) {
             // devo caricare le risposte salvate fino ad ora
             popolaCompilazione(c);
