@@ -64,7 +64,6 @@ public class QuestionarioControllerWeb {
             model.addAttribute("user", docente);
             model.addAttribute("questionario", questionario);
             model.addAttribute("domande", domande);
-            System.out.println(domande.isEmpty());
         }
         return "singolo-questionario";
     }

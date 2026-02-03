@@ -1,9 +1,13 @@
 package dev.eduteam.eduquest.controllers.web;
 
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @Controller
-@RequestMapping("api/docente/{docenteID}/questionari/{questionarioID}/domande")
+@RequestMapping("docente/dashboard/{questionarioID}/")
 public class DomandaControllerWeb {
 
     @Autowired
@@ -40,21 +44,33 @@ public class DomandaControllerWeb {
 
     @GetMapping("{domandaID}")
     public String getDomanda(
+            HttpSession session,
             Model model,
-            @PathVariable int docenteID,
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
+            Account user = (Account) session.getAttribute("user");
 
-        if (questionario != null) {
-            Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
-            if (domanda != null) {
-                model.addAttribute("questionario", questionario);
-                model.addAttribute("domanda", domanda);
+            if (user == null) {
+                return "redirect:/login";
             }
-        }
 
+            if (!user.isDocente()) {
+                return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+            }
+
+            Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
+            if (questionario != null) {
+                Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
+
+                if (domanda != null) {
+                    ArrayList<Risposta> risposte = domanda.getElencoRisposte();
+                    model.addAttribute("questionario", questionario);
+                    model.addAttribute("domanda", domanda);
+                    model.addAttribute("index", questionario.getElencoDomande().indexOf(domanda));
+                    model.addAttribute("risposte", risposte);
+                }
+            }
         return "singola-domanda";
     }
 

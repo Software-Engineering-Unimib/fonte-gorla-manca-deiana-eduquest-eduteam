@@ -28,15 +28,8 @@
 
                     <div th:if="${questionario != null}" class="questionari-list">
                         <div th:each="d : ${domande}" class="questionario-card">
-                            <h4>Domanda <span th:text="${domande.indexOf(d) + 1}"></span></h4>
-                            <p th:text="${d.testo}">Testo Domanda</p>
-                            <div class="card-meta">
-                                <span>📝 <span th:text="${d.numeroRisposte}"></span> risposte</span>
-                            </div>
-                            <div class="card-actions">
-                                <a th:href="@{/docente/questionari/{id}(id=${questionario.ID})}" class="btn btn-sm">Visualizza</a>
-                                <a th:href="@{/docente/questionari/{id}/modifica(id=${questionario.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
-                            </div>
+
+                            <section th:replace="~{fragments/domanda :: domandaCard(${questionario.ID}, ${d}, ${domande.indexOf(d)})}"></section>
                         </div>
                     </div>
                 </section>

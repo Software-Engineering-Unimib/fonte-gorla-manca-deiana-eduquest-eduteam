@@ -27,16 +27,7 @@
                 
                 <div th:if="${questionari != null and !questionari.empty}" class="questionari-list">
                     <div th:each="q : ${questionari}" class="questionario-card">
-                        <h4 th:text="${q.nome}">Nome Questionario</h4>
-                        <p th:text="${q.descrizione}">Descrizione</p>
-                        <div class="card-meta">
-                            <span>📝 <span th:text="${q.numDomande}"></span> domande</span>
-                            <span>📅 <span th:text="${q.dataCreazione}"></span></span>
-                        </div>
-                        <div class="card-actions">
-                            <a th:href="@{/docente/questionari/{id}(id=${q.questionarioID})}" class="btn btn-sm">Visualizza</a>
-                            <a th:href="@{/docente/questionari/{id}/modifica(id=${q.questionarioID})}" class="btn btn-sm btn-secondary">Modifica</a>
-                        </div>
+                        <section th:replace="~{fragments/questionario :: questionarioCard(${q})}"></section>
                     </div>
                 </div>
             </section>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="domandaCard(ID, d, index)">
+
+    <h4>Domanda <span th:text="${index}"></span></h4>
+    <p th:text="${d.testo}">Testo Domanda</p>
+    <div class="card-meta">
+        <span>📝 <span th:text="${d.numeroRisposte}"></span> risposte</span>
+    </div>
+    <div class="card-actions">
+        <a th:href="@{/docente/dashboard/{questionarioID}/{domandaID}(questionarioID=${ID}, domandaID=${d.ID})}" class="btn btn-sm">Visualizza</a>
+        <a th:href="@{/docente/questionari/{id}/modifica(id=${questionario.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
+    </div>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</section>
+</html>
