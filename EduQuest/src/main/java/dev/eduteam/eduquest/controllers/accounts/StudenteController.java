@@ -174,7 +174,6 @@ public class StudenteController {
         return ResponseEntity.ok(compilazioneService.getCompilazioniInSospeso(studenteID));
     }
 
-    // TODO sistemare in modo che ricominci dalla prima domanda senza risposta
     @GetMapping("{studenteID}/riprendi/{questionarioID}")
     // ->
     // @GetMapping("{studenteID}/compila/{questionarioID}/{compilazioneID}/{domandaID}")

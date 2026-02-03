@@ -3,6 +3,7 @@ package dev.eduteam.eduquest.repositories.questionari;
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Esercitazione;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.repositories.ConnectionSingleton;
@@ -31,28 +32,43 @@ public class QuestionarioRepository {
         Docente docente = docenteRepository.getDocenteByAccountID(rs.getInt("docenteID_FK"));
         Difficulty diff = Difficulty.valueOf(rs.getString("livelloDiff"));
 
-        // Se dataFine non è null -> Compitino
+        String nome = rs.getString("nome");
+        String descrizione = rs.getString("descrizione");
+        ArrayList<Domanda> domandeVuote = new ArrayList<>();
+        Questionario q;
+
+        /*
+         * Se dataFine non è null -> Compitino
+         * Se noteDidattiche non è null -> Esercitazione
+         * Altrimenti è un questionario
+         */
         if (rs.getObject("dataFine") != null) {
-            Compitino c = new Compitino(
-                    rs.getString("nome"),
-                    rs.getString("descrizione"),
-                    new ArrayList<Domanda>(),
+            q = new Compitino(
+                    nome,
+                    descrizione,
+                    domandeVuote,
                     docente,
                     diff,
                     rs.getDate("dataFine").toLocalDate(),
                     rs.getInt("tentativiMax"));
-            c.setID(rs.getInt("questionarioID"));
-            c.setNumeroDomande(rs.getInt("numeroDomande"));
-            c.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
-            return c;
-        } // Aggiungere implementazione esercitazione
-          // Altrimenti è un questionario
-        Questionario q = new Questionario(
-                rs.getString("nome"),
-                rs.getString("descrizione"),
-                new ArrayList<Domanda>(),
-                docente,
-                diff);
+        } else if (rs.getObject("noteDidattiche") != null) {
+            Esercitazione es = new Esercitazione(
+                    nome,
+                    descrizione,
+                    domandeVuote,
+                    docente,
+                    diff);
+            es.setNoteDidattiche(rs.getString("noteDidattiche"));
+            q = es;
+        } else {
+            q = new Questionario(
+                    nome,
+                    descrizione,
+                    domandeVuote,
+                    docente,
+                    diff);
+        }
+
         q.setID(rs.getInt("questionarioID"));
         q.setNumeroDomande(rs.getInt("numeroDomande"));
         q.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
@@ -63,9 +79,12 @@ public class QuestionarioRepository {
     // del docente
     public ArrayList<Questionario> getQuestionari() {
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
-        // LEFT JOIN per prendere i dati di entrambi
-        String query = "SELECT q.*, c.dataFine, c.tentativiMax FROM questionari q " +
-                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK";
+        String query = "SELECT q.*, " +
+                "c.dataFine, c.tentativiMax, " +
+                "e.noteDidattiche " +
+                "FROM questionari q " +
+                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK " +
+                "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);
@@ -83,8 +102,12 @@ public class QuestionarioRepository {
     // la Primary key di un questionario è questionarioID, NON SERVE IL DOCENTE
     public Questionario getQuestionarioByID(int id) {
         Questionario questionario = null;
-        String query = "SELECT q.*, c.dataFine, c.tentativiMax FROM questionari q " +
-                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK";
+        String query = "SELECT q.*, " +
+                "c.dataFine, c.tentativiMax, " +
+                "e.noteDidattiche " +
+                "FROM questionari q " +
+                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK " +
+                "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {

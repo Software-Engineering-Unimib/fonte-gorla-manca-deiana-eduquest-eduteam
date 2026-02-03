@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compilazione;
 import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.CompilazioneRepository;
@@ -66,9 +67,15 @@ public class CompilazioneService {
         if (!compitinoService.isCompilabileByStudente(studenteID, questionarioID)) {
             return null;
         }
-        Compilazione compilazione = new Compilazione(studenteRepository.getStudenteByAccountID(studenteID),
-                questionarioRepository.getQuestionarioByID(questionarioID));
-        return compilazioneRepository.insertCompilazione(compilazione);
+
+        Studente s = studenteRepository.getStudenteByAccountID(studenteID);
+        Questionario q = questionarioRepository.getQuestionarioByID(questionarioID);
+        if (s == null || q == null) {
+            return null;
+        }
+
+        Compilazione c = new Compilazione(s, q);
+        return compilazioneRepository.insertCompilazione(c);
     }
 
     // Metodi private

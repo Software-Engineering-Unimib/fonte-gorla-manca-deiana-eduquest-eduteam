@@ -44,6 +44,20 @@ CREATE TABLE compitini (
     PRIMARY KEY (questionarioID_FK),
     CONSTRAINT FK_QuestionarioCompitino FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
+CREATE TABLE esercitazioni (
+    questionarioID_FK INTEGER NOT NULL,
+    noteDidattiche VARCHAR(1000),
+    PRIMARY KEY (questionarioID_FK),
+    CONSTRAINT FK_QuestionarioEsercitazione FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = INNODB;
+CREATE TABLE feedback (
+    feedbackID INTEGER AUTO_INCREMENT,
+    testo VARCHAR(1000) NOT NULL,
+    -- Relazione 1:1 tra Domanda e Feedback
+    domandaID_FK INTEGER NOT NULL UNIQUE,
+    PRIMARY KEY (feedbackID),
+    CONSTRAINT FK_DomandaFeedback FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = INNODB;
 CREATE TABLE domande (
     domandaID INTEGER auto_increment,
     -- ad ogni intero di tipo corrisponderà una tipologia di domanda, 
@@ -64,7 +78,6 @@ CREATE TABLE risposte (
     PRIMARY KEY (rispostaID),
     CONSTRAINT FK_DomandaDiOrigine FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
-
 -- Tabella principale per l'oggetto Compilazione
 CREATE TABLE compilazioni (
     compilazioneID INTEGER AUTO_INCREMENT,
@@ -90,21 +103,23 @@ CREATE TABLE compilazioni_risposte (
     CONSTRAINT FK_RispostaSelezionata FOREIGN KEY (rispostaID_FK) REFERENCES risposte(rispostaID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 -- Dati di test Account
-INSERT INTO accounts (nome, cognome, userName, email, password, tipo) VALUES 
+INSERT INTO accounts (nome, cognome, userName, email, password, tipo)
+VALUES (
+        'Pinco',
+        'Pallo',
+        'PincoPallino1',
+        'pincopallo@prova.edu',
+        'PasswordValida1!',
+        'Studente'
+    ),
     (
-        'Pinco', 
-        'Pallo', 
-        'PincoPallino1', 
-        'pincopallo@prova.edu', 
-        'PasswordValida1!', 
-        'Studente'),
-    (
-        'Franco', 
-        'Rossi', 
-        'FrancoRossi2', 
-        'francorossi@prova.edu', 
-        'PasswordValida2!', 
-        'Docente'),
+        'Franco',
+        'Rossi',
+        'FrancoRossi2',
+        'francorossi@prova.edu',
+        'PasswordValida2!',
+        'Docente'
+    ),
     (
         'Maria',
         'Verdi',
@@ -155,7 +170,8 @@ VALUES (
         1,
         '2026-01-24',
         3
-    ), (
+    ),
+    (
         'Algebra Lineare',
         'Matrici e sistemi',
         'Matematica',
@@ -164,21 +180,39 @@ VALUES (
         '2026-02-01',
         2
     );
-
-INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax) VALUES 
-    (3, '2026-02-28', 1), -- Scade a fine mese, 1 solo tentativo
+INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax)
+VALUES (3, '2026-02-28', 1),
+    -- Scade a fine mese, 1 solo tentativo
     (4, '2026-03-15', 3);
 -- Domande
-INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK) VALUES 
-(1, 'Somma angoli interni triangolo?', 3, 1), -- ID 1 (Quest 1)
-(1, 'Chi ha scritto i Promessi Sposi?', 2, 2),  -- ID 2 (Quest 2)
-(1, 'In che raccolta è "X Agosto"?', 3, 3),    -- ID 3 (Quest 3)
-(3, 'Una matrice quadrata è sempre invertibile?', 2, 4);
+INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK)
+VALUES (1, 'Somma angoli interni triangolo?', 3, 1),
+    -- ID 1 (Quest 1)
+    (1, 'Chi ha scritto i Promessi Sposi?', 2, 2),
+    -- ID 2 (Quest 2)
+    (1, 'In che raccolta è "X Agosto"?', 3, 3),
+    -- ID 3 (Quest 3)
+    (
+        3,
+        'Una matrice quadrata è sempre invertibile?',
+        2,
+        4
+    );
 INSERT INTO risposte (testo, isCorretta, domandaID_FK)
-VALUES ('180°', TRUE, 1), ('90°', FALSE, 1), ('360°', FALSE, 1), -- Risposte per Domanda 1
-('Manzoni', TRUE, 2), ('Dante', FALSE, 2),               -- Risposte per Domanda 2
-('Myricae', TRUE, 3), ('Alcyone', FALSE, 3), ('Canti', FALSE, 3), -- Risposte per Domanda 3
-('Vero', FALSE, 4), ('Falso', TRUE, 4);                  -- Risposte per Domanda 4
+VALUES ('180°', TRUE, 1),
+    ('90°', FALSE, 1),
+    ('360°', FALSE, 1),
+    -- Risposte per Domanda 1
+    ('Manzoni', TRUE, 2),
+    ('Dante', FALSE, 2),
+    -- Risposte per Domanda 2
+    ('Myricae', TRUE, 3),
+    ('Alcyone', FALSE, 3),
+    ('Canti', FALSE, 3),
+    -- Risposte per Domanda 3
+    ('Vero', FALSE, 4),
+    ('Falso', TRUE, 4);
+-- Risposte per Domanda 4
 -- Compilazioni
 INSERT INTO compilazioni (
         studenteID_FK,

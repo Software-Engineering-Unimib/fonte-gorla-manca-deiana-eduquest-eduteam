@@ -48,8 +48,10 @@ public class CompitinoService {
 
     public boolean isCompilabileByStudente(int studenteID, int compitinoID) {
         Questionario q = compitinoRepository.getQuestionarioByID(compitinoID);
-        if (!(q instanceof Compitino))
+        if (q == null)
             return false;
+        if (!(q instanceof Compitino))
+            return true; // Se non è un compitino posso sempre compilarlo
         Compitino c = (Compitino) q;
 
         // Controllo scadenza
