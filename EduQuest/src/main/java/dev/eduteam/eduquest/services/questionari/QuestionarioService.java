@@ -1,6 +1,7 @@
 package dev.eduteam.eduquest.services.questionari;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
@@ -11,9 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionarioService {
+
+    @Autowired
+    private CompitinoService compitinoService;
 
     @Autowired
     private QuestionarioRepository questionarioRepository;
@@ -33,6 +39,17 @@ public class QuestionarioService {
 
     public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
         return questionarioRepository.getQuestionariByDocente(docenteID);
+    }
+
+    public List<Questionario> getQuestionariDisponibliPerStudente(int studenteID) {
+        List<Questionario> tutti = questionarioRepository.getQuestionari();
+
+        return tutti.stream().filter(q -> {
+            if (q instanceof Compitino) {
+                return compitinoService.isCompilabileByStudente(studenteID, q.getID());
+            }
+            return true;
+        }).collect(Collectors.toList());
     }
 
     public Questionario getQuestionarioCompleto(int ID) {

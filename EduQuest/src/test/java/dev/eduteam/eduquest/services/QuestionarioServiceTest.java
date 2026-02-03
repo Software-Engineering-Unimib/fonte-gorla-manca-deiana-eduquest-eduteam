@@ -1,6 +1,7 @@
 package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.models.accounts.Docente;
@@ -8,6 +9,7 @@ import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
+import dev.eduteam.eduquest.services.questionari.CompitinoService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +37,9 @@ class QuestionarioServiceTest {
 
     @Mock
     private DomandaService domandaService;
+
+    @Mock
+    private CompitinoService compitinoService;
 
     @InjectMocks
     private QuestionarioService questionarioService;
@@ -179,5 +186,60 @@ class QuestionarioServiceTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(questionarioRepository, times(1)).getQuestionariByDocente(docenteID);
+    }
+
+    @Test
+    void testGetQuestionariDisponibiliPerStudente_CompitinoCompilabile() {
+        int studenteID = 10;
+        ArrayList<Questionario> tutti = new ArrayList<>();
+
+        Docente d = new Docente();
+        d.setAccountID(1);
+
+        Questionario qNormale = new Questionario("Q1", "Desc", new ArrayList<>(), d, Difficulty.Medio);
+        qNormale.setID(1);
+        Compitino c = new Compitino("Comp1", "DescC", new ArrayList<>(), d, Difficulty.Medio, LocalDate.now(), 1);
+        c.setID(2);
+
+        tutti.add(qNormale);
+        tutti.add(c);
+
+        when(questionarioRepository.getQuestionari()).thenReturn(tutti);
+        when(compitinoService.isCompilabileByStudente(studenteID, c.getID())).thenReturn(true);
+
+        List<Questionario> result = questionarioService.getQuestionariDisponibliPerStudente(studenteID);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(questionarioRepository, times(1)).getQuestionari();
+        verify(compitinoService, times(1)).isCompilabileByStudente(studenteID, c.getID());
+    }
+
+    @Test
+    void testGetQuestionariDisponibiliPerStudente_CompitinoNonCompilabile() {
+        int studenteID = 11;
+        ArrayList<Questionario> tutti = new ArrayList<>();
+
+        Docente d = new Docente();
+        d.setAccountID(2);
+
+        Questionario qNormale = new Questionario("Q2", "Desc2", new ArrayList<>(), d, Difficulty.Facile);
+        qNormale.setID(3);
+        Compitino c = new Compitino("Comp2", "DescC2", new ArrayList<>(), d, Difficulty.Facile, LocalDate.now(), 1);
+        c.setID(4);
+
+        tutti.add(qNormale);
+        tutti.add(c);
+
+        when(questionarioRepository.getQuestionari()).thenReturn(tutti);
+        when(compitinoService.isCompilabileByStudente(studenteID, c.getID())).thenReturn(false);
+
+        List<Questionario> result = questionarioService.getQuestionariDisponibliPerStudente(studenteID);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(qNormale.getID(), result.get(0).getID());
+        verify(questionarioRepository, times(1)).getQuestionari();
+        verify(compitinoService, times(1)).isCompilabileByStudente(studenteID, c.getID());
     }
 }
