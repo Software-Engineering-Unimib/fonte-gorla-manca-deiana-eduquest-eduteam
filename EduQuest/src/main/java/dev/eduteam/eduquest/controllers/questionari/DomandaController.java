@@ -1,9 +1,11 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Esercitazione;
 import dev.eduteam.eduquest.models.questionari.Questionario;
-
+import dev.eduteam.eduquest.repositories.questionari.EsercitazioneRepository;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
+import dev.eduteam.eduquest.services.questionari.EsercitazioneService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class DomandaController {
 
     @Autowired
     private QuestionarioService questionarioService;
+
+    @Autowired
+    private EsercitazioneService esercitazioneService;
 
     @GetMapping()
     public ResponseEntity<ArrayList<Domanda>> getDomande(@PathVariable int questionarioID) {
@@ -59,6 +64,31 @@ public class DomandaController {
         }
 
         Domanda domandaAggiunta = domandaService.aggiungiDomanda(questionarioID, tipo);
+        if (domandaAggiunta != null) {
+            return ResponseEntity.ok(questionarioDaModificare);
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("aggiungiDomandaFeedback")
+    public ResponseEntity<Questionario> aggiungiDomandaFeedback(
+            @PathVariable int docenteID,
+            @PathVariable int questionarioID,
+            @RequestParam(name = "tipo") Domanda.Type tipo,
+            @RequestParam(name = "feedback") String feedbackTesto) {
+
+        Questionario questionarioDaModificare = questionarioService.getQuestionarioCompleto(questionarioID);
+        if (questionarioDaModificare == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!(questionarioDaModificare instanceof Esercitazione)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Domanda domandaAggiunta = esercitazioneService.aggiungiDomandaConFeedback(questionarioID, tipo, feedbackTesto);
+
         if (domandaAggiunta != null) {
             return ResponseEntity.ok(questionarioDaModificare);
         } else {

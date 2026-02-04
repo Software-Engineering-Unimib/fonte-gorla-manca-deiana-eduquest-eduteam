@@ -1,9 +1,11 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
 import dev.eduteam.eduquest.models.questionari.Compitino;
+import dev.eduteam.eduquest.models.questionari.Esercitazione;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.services.questionari.CompitinoService;
+import dev.eduteam.eduquest.services.questionari.EsercitazioneService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class QuestionarioController {
 
     @Autowired
     private CompitinoService compitinoService;
+
+    @Autowired
+    private EsercitazioneService esercitazioneService;
 
     @GetMapping()
     public ArrayList<Questionario> getQuestionariByDocente(@PathVariable int docenteID) {
@@ -61,6 +66,20 @@ public class QuestionarioController {
         Compitino compitino = compitinoService.creaCompitino(docenteID, difficolta, scadenza, tentativi);
         if (compitino != null) {
             return ResponseEntity.status(201).body(compitino);
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("creaEsercitazione")
+    public ResponseEntity<?> creaEsercitazione(
+            @PathVariable int docenteID,
+            @RequestParam Difficulty difficolta,
+            @RequestParam(defaultValue = "") String feedbackTesto) {
+
+        Esercitazione esercitazione = esercitazioneService.creaEsercitazione(docenteID, difficolta, feedbackTesto);
+        if (esercitazione != null) {
+            return ResponseEntity.status(201).body(esercitazione);
         } else {
             return ResponseEntity.internalServerError().build();
         }
