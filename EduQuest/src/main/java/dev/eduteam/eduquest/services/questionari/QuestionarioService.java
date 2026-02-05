@@ -1,5 +1,6 @@
 package dev.eduteam.eduquest.services.questionari;
 
+import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
@@ -36,8 +37,13 @@ public class QuestionarioService {
     }
 
     public Questionario creaQuestionario(int docenteID) {
-        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione", new ArrayList<Domanda>(),
-                docenteRepository.getDocenteByAccountID(docenteID));
+
+        Docente docente = docenteRepository.getDocenteByAccountID(docenteID);
+        Questionario nuovo = new Questionario("Nuovo Questionario",
+                "Nuova Descrizione",
+                new ArrayList<Domanda>(),
+                docente, docente.getInsegnamento(),
+                Questionario.Difficolta.Facile);
         return questionarioRepository.insertQuestionario(nuovo);
     }
 

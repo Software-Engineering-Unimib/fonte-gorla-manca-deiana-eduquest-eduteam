@@ -129,15 +129,18 @@ public class QuestionarioControllerWeb {
     }
 
     @PostMapping("crea")
-    public ResponseEntity<Questionario> creaQuestionario(@RequestParam int docenteID) {
+    public String creaQuestionario(HttpSession session) {
 
-        Questionario questionarioCreato = questionarioService.creaQuestionario(docenteID);
+        System.out.println("A");
+        Docente docente = (Docente) session.getAttribute("user");
 
-        if (questionarioCreato != null) {
-            return ResponseEntity.status(201).body(questionarioCreato);
-        } else {
-            return ResponseEntity.internalServerError().build();
+        if (docente == null) {
+            return "redirect:/login";
         }
+
+        questionarioService.creaQuestionario(docente.getAccountID());
+
+        return "redirect:/docente/dashboard";
     }
 
     // Post -> Delete per standard REST

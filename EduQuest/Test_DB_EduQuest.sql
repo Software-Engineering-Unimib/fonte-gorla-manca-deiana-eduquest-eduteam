@@ -30,7 +30,11 @@ CREATE TABLE questionari (
                              nome VARCHAR(40) NOT NULL,
                              descrizione VARCHAR(500) NOT NULL,
                              materia VARCHAR(100) NOT NULL,
-                             livelloDiff ENUM('Facile', 'Medio', 'Difficile') NOT NULL,
+    -- ad ogni intero di tipo corrisponderà una difficolta,
+    -- sono state lasciate "posizioni vuote" per possibili successive implementazioni
+                             livelloDiff TINYINT(8) NOT NULL,
+                             -- livelloDiff ENUM('Facile', 'Medio', 'Difficile') NOT NULL,
+    -- 1-Facile, 2=Medio, 3=Difficile
                              numeroDomande INTEGER NOT NULL,
                              dataCreazione DATE NOT NULL,
                              docenteID_FK INTEGER NOT NULL,

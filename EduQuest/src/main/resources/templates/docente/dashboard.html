@@ -15,14 +15,21 @@
             <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> 
             
             <section class="dashboard-section">
-                <div class="section-header">
-                    <h3>📋 I Tuoi Questionari</h3>
-                    <a th:href="@{/docente/questionari/nuovo}" class="btn btn-primary">+ Nuovo Questionario</a>
-                </div>
+
+                    <form th:action="@{/docente/dashboard/crea}" method="post" class="section-header">
+                        <h3>📋 I Tuoi Questionari</h3>
+
+                        <button type="submit" class="btn btn-primary">+ Nuovo Questionario</button>
+                    </form>
                 
                 <div th:if="${questionari == null or questionari.isEmpty()}" class="empty-state">
                     <p>Non hai ancora creato nessun questionario.</p>
-                    <a th:href="@{/docente/questionari/nuovo}" class="btn btn-primary">Crea il tuo primo questionario</a>
+                    <form th:action="@{/docente/dashboard/crea}" method="post" class="form">
+                        <div class="form-actions">
+
+                            <button type="submit" class="btn btn-primary">Crea il tuo primo Questionario</button>
+                        </div>
+                    </form>
                 </div>
                 
                 <div th:if="${questionari != null and !questionari.isEmpty()}" class="questionari-list">
