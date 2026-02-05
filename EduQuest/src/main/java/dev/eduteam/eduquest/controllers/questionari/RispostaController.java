@@ -93,7 +93,7 @@ public class RispostaController {
         if (rispostaDaModificare == null)
             return ResponseEntity.notFound().build();
 
-        if (rispostaService.modificaTesto(rispostaDaModificare, testo)) {
+        if (rispostaService.modificaRisposta(rispostaDaModificare, testo, rispostaDaModificare.isCorretta())) {
             return ResponseEntity.ok(rispostaDaModificare);
         } else {
             return ResponseEntity.internalServerError().build();

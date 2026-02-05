@@ -1,27 +1,40 @@
 package dev.eduteam.eduquest.controllers.web;
 
+import dev.eduteam.eduquest.models.accounts.Account;
+import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
+import dev.eduteam.eduquest.services.accounts.DocenteService;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
+import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 import dev.eduteam.eduquest.services.questionari.RispostaService;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 
 @Controller
-@RequestMapping("api/docente/{docenteID}/questionari/{questionarioID}/domande/{domandaID}/risposte")
+@RequestMapping("docente/dashboard/{questionarioID}/{domandaID}/")
 public class RispostaControllerWeb {
 
     @Autowired
-    private RispostaService rispostaService;
+    private DocenteService docenteService;
+
+    @Autowired
+    private QuestionarioService questionarioService;
 
     @Autowired
     private DomandaService domandaService;
+
+    @Autowired
+    private RispostaService rispostaService;
 
     @GetMapping()
     public String getRisposte(
@@ -41,15 +54,31 @@ public class RispostaControllerWeb {
 
     @GetMapping("{rispostaID}")
     public String getRisposta(
+            HttpSession session,
             Model model,
             @PathVariable int questionarioID,
             @PathVariable int domandaID,
             @PathVariable int rispostaID) {
 
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (!user.isDocente()) {
+            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+        }
+
+        Docente docente = (Docente) user;
+
+        Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
         Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
         if (domanda != null) {
             Risposta risposta = rispostaService.getRispostaById(rispostaID);
             if (risposta != null) {
+                model.addAttribute("user", docente);
+                model.addAttribute("questionario", questionario);
                 model.addAttribute("domanda", domanda);
                 model.addAttribute("risposta", risposta);
             }
@@ -88,25 +117,65 @@ public class RispostaControllerWeb {
         }
     }
 
-    @PostMapping("modifica/{rispostaID}/testo")
-    public ResponseEntity<Risposta> setTestoRisposta(
-            @PathVariable int domandaID,
-            @PathVariable int rispostaID,
-            @RequestParam(name = "testo") String testo) {
+    @PostMapping("/modifica/{rispostaID}")
+    public String modificaQuestionario(@PathVariable int questionarioID,
+                                       @PathVariable int domandaID,
+                                       @PathVariable int rispostaID,
+                                       @RequestParam String testo,
+                                       @RequestParam(name="corretta", defaultValue="false") boolean corretta,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        Docente docente = (Docente) session.getAttribute("user");
 
-        // Controllo validità del testo
-        if (testo == null || testo.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
+        if (docente == null) {
+            return "redirect:/login";
         }
 
-        Risposta rispostaDaModificare = rispostaService.getRispostaById(rispostaID);
-        if (rispostaDaModificare == null)
-            return ResponseEntity.notFound().build();
-
-        if (rispostaService.modificaTesto(rispostaDaModificare, testo)) {
-            return ResponseEntity.ok(rispostaDaModificare);
-        } else {
-            return ResponseEntity.internalServerError().build();
+        // Validazione: campi obbligatori non vuoti
+        if (domandaID == 0 || testo.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Il testo è obbligatorio.");
+            redirectAttributes.addFlashAttribute("nome", testo);
+            return "redirect:/docente/profilo";
         }
+        Risposta risposta = rispostaService.getRispostaById(rispostaID);
+
+        rispostaService.modificaRisposta(risposta, testo, corretta);
+
+        return "redirect:/docente/dashboard/" + questionarioID + "/" + domandaID;
+    }
+
+    @GetMapping("/modifica/{rispostaID}")
+    public String modificaQuestionario(@PathVariable int questionarioID,
+                                       @PathVariable int domandaID,
+                                       @PathVariable int rispostaID,
+                                       HttpSession session,
+                                       Model model) {
+
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (!user.isDocente()) {
+            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+        }
+
+        Docente docente = (Docente) user;
+        Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
+        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
+        Risposta risposta = rispostaService.getRispostaById(rispostaID);
+
+        if (questionario != null) {
+
+            if (!docenteService.proprietarioQuestionario(docente, questionario)) {
+                return "redirect:/docente/redirect";
+            }
+
+            model.addAttribute("questionario", questionario);
+            model.addAttribute("domanda", domanda);
+            model.addAttribute("risposta", risposta);
+        }
+        return "risposta/modifica-risposta";
     }
 }

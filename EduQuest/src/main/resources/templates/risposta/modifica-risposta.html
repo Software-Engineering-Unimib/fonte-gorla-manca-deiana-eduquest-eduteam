@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Modifica Risposta')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="form-container form-container-wide">
+        <h2>Modifica Risposta</h2>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <form th:action="@{|/docente/dashboard/${questionario.ID}/${domanda.ID}/modifica/${risposta.ID}|}" method="post" class="form">
+
+            <div th:replace="~{fragments/risposta-form :: formRisposta(${risposta})}"></div>
+
+            <div class="form-actions">
+                <a th:href="@{|/docente/dashboard/${questionario.ID}/${domanda.ID}|}" class="btn btn-secondary">Annulla</a>
+                <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

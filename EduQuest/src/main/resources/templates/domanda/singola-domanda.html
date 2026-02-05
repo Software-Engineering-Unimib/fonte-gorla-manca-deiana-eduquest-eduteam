@@ -11,13 +11,13 @@
             <p>Appartenente al Questionario "<span th:text="${questionario.nome}"></span>"</p>
         </header>
 
-        <!--
-        <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> -->
+        <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section>
 
         <section class="dashboard-section">
             <div class="section-header">
                 <h3>
                     📝 <span th:text="${domanda.testo}"></span>
+                    <a th:href="@{/docente/dashboard/nuovo}" class="btn btn-primary">+ Nuova Risposta</a>
                 </h3>
 
             </div>
@@ -29,7 +29,7 @@
             <div th:if="${questionario != null}" class="questionari-list">
                 <div th:each="r : ${risposte}" class="questionario-card">
 
-                    <section th:replace="~{fragments/risposta :: rispostaCard(${r}, ${risposte.indexOf(r)})}"></section>
+                    <section th:replace="~{fragments/risposta :: rispostaCard(${questionario}, ${domanda}, ${r}, ${risposte.indexOf(r)})}"></section>
                 </div>
             </div>
         </section>

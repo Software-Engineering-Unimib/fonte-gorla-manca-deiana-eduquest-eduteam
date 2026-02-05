@@ -20,12 +20,12 @@
                     <a th:href="@{/docente/questionari/nuovo}" class="btn btn-primary">+ Nuovo Questionario</a>
                 </div>
                 
-                <div th:if="${questionari == null or questionari.empty}" class="empty-state">
+                <div th:if="${questionari == null or questionari.isEmpty()}" class="empty-state">
                     <p>Non hai ancora creato nessun questionario.</p>
                     <a th:href="@{/docente/questionari/nuovo}" class="btn btn-primary">Crea il tuo primo questionario</a>
                 </div>
                 
-                <div th:if="${questionari != null and !questionari.empty}" class="questionari-list">
+                <div th:if="${questionari != null and !questionari.isEmpty()}" class="questionari-list">
                     <div th:each="q : ${questionari}" class="questionario-card">
                         <section th:replace="~{fragments/questionario :: questionarioCard(${q})}"></section>
                     </div>

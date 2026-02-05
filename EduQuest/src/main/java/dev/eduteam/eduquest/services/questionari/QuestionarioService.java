@@ -32,16 +32,7 @@ public class QuestionarioService {
     }
 
     public Questionario getQuestionarioCompleto(int ID) {
-        Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
-
-        // Controllo che questionario non sia null prima di usarlo
-        if (questionario != null) {
-            // Recupero le domande (che a loro volta hanno già le risposte caricate)
-            ArrayList<Domanda> domande = domandaService.getDomandeComplete(ID);
-            // "Allego" le domande al questionario prima di restituirlo
-            questionario.setElencoDomande(domande);
-        }
-        return questionario;
+        return questionarioRepository.getQuestionarioByID(ID);
     }
 
     public Questionario creaQuestionario(int docenteID) {

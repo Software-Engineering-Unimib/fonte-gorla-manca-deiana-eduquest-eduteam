@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<section th:fragment="rispostaCard(r, index)">
+<section th:fragment="rispostaCard(q, d, r, index)">
 
     <h4>Risposta <span th:text="${index}"></span></h4>
     <p th:text="${r.testo}">Testo Risposta</p>
@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="card-actions">
-        <a th:href="@{/docente/questionari/{id}/modifica(id=${questionario.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
+        <a th:href="@{/docente/dashboard/{questionarioID}/{domandaID}/modifica/{rispostaID}(questionarioID=${q.ID}, domandaID=${d.ID}, rispostaID=${r.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
     </div>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">

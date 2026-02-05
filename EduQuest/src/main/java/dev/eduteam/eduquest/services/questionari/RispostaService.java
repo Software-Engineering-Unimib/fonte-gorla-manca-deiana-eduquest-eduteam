@@ -42,8 +42,9 @@ public class RispostaService {
         return rispostaRepository.removeRisposta(domandaID, rispostaID);
     }
 
-    public boolean modificaTesto(Risposta risposta, String testo) {
+    public boolean modificaRisposta(Risposta risposta, String testo, boolean corretta) {
         risposta.setTesto(testo);
+        risposta.setCorretta(corretta);
         return rispostaRepository.updateRisposta(risposta);
     }
 }

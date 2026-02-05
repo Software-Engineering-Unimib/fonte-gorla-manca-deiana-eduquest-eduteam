@@ -66,6 +66,8 @@ public abstract class Domanda {
         return elencoRisposte;
     }
 
+    public void setElencoRisposte(ArrayList<Risposta> risposte) { elencoRisposte = risposte; }
+
     public void addRisposta(Risposta risposta) {
         elencoRisposte.add(risposta);
     }

@@ -1,9 +1,0 @@
-<h1>
-    <b>Risposte della domanda
-        <span th:text="${domanda.getTesto()} "></span>
-    </b>
-</h1>
-
-<ul>
-    <li th:each="r : ${risposte}" th:text="${r.getTesto()}"></li>
-</ul>

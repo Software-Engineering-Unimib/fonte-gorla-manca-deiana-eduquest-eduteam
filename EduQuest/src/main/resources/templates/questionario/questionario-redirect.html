@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Questionario Errato')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <section class="hero">
+        <h1>Non sei il docente che ha creato il questionario!</h1>
+        <p>Non puoi modificarlo!!</p>
+
+        <div class="hero-buttons" th:if="${session.user == null}">
+            <a th:href="@{/register}" class="btn btn-primary">Registrati</a>
+            <a th:href="@{/login}" class="btn btn-secondary">Accedi</a>
+        </div>
+        <div class="hero-buttons" th:if="${session.user != null}">
+            <a th:href="@{/dashboard}" class="btn btn-primary">Vai alla Dashboard</a>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

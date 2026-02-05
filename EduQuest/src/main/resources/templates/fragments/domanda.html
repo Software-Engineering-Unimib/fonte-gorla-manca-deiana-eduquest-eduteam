@@ -9,7 +9,7 @@
     </div>
     <div class="card-actions">
         <a th:href="@{/docente/dashboard/{questionarioID}/{domandaID}(questionarioID=${ID}, domandaID=${d.ID})}" class="btn btn-sm">Visualizza</a>
-        <a th:href="@{/docente/questionari/{id}/modifica(id=${questionario.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
+        <a th:href="@{/docente/dashboard/{questionarioID}/modifica/{domandaID}(questionarioID=${ID}, domandaID=${d.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
     </div>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">

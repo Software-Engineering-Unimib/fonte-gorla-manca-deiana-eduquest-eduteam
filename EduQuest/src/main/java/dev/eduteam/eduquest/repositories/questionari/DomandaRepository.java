@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import dev.eduteam.eduquest.models.questionari.Risposta;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.questionari.Domanda;
@@ -12,6 +14,9 @@ import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 
 @Repository
 public class DomandaRepository {
+
+    @Autowired
+    private RispostaRepository rispostaRepository;
 
     // DA VALUTARE: Dato che l'ID delle domande è univoco si potrebbe fare un metodo
     // in overload per la ricerca con solo l'ID della domanda
@@ -36,6 +41,9 @@ public class DomandaRepository {
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
                     domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
+
+                    ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
+                    domanda.setElencoRisposte(risposte);
                 }
             }
         } catch (Exception e) {
@@ -70,6 +78,9 @@ public class DomandaRepository {
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
                     domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
+
+                    ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
+                    domanda.setElencoRisposte(risposte);
                 }
             }
         } catch (Exception e) {
@@ -103,6 +114,9 @@ public class DomandaRepository {
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
                     domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
+
+                    ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
+                    domanda.setElencoRisposte(risposte);
 
                     elecoDomande.add(domanda);
                 }

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Fragment per i campi comuni del form profilo -->
+<div th:fragment="formDomanda(domanda)" class="form-fields-comuni">
+
+    <div class="form-group">
+        <label for="domandaID">ID Domanda</label>
+        <input type="number" id="domandaID" name="domandaID"
+               th:value="${questionario.ID}" disabled class="input-disabled">
+        <small class="form-hint">L'ID della domanda non può essere modificata</small>
+    </div>
+
+    <div class="form-group">
+        <label for="testo">Testo</label>
+        <input type="text" id="testo" name="testo" required
+               th:value="${questionario.descrizione}" placeholder="Testo della domanda">
+    </div>
+</div>
+</html>

@@ -1,7 +1,10 @@
 package dev.eduteam.eduquest.services.accounts;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,9 @@ public class DocenteService {
 
     @Autowired
     private DocenteRepository docenteRepository;
+
+    @Autowired
+    private QuestionarioRepository questionarioRepository;
 
     public Docente getByID(int id) {
         return docenteRepository.getDocenteByAccountID(id);
@@ -35,6 +41,17 @@ public class DocenteService {
         if (d != null) {
             d.setInsegnamento(nuovaMateria);
             return docenteRepository.updateDocente(d);
+        }
+        return false;
+    }
+
+    public boolean proprietarioQuestionario(Docente docente, Questionario questionario) {
+        ArrayList<Questionario> questionari = questionarioRepository.getQuestionariByDocente(docente.getAccountID());
+
+        for (Questionario q : questionari) {
+            if (q.getID() == questionario.getID()) {
+                return true;
+            }
         }
         return false;
     }

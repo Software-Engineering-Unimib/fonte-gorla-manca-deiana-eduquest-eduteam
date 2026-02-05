@@ -1,9 +1,0 @@
-<h1>
-    <b>Domande del questionario
-        <span th:text="${questionario.getNome()} "></span>
-    </b>
-</h1>
-
-<ul>
-    <li th:each="d : ${domande}" th:text="${d.getTesto()}"></li>
-</ul>

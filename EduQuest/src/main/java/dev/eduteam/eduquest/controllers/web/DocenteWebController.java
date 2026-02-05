@@ -50,6 +50,7 @@ public class DocenteWebController {
         // Carica i questionari del docente
         try {
             List<Questionario> questionari = questionarioService.getQuestionariByDocente(docente.getAccountID());
+
             model.addAttribute("questionari", questionari);
         } catch (Exception e) {
             // Se non ci sono questionari, la lista sarà null
@@ -57,6 +58,11 @@ public class DocenteWebController {
         }
 
         return "docente/dashboard";
+    }
+
+    @GetMapping("/redirect")
+    public String redirectPage() {
+        return "questionario-redirect";
     }
 
     // ==================== PROFILO ====================

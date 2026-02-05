@@ -10,14 +10,14 @@
             <h1>Questionario "<span th:text="${questionario.nome}"></span>"</h1>
         </header>
 
-        <!--
-        <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> -->
+        <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section>
 
-                <section class="dashboard-section">
+        <section class="dashboard-section">
                     <div class="section-header">
                         <h3>
                             📝 <span th:text="${questionario.descrizione}"></span>
                             📅 <span th:text="${questionario.dataCreazione}"></span>
+                            <a th:href="@{/docente/dashboard/nuovo}" class="btn btn-primary">+ Nuova Domanda</a>
                         </h3>
 
                     </div>
