@@ -75,9 +75,9 @@ public class QuestionarioController {
     public ResponseEntity<?> creaEsercitazione(
             @PathVariable int docenteID,
             @RequestParam Difficulty difficolta,
-            @RequestParam(defaultValue = "") String feedbackTesto) {
+            @RequestParam(defaultValue = "") String noteDidattiche) {
 
-        Esercitazione esercitazione = esercitazioneService.creaEsercitazione(docenteID, difficolta, feedbackTesto);
+        Esercitazione esercitazione = esercitazioneService.creaEsercitazione(docenteID, difficolta, noteDidattiche);
         if (esercitazione != null) {
             return ResponseEntity.status(201).body(esercitazione);
         } else {
@@ -98,7 +98,7 @@ public class QuestionarioController {
 
     // Post -> Put per standard REST, unificato metodo modifica
     @PutMapping("modifica/{ID}")
-    public ResponseEntity<Questionario> setDescrizoneQuestionario(
+    public ResponseEntity<Questionario> setDatiQuestionario(
             @PathVariable int ID,
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) String descrizione,
