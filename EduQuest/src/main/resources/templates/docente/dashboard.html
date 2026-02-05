@@ -11,8 +11,8 @@
                 <p>Benvenuto, <span th:text="${user.nome + ' ' + user.cognome}"></span>!</p>
             </header>
 
-            <!--
-            <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> -->
+            
+            <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> 
             
             <section class="dashboard-section">
                 <div class="section-header">
