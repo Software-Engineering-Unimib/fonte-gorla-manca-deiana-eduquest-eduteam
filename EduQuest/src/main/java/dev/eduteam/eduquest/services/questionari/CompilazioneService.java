@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compilazione;
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.CompilazioneRepository;
@@ -28,6 +30,9 @@ public class CompilazioneService {
 
     @Autowired
     private RispostaRepository rispostaRepository;
+
+    @Autowired
+    private CompitinoService compitinoService;
 
     public boolean inserisciRispostaComp(int compilazioneID, int domandaID, int rispostaID) {
         Compilazione compilazione = compilazioneRepository.getCompilazioneByID(compilazioneID);
@@ -54,13 +59,23 @@ public class CompilazioneService {
     }
 
     public ArrayList<Compilazione> getCompilazioniCompletate(int studenteID) {
-        return compilazioneRepository.getCompilazioniCompletate(studenteID);
+        return compilazioneRepository.getCompilazioniStatus(studenteID, true);
     }
 
     public Compilazione creaCompilazione(int studenteID, int questionarioID) {
-        Compilazione compilazione = new Compilazione(studenteRepository.getStudenteByAccountID(studenteID),
-                questionarioRepository.getQuestionarioByID(questionarioID));
-        return compilazioneRepository.insertCompilazione(compilazione);
+        // controllo per vedere se lo studente può fare la compilazione del compitino
+        if (!compitinoService.isCompilabileByStudente(studenteID, questionarioID)) {
+            return null;
+        }
+
+        Studente s = studenteRepository.getStudenteByAccountID(studenteID);
+        Questionario q = questionarioRepository.getQuestionarioByID(questionarioID);
+        if (s == null || q == null) {
+            return null;
+        }
+
+        Compilazione c = new Compilazione(s, q);
+        return compilazioneRepository.insertCompilazione(c);
     }
 
     // Metodi private
@@ -87,7 +102,7 @@ public class CompilazioneService {
         Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
 
         double mediaAttuale = studente.getMediaPunteggio();
-        int totCompilazioni = compilazioneRepository.getCompilazioniCompletate(studenteID).size();
+        int totCompilazioni = compilazioneRepository.getCompilazioniStatus(studenteID, true).size();
         int punteggioCompilazione = c.getPunteggio();
         double nuovaMedia = ((mediaAttuale * totCompilazioni) + punteggioCompilazione) / (totCompilazioni + 1);
 
@@ -95,5 +110,18 @@ public class CompilazioneService {
         c.setCompletato(true);
         return (studenteRepository.updateStudente(studente)
                 && compilazioneRepository.upateStatusCompilazione(compilazioneID, true));
+    }
+
+    public ArrayList<Compilazione> getCompilazioniInSospeso(int studenteID) {
+        return compilazioneRepository.getCompilazioniStatus(studenteID, false);
+    }
+
+    public Compilazione riprendiCompilazione(int studenteID, int questionarioID) {
+        Compilazione c = compilazioneRepository.getCompilazioneInSospeso(studenteID, questionarioID);
+        if (c != null) {
+            // devo caricare le risposte salvate fino ad ora
+            popolaCompilazione(c);
+        }
+        return c;
     }
 }

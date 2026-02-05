@@ -1,0 +1,61 @@
+package dev.eduteam.eduquest.repositories.questionari;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import dev.eduteam.eduquest.models.questionari.Compitino;
+import dev.eduteam.eduquest.models.questionari.Domanda;
+import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
+import dev.eduteam.eduquest.repositories.ConnectionSingleton;
+import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
+
+@Repository
+public class CompitinoRepository extends QuestionarioRepository {
+
+    public Compitino insertCompitino(Compitino c) {
+        // Usiamo il metodo padre per salvare nella tabella "questionari" i dati comuni
+        Questionario base = super.insertQuestionario(c);
+
+        // Garantiamo che un compitino non può esistere
+        // se non esiste il questionario corrispondente
+        if (base != null) {
+            String query = "INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax) VALUES (?, ?, ?)";
+
+            try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                    PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setInt(1, base.getID());
+                ps.setDate(2, java.sql.Date.valueOf(c.getDataFine()));
+                ps.setInt(3, c.getTentativiMax());
+
+                ps.executeUpdate();
+                return c;
+            } catch (Exception e) {
+                System.out.println("Errore inserimento dettagli compitino: " + e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    public int countTentativi(int studenteID, int questionarioID) {
+        String query = "SELECT COUNT(*) FROM compilazioni WHERE studenteID_FK = ? AND questionarioID_FK = ?";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, studenteID);
+            ps.setInt(2, questionarioID);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next())
+                    return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+}

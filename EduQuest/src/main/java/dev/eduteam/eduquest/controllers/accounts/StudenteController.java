@@ -112,10 +112,10 @@ public class StudenteController {
         }
     }
 
-    // verrà mostrato allo studente una simil-galleria di questionari
+    // Verrà mostrato allo studente una simil-galleria di questionari
     @GetMapping("{studenteID}/questionari")
-    public ResponseEntity<List<Questionario>> mostraQuestionariDisponibili(/* @PathVariable int studenteID, */) {
-        List<Questionario> questionari = questionarioService.getQuestionari();
+    public ResponseEntity<List<Questionario>> mostraQuestionariDisponibili(@PathVariable int studenteID) {
+        List<Questionario> questionari = questionarioService.getQuestionariDisponibliPerStudente(studenteID);
         if (questionari.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         } else {
@@ -126,15 +126,18 @@ public class StudenteController {
     // Dovrebbe inizializzare la compilazione e mostrare la prima domanda del
     // questionario
     @GetMapping("{studenteID}/compila/{questionarioID}")
-    public ResponseEntity<Domanda> compilaQuestionario(@PathVariable int studenteID,
+    public ResponseEntity<?> compilaQuestionario(@PathVariable int studenteID,
             @PathVariable int questionarioID) {
         Compilazione c = compilazioneService.creaCompilazione(studenteID, questionarioID);
         if (c != null) {
             Questionario q = questionarioService.getQuestionarioCompleto(questionarioID);
-            // sistemare caso in cui il questionario è vuoto -> non posso compilarlo
+            if (q.getElencoDomande().isEmpty()) {
+                return ResponseEntity.badRequest().body("Il questionario non ha domande.");
+            }
             return ResponseEntity.ok(q.getElencoDomande().getFirst());
         } else {
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Accesso negato: Tentativi esauriti.");
         }
     }
 
@@ -165,6 +168,32 @@ public class StudenteController {
         return ResponseEntity.ok(compilazioneService.getCompilazioniCompletate(studenteID));
     }
 
-    // TODO implementare la funzione di ripresa di un questionario lasciato in
-    // sospeso
+    // Torna le compilazioni lasciare in sospeso
+    @GetMapping("{studenteID}/riprendi")
+    public ResponseEntity<ArrayList<Compilazione>> getCompilazioniInSospeso(@PathVariable int studenteID) {
+        return ResponseEntity.ok(compilazioneService.getCompilazioniInSospeso(studenteID));
+    }
+
+    @GetMapping("{studenteID}/riprendi/{questionarioID}")
+    // ->
+    // @GetMapping("{studenteID}/compila/{questionarioID}/{compilazioneID}/{domandaID}")
+    public ResponseEntity<?> riprendiCompilazione(
+            @PathVariable int studenteID,
+            @PathVariable int questionarioID) {
+
+        Compilazione c = compilazioneService.riprendiCompilazione(studenteID, questionarioID);
+        if (c != null) {
+            Domanda d = questionarioService.getDomandaInSospeso(questionarioID, c.getRisposte());
+            if (d != null)
+                return ResponseEntity.ok(d);
+            // se d == null allora lo student ha risposto a tutte le domande
+            if (compilazioneService.chiudiCompilazione(studenteID, c.getID())) {
+                return ResponseEntity.ok("Questionario completato");
+            }
+            return ResponseEntity.internalServerError().body("Errore durante la chiusura della compilazione");
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Nessuna compilazione in corso trovata per questo questionario.");
+    }
 }

@@ -1,12 +1,18 @@
 package dev.eduteam.eduquest.controllers.questionari;
 
+import dev.eduteam.eduquest.models.questionari.Compitino;
+import dev.eduteam.eduquest.models.questionari.Esercitazione;
 import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
+import dev.eduteam.eduquest.services.questionari.CompitinoService;
+import dev.eduteam.eduquest.services.questionari.EsercitazioneService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @RestController
@@ -15,6 +21,12 @@ public class QuestionarioController {
 
     @Autowired
     private QuestionarioService questionarioService;
+
+    @Autowired
+    private CompitinoService compitinoService;
+
+    @Autowired
+    private EsercitazioneService esercitazioneService;
 
     @GetMapping()
     public ArrayList<Questionario> getQuestionariByDocente(@PathVariable int docenteID) {
@@ -32,12 +44,42 @@ public class QuestionarioController {
     }
 
     @PostMapping("crea")
-    public ResponseEntity<Questionario> creaQuestionario(@RequestParam int docenteID) {
+    public ResponseEntity<Questionario> creaQuestionario(
+            @PathVariable int docenteID,
+            @RequestParam Difficulty difficolta) { // potremmo mettere @RequestParam(defaultValue = "Medio")
 
-        Questionario questionarioCreato = questionarioService.creaQuestionario(docenteID);
+        Questionario questionarioCreato = questionarioService.creaQuestionario(docenteID, difficolta);
 
         if (questionarioCreato != null) {
             return ResponseEntity.status(201).body(questionarioCreato);
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("creaCompitino")
+    public ResponseEntity<?> creaCompitino(@PathVariable int docenteID,
+            @RequestParam Difficulty difficolta,
+            @RequestParam String dataFine, // Formato YYYY-MM-DD
+            @RequestParam int tentativi) {
+        LocalDate scadenza = LocalDate.parse(dataFine);
+        Compitino compitino = compitinoService.creaCompitino(docenteID, difficolta, scadenza, tentativi);
+        if (compitino != null) {
+            return ResponseEntity.status(201).body(compitino);
+        } else {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("creaEsercitazione")
+    public ResponseEntity<?> creaEsercitazione(
+            @PathVariable int docenteID,
+            @RequestParam Difficulty difficolta,
+            @RequestParam(defaultValue = "") String noteDidattiche) {
+
+        Esercitazione esercitazione = esercitazioneService.creaEsercitazione(docenteID, difficolta, noteDidattiche);
+        if (esercitazione != null) {
+            return ResponseEntity.status(201).body(esercitazione);
         } else {
             return ResponseEntity.internalServerError().build();
         }
@@ -48,52 +90,31 @@ public class QuestionarioController {
     public ResponseEntity<Questionario> rimuoviQuestionario(@PathVariable int ID) {
         boolean result = questionarioService.rimuoviQuestionario(ID);
         if (result) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // Post -> Put per standard REST
-    @PutMapping("modifica/{ID}/rinomina")
-    public ResponseEntity<Questionario> rinominaQuestionario(
-            @PathVariable int docenteID,
+    // Post -> Put per standard REST, unificato metodo modifica
+    @PutMapping("modifica/{ID}")
+    public ResponseEntity<Questionario> setDatiQuestionario(
             @PathVariable int ID,
-            @RequestParam(name = "nome") String nome) {
-
-        // Validazione del nome - non nullo o vuoto
-        if (nome == null || nome.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String descrizione,
+            @RequestParam(required = false) Difficulty difficolta) {
 
         Questionario q = questionarioService.getQuestionarioCompleto(ID);
         if (q == null) {
             return ResponseEntity.notFound().build();
         }
-        boolean result = questionarioService.modificaInfo(q, nome, q.getDescrizione());
-        if (result) {
-            return ResponseEntity.ok(q);
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
 
-    }
+        // Validazione input - se un parametro non inviato, manteniamo valore attuale
+        String nuovoNome = (nome != null && !nome.trim().isEmpty()) ? nome : q.getNome();
+        String nuovaDesc = (descrizione != null && !descrizione.trim().isEmpty()) ? descrizione : q.getDescrizione();
+        Difficulty nuovaDiff = (difficolta != null) ? difficolta : q.getLivelloDifficulty();
 
-    @PostMapping("modifica/{ID}/descrizione")
-    public ResponseEntity<Questionario> setDescrizoneQuestionario(
-            @PathVariable int docenteID,
-            @PathVariable int ID,
-            @RequestParam(name = "descrizione") String descrizione) {
-
-        // Validazione della descrizione - non nulla o vuota
-        if (descrizione == null || descrizione.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        Questionario q = questionarioService.getQuestionarioCompleto(ID);
-        if (q == null) {
-            return ResponseEntity.notFound().build();
-        }
-        boolean result = questionarioService.modificaInfo(q, q.getNome(), descrizione);
+        boolean result = questionarioService.modificaInfo(q, nuovoNome, nuovaDesc, nuovaDiff);
         if (result) {
             return ResponseEntity.ok(q);
         } else {

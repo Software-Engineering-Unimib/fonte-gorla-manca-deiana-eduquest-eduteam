@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import dev.eduteam.eduquest.services.questionari.CompitinoService;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.accounts.Studente;
@@ -37,6 +38,9 @@ class CompilazioneServiceTest {
         @Mock
         private RispostaRepository rispostaRepository;
 
+        @Mock
+        private CompitinoService compitinoService;
+
         @InjectMocks
         private CompilazioneService compilazioneService;
 
@@ -63,7 +67,8 @@ class CompilazioneServiceTest {
                 domande.add(d1);
                 domande.add(d2);
                 domande.add(d3);
-                questionario = new Questionario("Test Questionario", "Descrizione", domande, docente);
+                questionario = new Questionario("Test Questionario", "Descrizione", domande, docente,
+                                Questionario.Difficulty.Facile);
                 questionario.setID(1);
 
                 compilazione = new Compilazione(studente, questionario);
@@ -79,6 +84,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(studente);
                 when(questionarioRepository.getQuestionarioByID(1))
                                 .thenReturn(questionario);
+                when(compitinoService.isCompilabileByStudente(1, 1)).thenReturn(true);
                 when(compilazioneRepository.insertCompilazione(any(Compilazione.class)))
                                 .thenReturn(compilazione);
 
@@ -161,7 +167,7 @@ class CompilazioneServiceTest {
                 ArrayList<Compilazione> compilazioni = new ArrayList<>();
                 compilazioni.add(compilazione);
 
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
 
                 ArrayList<Compilazione> risultato = compilazioneService.getCompilazioniCompletate(1);
@@ -173,7 +179,7 @@ class CompilazioneServiceTest {
 
         @Test
         void testGetCompilazioniCompletateEmpty() {
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(new ArrayList<>());
 
                 ArrayList<Compilazione> risultato = compilazioneService.getCompilazioniCompletate(1);
@@ -194,7 +200,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))
                                 .thenReturn(true);
@@ -220,7 +226,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
-                when(compilazioneRepository.getCompilazioniCompletate(1))
+                when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))
                                 .thenReturn(true);
@@ -229,5 +235,36 @@ class CompilazioneServiceTest {
 
                 boolean risultato = compilazioneService.chiudiCompilazione(1, 1);
                 assertFalse(risultato);
+        }
+
+        @Test
+        void testRiprendiCompilazioneSuccess() {
+                Risposta[] risposte = new Risposta[3];
+                risposte[0] = risposta;
+
+                when(compilazioneRepository.getCompilazioneInSospeso(1, 1))
+                                .thenReturn(compilazione);
+                when(compilazioneRepository.getRisposteCompilazione(1, 3))
+                                .thenReturn(risposte);
+
+                Compilazione risultato = compilazioneService.riprendiCompilazione(1, 1);
+
+                assertNotNull(risultato);
+                assertNotNull(risultato.getRisposte());
+                assertEquals(risposta, risultato.getRisposte()[0]);
+                verify(compilazioneRepository, times(1)).getCompilazioneInSospeso(1, 1);
+                verify(compilazioneRepository, times(1)).getRisposteCompilazione(1, 3);
+        }
+
+        @Test
+        void testRiprendiCompilazioneReturnsNullWhenNoInCorso() {
+                when(compilazioneRepository.getCompilazioneInSospeso(1, 1))
+                                .thenReturn(null);
+
+                Compilazione risultato = compilazioneService.riprendiCompilazione(1, 1);
+
+                assertNull(risultato);
+                verify(compilazioneRepository, times(1)).getCompilazioneInSospeso(1, 1);
+                verify(compilazioneRepository, never()).getRisposteCompilazione(anyInt(), anyInt());
         }
 }

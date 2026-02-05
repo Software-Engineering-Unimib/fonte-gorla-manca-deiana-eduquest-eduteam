@@ -9,7 +9,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compilazione;
+import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
@@ -26,6 +28,21 @@ public class CompilazioneRepository {
     @Autowired
     RispostaRepository rispostaRepository;
 
+    private Compilazione mapResultSetToCompilazione(ResultSet rs) throws Exception {
+        int studenteID = rs.getInt("studenteID_FK");
+        int questionarioID = rs.getInt("questionarioID_FK");
+
+        Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
+        Questionario questionario = questionarioRepository.getQuestionarioByID(questionarioID);
+
+        Compilazione c = new Compilazione(studente, questionario);
+        c.setID(rs.getInt("compilazioneID"));
+        c.setCompletato(rs.getBoolean("completato"));
+        c.setPunteggio(rs.getInt("punteggio"));
+
+        return c;
+    }
+
     public Compilazione getCompilazioneByID(int compilazioneID) {
         Compilazione compilazione = null;
         String query = "SELECT " +
@@ -40,14 +57,7 @@ public class CompilazioneRepository {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    compilazione = new Compilazione(null, null);
-
-                    compilazione.setID(rs.getInt("compilazioneID"));
-                    compilazione.setStudente(studenteRepository.getStudenteByAccountID(rs.getInt("studenteID_FK")));
-                    compilazione.setQuestionario(
-                            questionarioRepository.getQuestionarioByID(rs.getInt("questionarioID_FK")));
-                    compilazione.setCompletato(rs.getBoolean("completato"));
-                    compilazione.setPunteggio(rs.getInt("punteggio"));
+                    return mapResultSetToCompilazione(rs);
                 }
             }
         } catch (Exception e) {
@@ -87,7 +97,7 @@ public class CompilazioneRepository {
 
     }
 
-    public ArrayList<Compilazione> getCompilazioniCompletate(int studenteID) {
+    public ArrayList<Compilazione> getCompilazioniStatus(int studenteID, boolean status) {
         ArrayList<Compilazione> elencoCompilazioni = new ArrayList<Compilazione>();
         String query = "SELECT " +
                 "compilazioneID, studenteID_FK, " +
@@ -97,20 +107,11 @@ public class CompilazioneRepository {
                 PreparedStatement ps = conn.prepareStatement(query);) {
 
             ps.setInt(1, studenteID);
-            ps.setBoolean(2, true);
+            ps.setBoolean(2, status);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Compilazione compilazione = new Compilazione(null, null);
-
-                    compilazione.setID(rs.getInt("compilazioneID"));
-                    compilazione.setStudente(studenteRepository.getStudenteByAccountID(rs.getInt("studenteID_FK")));
-                    compilazione.setQuestionario(
-                            questionarioRepository.getQuestionarioByID(rs.getInt("questionarioID_FK")));
-                    compilazione.setCompletato(rs.getBoolean("completato"));
-                    compilazione.setPunteggio(rs.getInt("punteggio"));
-
-                    elencoCompilazioni.add(compilazione);
+                    elencoCompilazioni.add(mapResultSetToCompilazione(rs));
                 }
             }
         } catch (Exception e) {
@@ -188,5 +189,22 @@ public class CompilazioneRepository {
             System.out.println("Errore aggiornamento status compilazione: " + e.getMessage());
             return false;
         }
+    }
+
+    public Compilazione getCompilazioneInSospeso(int studenteID, int questionarioID) {
+        String query = "SELECT * FROM compilazioni WHERE studenteID_FK = ? AND questionarioID_FK = ? AND completato = false LIMIT 1";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, studenteID);
+            ps.setInt(2, questionarioID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToCompilazione(rs);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore, nessuna compilazione in sospeso: " + e.getMessage());
+        }
+        return null;
     }
 }

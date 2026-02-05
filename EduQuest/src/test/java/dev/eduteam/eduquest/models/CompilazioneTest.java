@@ -25,10 +25,12 @@ class CompilazioneTest {
     void setUp() {
         studente = new Studente("Mario", "Rossi", "mrossi", "mario@email.com", "password123");
         docente = new Docente("Luigi", "Bianchi", "lbianchi", "luigi@email.com", "password456");
+        docente.setInsegnamento("Matematica");
 
         ArrayList<Domanda> domande = new ArrayList<>();
         // Aggiungi alcune domande di test
-        questionario = new Questionario("Test Questionario", "Descrizione test", domande, docente);
+        questionario = new Questionario("Test Questionario", "Descrizione test", domande, docente,
+                Questionario.Difficulty.Facile);
 
         compilazione = new Compilazione(studente, questionario);
     }
@@ -39,6 +41,7 @@ class CompilazioneTest {
         assertNotNull(compilazione.getQuestionario());
         assertEquals(studente, compilazione.getStudente());
         assertEquals(questionario, compilazione.getQuestionario());
+        assertEquals("Matematica", compilazione.getQuestionario().getMateria());
     }
 
     @Test
@@ -68,7 +71,8 @@ class CompilazioneTest {
 
         // Test Questionario
         ArrayList<Domanda> nuoveDomande = new ArrayList<>();
-        Questionario nuovoQuestionario = new Questionario("Nuovo Test", "Descrizione nuova", nuoveDomande, docente);
+        Questionario nuovoQuestionario = new Questionario("Nuovo Test", "Descrizione nuova", nuoveDomande, docente,
+                Questionario.Difficulty.Difficile);
         compilazione.setQuestionario(nuovoQuestionario);
         assertEquals(nuovoQuestionario, compilazione.getQuestionario());
 

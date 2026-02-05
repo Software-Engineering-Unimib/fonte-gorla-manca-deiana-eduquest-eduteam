@@ -1,8 +1,12 @@
 package dev.eduteam.eduquest.services.questionari;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.questionari.Compilazione;
+import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
+import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 
@@ -10,12 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionarioService {
 
     @Autowired
+    private CompitinoService compitinoService;
+
+    @Autowired
     private QuestionarioRepository questionarioRepository;
+
     @Autowired
     private DocenteRepository docenteRepository;
 
@@ -25,6 +35,7 @@ public class QuestionarioService {
     // Aggiunto per permettere allo studente di controllare i questionari senza l'ID
     // del docente
     public ArrayList<Questionario> getQuestionari() {
+        // Restituisce una lista mista di Questionario e Compitini
         return questionarioRepository.getQuestionari();
     }
 
@@ -32,34 +43,59 @@ public class QuestionarioService {
         return questionarioRepository.getQuestionariByDocente(docenteID);
     }
 
-    public Questionario getQuestionarioCompleto(int ID) {
-        return questionarioRepository.getQuestionarioByID(ID);
+    public List<Questionario> getQuestionariDisponibliPerStudente(int studenteID) {
+        List<Questionario> tutti = questionarioRepository.getQuestionari();
+
+        return tutti.stream().filter(q -> {
+            if (q instanceof Compitino) {
+                return compitinoService.isCompilabileByStudente(studenteID, q.getID());
+            }
+            return true;
+        }).collect(Collectors.toList());
     }
 
-    public Questionario creaQuestionario(int docenteID) {
+    public Questionario getQuestionarioCompleto(int ID) {
+        // Grazie alla LEFT JOIN nel repo, 'questionario' potrebbe essere un'istanza di
+        // Compitino
+        Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
 
-        Docente docente = docenteRepository.getDocenteByAccountID(docenteID);
-        Questionario nuovo = new Questionario("Nuovo Questionario",
-                "Nuova Descrizione",
-                new ArrayList<Domanda>(),
-                docente, docente.getInsegnamento(),
-                Questionario.Difficolta.Facile);
+        // Controllo che questionario non sia null prima di usarlo
+        if (questionario != null) {
+            // Recupero le domande (che a loro volta hanno già le risposte caricate)
+            ArrayList<Domanda> domande = domandaService.getDomandeComplete(ID);
+            // "Allego" le domande al questionario prima di restituirlo
+            questionario.setElencoDomande(domande);
+        }
+        return questionario;
+    }
+
+    public Questionario creaQuestionario(int docenteID, Difficulty livelloDiff) {
+        Docente d = docenteRepository.getDocenteByAccountID(docenteID);
+        if (d == null)
+            return null;
+        Questionario nuovo = new Questionario("Nuovo Questionario", "Nuova Descrizione",
+                new ArrayList<Domanda>(), d, livelloDiff);
         return questionarioRepository.insertQuestionario(nuovo);
     }
 
     public boolean rimuoviQuestionario(int ID) {
+        // Il CASCADE sul DB cancellerà anche eventuali righe in 'compitini'
         return questionarioRepository.removeQuestionario(ID);
     }
 
     // Uniti i due metodi di modifica e sistemata logica in controller
-    public boolean modificaInfo(Questionario questionario, String nome, String descrizione) {
+    public boolean modificaInfo(Questionario questionario, String nome, String descrizione, Difficulty livelloDiff) {
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
+        questionario.setLivelloDiff(livelloDiff);
         return questionarioRepository.updateQuestionario(questionario);
     }
 
     public Domanda getDomandaSuccessiva(int questionarioID, int domandaID) {
-        Questionario q = questionarioRepository.getQuestionarioByID(questionarioID);
+        Questionario q = getQuestionarioCompleto(questionarioID);
+        if (q == null || q.getElencoDomande() == null)
+            return null;
+
         ArrayList<Domanda> elenco = q.getElencoDomande();
         for (int i = 0; i < elenco.size(); i++) {
             if (elenco.get(i).getID() == domandaID) {
@@ -72,6 +108,23 @@ public class QuestionarioService {
         }
         // Si potrebbe definire un'eccezione specifica per distinguere
         // tra non c'è e ID non valido
+        return null;
+    }
+
+    public Domanda getDomandaInSospeso(int questionarioID, Risposta[] risposte) {
+        int index = 0;
+        Questionario q = getQuestionarioCompleto(questionarioID);
+        if (q == null || q.getElencoDomande() == null)
+            return null;
+
+        // Deve trovare la prossima domanda a cui non ho ancora dato risposta e tornarla
+        while (index < risposte.length && index < q.getNumeroDomande() && risposte[index] != null) {
+            index++;
+        }
+        // Escludiamo il caso in cui non ho domanda da compilare
+        if (index < q.getNumeroDomande()) {
+            return q.getElencoDomande().get(index);
+        }
         return null;
     }
 

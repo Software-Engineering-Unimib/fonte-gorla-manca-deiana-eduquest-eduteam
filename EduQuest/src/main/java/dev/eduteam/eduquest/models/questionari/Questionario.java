@@ -7,25 +7,34 @@ import dev.eduteam.eduquest.models.accounts.Docente;
 
 public class Questionario {
 
+    public enum Difficulty {
+        Facile,
+        Medio,
+        Difficile
+    }
+
     // Variabili private del questionario
     private int ID; // GLI ID SARANNO LEGATI AI QUESTIONARI SALVATI SUL DB
-    // ID inizializzato nel costruttore vuoto
-    private String nome; // null
-    private String descrizione; // null
+    private String nome;
+    private String descrizione;
 
-    private int numeroDomande; // 0
-    private ArrayList<Domanda> elencoDomande; // vuota?
+    private int numeroDomande;
+    private ArrayList<Domanda> elencoDomande;
 
     private LocalDate dataCreazione; // inizializzata di default nel costruttore senza parametri
     private Docente docenteCreatore; // ID del docente che ha creato il questionario
+    private String materia;
+    private Difficulty livelloDiff;
 
-    public Questionario(String nome, String descrizione, ArrayList<Domanda> domande, Docente docente) {
+    public Questionario(String nome, String descrizione, ArrayList<Domanda> domande, Docente docente,
+            Difficulty livelloDiff) {
         setNome(nome);
+        setDescrizione(descrizione);
         this.elencoDomande = (domande != null) ? domande : new ArrayList<>();
         setNumeroDomande(domande.size());
         setDataCreazione(LocalDate.now());
         setDocente(docente);
-        setDescrizione(descrizione);
+        setLivelloDiff(livelloDiff);
     }
 
     public int getID() {
@@ -95,7 +104,20 @@ public class Questionario {
     }
 
     public void setDocente(Docente docente) {
-        docenteCreatore = docente;
+        this.docenteCreatore = docente;
+        this.materia = docente.getInsegnamento();
+    }
+
+    public String getMateria() {
+        return materia;
+    }
+
+    public Difficulty getLivelloDifficulty() {
+        return livelloDiff;
+    }
+
+    public void setLivelloDiff(Difficulty livello) {
+        this.livelloDiff = livello;
     }
 
 }

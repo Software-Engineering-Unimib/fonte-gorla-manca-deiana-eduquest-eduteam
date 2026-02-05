@@ -2,14 +2,12 @@ package dev.eduteam.eduquest.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import dev.eduteam.eduquest.models.accounts.Account;
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.services.accounts.AccountFactory;
 
-@SpringBootTest
 public class AccountFactoryTest {
     @Test
     void creaDocenteQuandoTrue() {
