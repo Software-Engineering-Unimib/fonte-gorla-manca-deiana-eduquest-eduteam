@@ -47,4 +47,12 @@ public class RispostaService {
         risposta.setCorretta(corretta);
         return rispostaRepository.updateRisposta(risposta);
     }
+
+    public boolean modificaTesto(Risposta risposta, String testo) {
+        if (testo == null) {
+            throw new IllegalArgumentException("Il testo non può essere null");
+        }
+        risposta.setTesto(testo);
+        return rispostaRepository.updateRisposta(risposta);
+    }
 }
