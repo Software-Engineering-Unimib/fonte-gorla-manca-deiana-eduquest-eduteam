@@ -79,6 +79,7 @@ public class QuestionarioControllerWeb {
     public String modificaQuestionario(@PathVariable int questionarioID,
                                   @RequestParam String nome,
                                   @RequestParam String descrizione,
+                                  @RequestParam String difficolta,
                                   HttpSession session,
                                   RedirectAttributes redirectAttributes) {
         Docente docente = (Docente) session.getAttribute("user");
@@ -87,6 +88,8 @@ public class QuestionarioControllerWeb {
             return "redirect:/login";
         }
 
+        Questionario.Difficulty diff = Questionario.Difficulty.valueOf(difficolta);
+
         // Validazione: campi obbligatori non vuoti
         if (questionarioID == 0 || nome.isBlank() || descrizione.isBlank()) {
             redirectAttributes.addFlashAttribute("error", "Nome e descrizione sono obbligatori.");
@@ -94,7 +97,7 @@ public class QuestionarioControllerWeb {
             redirectAttributes.addFlashAttribute("cognome", descrizione);
             return "redirect:/docente/profilo";
         }
-        questionarioService.modificaInfo(questionarioService.getQuestionarioCompleto(questionarioID), nome, descrizione);
+        questionarioService.modificaInfo(questionarioService.getQuestionarioCompleto(questionarioID), nome, descrizione, diff);
 
         return "redirect:/docente/dashboard/" + questionarioID;
     }
@@ -138,7 +141,7 @@ public class QuestionarioControllerWeb {
             return "redirect:/login";
         }
 
-        questionarioService.creaQuestionario(docente.getAccountID());
+        questionarioService.creaQuestionario(docente.getAccountID(), Questionario.Difficulty.Facile);
 
         return "redirect:/docente/dashboard";
     }
