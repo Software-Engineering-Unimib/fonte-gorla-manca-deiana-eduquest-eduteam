@@ -86,36 +86,53 @@ public class DomandaControllerWeb {
         return "domanda/singola-domanda";
     }
 
-    @PostMapping("aggiungi")
-    public ResponseEntity<Questionario> aggiungiDomanda(
-            @PathVariable int docenteID,
-            @PathVariable int questionarioID,
-            @RequestParam(name = "tipo") Domanda.Type tipo) {
+    @PostMapping("aggiungiSingolaRisposta")
+    public String creaDomandaSingolaRisposta(HttpSession session,
+                                   @PathVariable int questionarioID) {
+        Docente docente = (Docente) session.getAttribute("user");
 
-        Questionario questionarioDaModificare = questionarioService.getQuestionarioCompleto(questionarioID);
-        if (questionarioDaModificare == null) {
-            return ResponseEntity.notFound().build();
+        if (docente == null) {
+            return "redirect:/login";
         }
+        domandaService.aggiungiDomanda(questionarioID, Domanda.Type.DOMANDA_MULTIPLA);
+        return "redirect:/docente/dashboard/" + questionarioID;
+    }
+    @PostMapping("aggiungiMultipleRisposte")
+    public String creaDomandaMultipleRisposte(HttpSession session,
+                                   @PathVariable int questionarioID) {
+        Docente docente = (Docente) session.getAttribute("user");
 
-        Domanda domandaAggiunta = domandaService.aggiungiDomanda(questionarioID, tipo);
-        if (domandaAggiunta != null) {
-            return ResponseEntity.ok(questionarioDaModificare);
-        } else {
-            return ResponseEntity.internalServerError().build();
+        if (docente == null) {
+            return "redirect:/login";
         }
+        domandaService.aggiungiDomanda(questionarioID, Domanda.Type.DOMANDA_MULTIPLE_RISPOSTE);
+        return "redirect:/docente/dashboard/" + questionarioID;
+    }
+    @PostMapping("aggiungiVeroFalso")
+    public String creaDomandaVeroFalso(HttpSession session,
+                                   @PathVariable int questionarioID) {
+        Docente docente = (Docente) session.getAttribute("user");
+
+        if (docente == null) {
+            return "redirect:/login";
+        }
+        domandaService.aggiungiDomanda(questionarioID, Domanda.Type.DOMANDA_VERO_FALSO);
+        return "redirect:/docente/dashboard/" + questionarioID;
     }
 
+
     @PostMapping("rimuovi/{domandaID}")
-    public ResponseEntity<Questionario> rimuoviDomanda(
+    public String rimuoviDomanda(HttpSession session,
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
 
-        boolean rimosso = domandaService.rimuoviDomanda(questionarioID, domandaID);
-        if (rimosso) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        Docente docente = (Docente) session.getAttribute("user");
+
+        if (docente == null) {
+            return "redirect:/login";
         }
+        boolean rimosso = domandaService.rimuoviDomanda(questionarioID, domandaID);
+        return "redirect:/docente/dashboard/" + questionarioID;
     }
 
     @PostMapping("/modifica/{domandaID}")

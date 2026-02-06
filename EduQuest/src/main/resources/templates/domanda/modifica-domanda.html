@@ -16,7 +16,7 @@
             <div th:replace="~{fragments/domanda-form :: formDomanda(${domanda})}"></div>
 
             <div class="form-actions">
-                <a th:href="@{/docente/dashboard/{questionario.ID}" class="btn btn-secondary">Annulla</a>
+                <a th:href="@{|/docente/dashboard/${questionario.ID}|}" class="btn btn-secondary">Annulla</a>
                 <button type="submit" class="btn btn-primary">Salva Modifiche</button>
             </div>
         </form>

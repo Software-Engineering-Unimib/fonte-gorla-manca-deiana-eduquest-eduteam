@@ -20,6 +20,9 @@ public class CompitinoService {
     private CompitinoRepository compitinoRepository;
 
     @Autowired
+    private QuestionarioRepository questionarioRepository;
+
+    @Autowired
     private DomandaService domandaService;
 
     @Autowired
@@ -62,5 +65,16 @@ public class CompitinoService {
         // Controllo tentativi
         int tentativiFatti = compitinoRepository.countTentativi(studenteID, compitinoID);
         return tentativiFatti < c.getTentativiMax();
+    }
+
+    // Uniti i due metodi di modifica e sistemata logica in controller
+    public boolean modificaInfoCompitino(Compitino questionario, String nome, String descrizione, Difficulty livelloDiff, LocalDate dataFine, int tentativiMax) {
+        questionario.setNome(nome);
+        questionario.setDescrizione(descrizione);
+        questionario.setLivelloDiff(livelloDiff);
+        questionarioRepository.updateQuestionario(questionario);
+        questionario.setDataFine(dataFine);
+        questionario.setTentativiMax(tentativiMax);
+        return compitinoRepository.updateCompitino(questionario);
     }
 }

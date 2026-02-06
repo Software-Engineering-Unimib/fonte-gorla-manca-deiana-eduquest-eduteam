@@ -12,13 +12,4 @@ public class DomandaMultipla extends Domanda {
         setNumeroRisposte(0);
         setTesto(testo);
     }
-
-    public Risposta getRispostaCorretta() {
-        return rispostaCorretta;
-    }
-
-    @Override
-    public void setRispostaCorretta(Risposta risposta) {
-        rispostaCorretta = risposta;
-    }
 }

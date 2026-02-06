@@ -107,12 +107,12 @@ public class QuestionarioRepository {
                 "e.noteDidattiche " +
                 "FROM questionari q " +
                 "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK " +
-                "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK";
+                "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK " +
+                "WHERE questionarioID = " + id;
+
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
-
-            ps.setInt(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -127,20 +127,18 @@ public class QuestionarioRepository {
 
     public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
-        String query = "SELECT " +
-                "questionarioID, " +
-                "nome, " +
-                "descrizione, " +
-                "materia, " +
-                "livelloDiff, " +
-                "numeroDomande, " +
-                "dataCreazione, " +
-                "docenteID_FK FROM questionari WHERE docenteID_FK = ?";
+
+        String query = "SELECT q.*, " +
+                "c.dataFine, c.tentativiMax, " +
+                "e.noteDidattiche " +
+                "FROM questionari q " +
+                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK " +
+                "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK " +
+                "WHERE docenteID_FK = " + docenteID;
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);) {
 
-            ps.setInt(1, docenteID);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     questionari.add(mapResultSetToQuestionario(rs));
@@ -171,12 +169,16 @@ public class QuestionarioRepository {
                 if (rs.next()) {
                     questionario.setID(rs.getInt(1)); // Imposta l'ID generato al questionario
                 }
+
+                return questionario;
             }
-            return questionario;
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
         }
+
+
     }
 
     public boolean removeQuestionario(int id) {

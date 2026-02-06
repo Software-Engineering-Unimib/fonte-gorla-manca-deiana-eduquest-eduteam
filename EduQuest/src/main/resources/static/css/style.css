@@ -12,6 +12,7 @@
     --text-secondary: #6B7280;
     --border-color: #E5E7EB;
     --border-radius: 8px;
+    --border-radius-two: 5px;
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
@@ -138,8 +139,9 @@ body {
 .btn {
     display: inline-block;
     padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-two);
     font-weight: 500;
+    margin: auto
     text-decoration: none;
     cursor: pointer;
     border: none;

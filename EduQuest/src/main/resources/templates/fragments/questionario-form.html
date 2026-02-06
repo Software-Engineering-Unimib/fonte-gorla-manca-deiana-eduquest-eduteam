@@ -24,5 +24,45 @@
         <input type="text" id="descrizione" name="descrizione" required
                th:value="${questionario.descrizione}" placeholder="Descrizione del questionario">
     </div>
+
+    <div class="form-group">
+        <label for="questionarioID">Materia</label>
+        <input type="text" id="materia" name="materia"
+               th:value="${questionario.materia}" disabled class="input-disabled">
+        <small class="form-hint">La materia del questionario non può essere modificata</small>
+    </div>
+
+    <div class="form-group">
+        <label for="difficolta">Difficoltà</label>
+        <select name="difficolta" id="difficolta" required>
+            <option value="Facile">Facile</option>
+            <option value="Medio">Medio</option>
+            <option value="Difficile">Difficile</option>
+        </select>
+    </div>
+
+    <div>
+        <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+            <div class="form-group">
+                <label for="noteDidattiche">Note Didattiche</label>
+                <input type="text" id="noteDidattiche" name="noteDidattiche" required
+                       th:value="${questionario.noteDidattiche}" placeholder="Note didattiche">
+            </div>
+        </div>
+
+        <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+            <div class="form-group">
+                <label for="dataFine">Data Fine</label>
+                <input type="date" id="dataFine" name="dataFine" required
+                       th:value="${questionario.dataFine}" placeholder="Data Fine">
+            </div>
+
+            <div class="form-group">
+                <label for="tentativiMax">Tentativi Massimi</label>
+                <input type="number" id="tentativiMax" name="tentativiMax"
+                       th:value="${questionario.tentativiMax}" placeholder="Tentativi Massimi">
+            </div>
+        </div>
+    </div>
 </div>
 </html>

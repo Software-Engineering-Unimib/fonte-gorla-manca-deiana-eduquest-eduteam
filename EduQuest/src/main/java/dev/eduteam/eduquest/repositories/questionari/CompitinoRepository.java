@@ -1,10 +1,13 @@
 package dev.eduteam.eduquest.repositories.questionari;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
+import dev.eduteam.eduquest.models.questionari.Esercitazione;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +20,7 @@ import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 
 @Repository
 public class CompitinoRepository extends QuestionarioRepository {
+
 
     public Compitino insertCompitino(Compitino c) {
         // Usiamo il metodo padre per salvare nella tabella "questionari" i dati comuni
@@ -57,5 +61,24 @@ public class CompitinoRepository extends QuestionarioRepository {
             System.out.println(e.getMessage());
         }
         return 0;
+    }
+
+    public boolean updateCompitino(Compitino comp) {
+        boolean result = false;
+        String query = "UPDATE compitini SET dataFine = ?, tentativiMax = ? WHERE questionarioID_FK = ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setDate(1, Date.valueOf(comp.getDataFine()));
+            ps.setInt(2, comp.getTentativiMax());
+            ps.setInt(3, comp.getID());
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return result;
     }
 }

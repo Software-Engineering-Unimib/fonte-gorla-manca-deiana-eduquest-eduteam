@@ -114,7 +114,7 @@ public class QuestionarioController {
         String nuovaDesc = (descrizione != null && !descrizione.trim().isEmpty()) ? descrizione : q.getDescrizione();
         Difficulty nuovaDiff = (difficolta != null) ? difficolta : q.getLivelloDifficulty();
 
-        boolean result = questionarioService.modificaInfo(q, nuovoNome, nuovaDesc, nuovaDiff);
+        boolean result = questionarioService.modificaInfoQuestionario(q, nuovoNome, nuovaDesc, nuovaDiff);
         if (result) {
             return ResponseEntity.ok(q);
         } else {

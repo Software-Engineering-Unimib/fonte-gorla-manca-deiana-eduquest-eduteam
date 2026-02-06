@@ -75,6 +75,4 @@ public abstract class Domanda {
     public Type getTipoDomanda() {
         return tipoDomanda;
     }
-
-    public abstract void setRispostaCorretta(Risposta risposta);
 }

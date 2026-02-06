@@ -2,7 +2,26 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <section th:fragment="domandaCard(ID, d, index)">
 
-    <h4>Domanda <span th:text="${index}"></span></h4>
+    <h3>Domanda <span th:text="${index + 1}"></span></h3>
+
+    <div th:if='${d.tipoDomanda.toString() == "DOMANDA_MULTIPLA"}'>
+        <h4>
+            ✒️ Risposte multiple - Una sola corretta!
+        </h4>
+    </div>
+
+    <div th:if='${d.tipoDomanda.toString() == "DOMANDA_MULTIPLE_RISPOSTE"}'>
+        <h4>
+            ✒️ Risposte multiple - Più di una corretta!
+        </h4>
+    </div>
+
+    <div th:if='${d.tipoDomanda.toString() == "DOMANDA_VERO_FALSO"}'>
+        <h4>
+            ✒️ Vero o Falso!
+        </h4>
+    </div>
+
     <p th:text="${d.testo}">Testo Domanda</p>
     <div class="card-meta">
         <span>📝 <span th:text="${d.numeroRisposte}"></span> risposte</span>
@@ -10,6 +29,9 @@
     <div class="card-actions">
         <a th:href="@{/docente/dashboard/{questionarioID}/{domandaID}(questionarioID=${ID}, domandaID=${d.ID})}" class="btn btn-sm">Visualizza</a>
         <a th:href="@{/docente/dashboard/{questionarioID}/modifica/{domandaID}(questionarioID=${ID}, domandaID=${d.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
+        <form th:action="@{|/docente/dashboard/${ID}/rimuovi/${d.ID}|}" method="post">
+            <button type="submit" class="btn btn-sm btn-secondary">Rimuovi</button>
+        </form>
     </div>
 
     <link rel="stylesheet" th:href="@{/css/style.css}">

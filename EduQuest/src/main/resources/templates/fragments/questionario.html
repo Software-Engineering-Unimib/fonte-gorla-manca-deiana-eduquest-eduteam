@@ -2,16 +2,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <section th:fragment="questionarioCard(q)">
 
-    <h4>Questionario "<span th:text="${q.nome}"></span>"</h4>
+    <div>
+        <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Questionario"}'>
+            <h4>Questionario "<span th:text="${q.nome}"></span>"</h4>
+        </div>
+
+        <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+            <h4>Esercitazione "<span th:text="${q.nome}"></span>"</h4>
+        </div>
+
+        <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+            <h4>Compitino "<span th:text="${q.nome}"></span>"</h4>
+        </div>
+    </div>
+
     <p th:text="${q.descrizione}">Testo Domanda</p>
     <div class="card-meta">
         <span>📝 <span th:text="${q.numeroDomande}"></span> domande</span>
+        <span>📒 Materia: <span th:text="${q.materia}"></span></span>
+    </div>
+
+    <div class="card-meta">
+        <span>🚩 Difficoltà: <span th:text="${q.getLivelloDifficulty()}"></span></span>
         <span>📅 <span th:text="${q.dataCreazione}"></span></span>
     </div>
+
+    <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}' class="card-meta">
+        <span>✒️ Note Didattiche:</span>
+        <span th:text="${q.noteDidattiche}"></span>
+    </div>
+
+    <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}' class="card-meta">
+        <span>📅 Data fine: <span th:text="${q.dataFine}"></span></span>
+        <span>🔢 Tentativi: <span th:text="${q.tentativiMax}"></span></span>
+    </div>
+
     <div class="card-actions">
         <a th:href="@{/docente/dashboard/{id}(id=${q.ID})}" class="btn btn-sm">Visualizza</a>
         <a th:href="@{/docente/dashboard/modifica/{id}(id=${q.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
+        <form th:action="@{/docente/dashboard/rimuovi/{id}(id=${q.ID})}" method="post">
+            <button type="submit" class="btn btn-sm btn-secondary">Rimuovi</button>
+        </form>
     </div>
+
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </section>

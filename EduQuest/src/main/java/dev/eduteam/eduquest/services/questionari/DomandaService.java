@@ -21,31 +21,12 @@ public class DomandaService {
 
     public ArrayList<Domanda> getDomandeComplete(int questionarioID) {
         ArrayList<Domanda> domande = domandaRepository.getDomandeByQuestionario(questionarioID);
-        for (Domanda d : domande) {
-            popolaRisposte(d);
-        }
         return domande;
     }
 
     public Domanda getDomandaByIdCompleta(int questionarioID, int domandaID) {
         Domanda d = domandaRepository.getDomandaByID(questionarioID, domandaID);
-        if (d != null) {
-            popolaRisposte(d);
-        }
         return d;
-    }
-
-    // Metodo per popolare una domanda con le sue risposte
-    private void popolaRisposte(Domanda d) {
-        ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(d.getID());
-        for (Risposta r : risposte) {
-            d.addRisposta(r);
-            if (r.isCorretta()) {
-                // Il polimorfismo implementato gestirà se aggiungere la risposta corretta a una
-                // lista o a un singolo campo
-                d.setRispostaCorretta(r);
-            }
-        }
     }
 
     public Domanda aggiungiDomanda(int questionarioID, Domanda.Type tipoDomanda) {

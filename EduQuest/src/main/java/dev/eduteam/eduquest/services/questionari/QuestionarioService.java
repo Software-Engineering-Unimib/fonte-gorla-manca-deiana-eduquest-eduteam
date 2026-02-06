@@ -1,18 +1,15 @@
 package dev.eduteam.eduquest.services.questionari;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
-import dev.eduteam.eduquest.models.questionari.Compilazione;
-import dev.eduteam.eduquest.models.questionari.Compitino;
-import dev.eduteam.eduquest.models.questionari.Domanda;
-import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.*;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
-import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,7 +81,7 @@ public class QuestionarioService {
     }
 
     // Uniti i due metodi di modifica e sistemata logica in controller
-    public boolean modificaInfo(Questionario questionario, String nome, String descrizione, Difficulty livelloDiff) {
+    public boolean modificaInfoQuestionario(Questionario questionario, String nome, String descrizione, Difficulty livelloDiff) {
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
         questionario.setLivelloDiff(livelloDiff);

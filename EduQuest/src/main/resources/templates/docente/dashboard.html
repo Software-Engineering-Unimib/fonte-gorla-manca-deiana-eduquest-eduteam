@@ -16,11 +16,7 @@
             
             <section class="dashboard-section">
 
-                    <form th:action="@{/docente/dashboard/crea}" method="post" class="section-header">
-                        <h3>📋 I Tuoi Questionari</h3>
-
-                        <button type="submit" class="btn btn-primary">+ Nuovo Questionario</button>
-                    </form>
+                <h3>📋 I Tuoi Questionari</h3>
                 
                 <div th:if="${questionari == null or questionari.isEmpty()}" class="empty-state">
                     <p>Non hai ancora creato nessun questionario.</p>
@@ -37,6 +33,28 @@
                         <section th:replace="~{fragments/questionario :: questionarioCard(${q})}"></section>
                     </div>
                 </div>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/crea}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuovo Questionario</button>
+                </form>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/creaEsercitazione}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuova Esercitazione</button>
+                </form>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/creaCompitino}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuovo Compitino</button>
+                </form>
+
             </section>
         </div>
     </main>

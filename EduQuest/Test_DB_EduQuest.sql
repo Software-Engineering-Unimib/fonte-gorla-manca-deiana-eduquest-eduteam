@@ -50,14 +50,6 @@ CREATE TABLE esercitazioni (
     PRIMARY KEY (questionarioID_FK),
     CONSTRAINT FK_QuestionarioEsercitazione FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
-CREATE TABLE feedback (
-    feedbackID INTEGER AUTO_INCREMENT,
-    testo VARCHAR(1000) NOT NULL,
-    -- Relazione 1:1 tra Domanda e Feedback
-    domandaID_FK INTEGER NOT NULL UNIQUE,
-    PRIMARY KEY (feedbackID),
-    CONSTRAINT FK_DomandaFeedback FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = INNODB;
 CREATE TABLE domande (
     domandaID INTEGER auto_increment,
     -- ad ogni intero di tipo corrisponderà una tipologia di domanda, 
@@ -69,6 +61,14 @@ CREATE TABLE domande (
     questionarioID_FK INTEGER,
     PRIMARY KEY(domandaID),
     CONSTRAINT FK_QuestionarioDiOrigine FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = INNODB;
+CREATE TABLE feedback (
+                          feedbackID INTEGER AUTO_INCREMENT,
+                          testo VARCHAR(1000) NOT NULL,
+    -- Relazione 1:1 tra Domanda e Feedback
+                          domandaID_FK INTEGER NOT NULL UNIQUE,
+                          PRIMARY KEY (feedbackID),
+                          CONSTRAINT FK_DomandaFeedback FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 CREATE TABLE risposte (
     rispostaID INTEGER auto_increment,
