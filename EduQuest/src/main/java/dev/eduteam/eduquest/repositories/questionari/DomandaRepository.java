@@ -26,7 +26,7 @@ public class DomandaRepository {
     // domanda
     public Domanda getDomandaByID(int domandaID) {
         Domanda domanda = null;
-        String query = "SELECT domandaID, tipo, testo, questionarioID_FK FROM domande WHERE domandaID = ?";
+        String query = "SELECT domandaID, tipo, testo, questionarioID_FK, punteggio FROM domande WHERE domandaID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -40,6 +40,7 @@ public class DomandaRepository {
                     domanda = Domanda.createDomandaOfType(tipoEnum);
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
+                    domanda.setPunteggio(rs.getInt("punteggio"));
 
                     ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
                     domanda.setElencoRisposte(risposte);
@@ -57,7 +58,8 @@ public class DomandaRepository {
                 "domandaID, " +
                 "tipo, " +
                 "testo, " +
-                "questionarioID_FK FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
+                "questionarioID_FK " +
+                "punteggio FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);) {
@@ -75,6 +77,7 @@ public class DomandaRepository {
                     domanda = Domanda.createDomandaOfType(tipoEnum);
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
+                    domanda.setPunteggio(rs.getInt("punteggio"));
 
                     ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
                     domanda.setElencoRisposte(risposte);
@@ -94,7 +97,8 @@ public class DomandaRepository {
                 "domandaID, " +
                 "tipo, " +
                 "testo, " +
-                "questionarioID_FK FROM domande WHERE questionarioID_FK = ?";
+                "questionarioID_FK " +
+                "punteggio FROM domande WHERE questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -109,6 +113,7 @@ public class DomandaRepository {
                     Domanda domanda = Domanda.createDomandaOfType(tipoEnum);
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
+                    domanda.setPunteggio(rs.getInt("punteggio"));
 
                     ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
                     domanda.setElencoRisposte(risposte);
@@ -123,7 +128,7 @@ public class DomandaRepository {
     }
 
     public Domanda insertDomanda(Domanda d, int questionarioID) {
-        String query = "INSERT INTO domande (tipo, testo, questionarioID_FK) VALUES (?, ?, ?)";
+        String query = "INSERT INTO domande (tipo, testo, questionarioID_FK, punteggio) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -131,6 +136,7 @@ public class DomandaRepository {
             ps.setInt(1, d.getTipoDomanda().ordinal() + 1);
             ps.setString(2, d.getTesto());
             ps.setInt(3, questionarioID);
+            ps.setInt(4, d.getPunteggio());
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -166,13 +172,14 @@ public class DomandaRepository {
     public boolean updateDomanda(Domanda d) {
         // Una volta creata la domanda, il tipo non può essere modificato
         boolean result = false;
-        String query = "UPDATE domande SET testo = ? WHERE domandaID = ?";
+        String query = "UPDATE domande SET testo = ?, punteggio = ? WHERE domandaID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setString(1, d.getTesto());
-            ps.setInt(2, d.getID());
+            ps.setInt(2, d.getPunteggio());
+            ps.setInt(3, d.getID());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {

@@ -34,10 +34,16 @@ public class CompilazioneService {
     @Autowired
     private CompitinoService compitinoService;
 
+    @Autowired
+    private DomandaService domandaService;
+
     public boolean inserisciRispostaComp(int compilazioneID, int domandaID, int rispostaID) {
         Compilazione compilazione = compilazioneRepository.getCompilazioneByID(compilazioneID);
         popolaCompilazione(compilazione);
         Risposta[] risposte = compilazione.getRisposte();
+        // mi serve la domanda attuale per sapere quanto vale
+        Domanda domandaAttuale = domandaService.getDomandaByIdCompleta(compilazione.getQuestionario().getID(),
+                domandaID);
         Risposta risposta = rispostaRepository.getRispostaByID(rispostaID);
         if (!isValida(domandaID, rispostaID))
             return false;
@@ -47,7 +53,7 @@ public class CompilazioneService {
                 risposte[i] = risposta;
                 // controllo se è corretta e setto il punteggio
                 if (risposta.isCorretta()) {
-                    compilazione.setPunteggio(compilazione.getPunteggio() + 1);
+                    compilazione.setPunteggio(compilazione.getPunteggio() + domandaAttuale.getPunteggio());
                 }
                 if (compilazioneRepository.salvaRisposta(compilazioneID, rispostaID))
                     return compilazioneRepository.aggiornaPunteggio(compilazioneID, compilazione.getPunteggio());
@@ -101,10 +107,19 @@ public class CompilazioneService {
         Compilazione c = compilazioneRepository.getCompilazioneByID(compilazioneID);
         Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
 
+        Questionario q = questionarioRepository.getQuestionarioByID(c.getQuestionario().getID());
+        int maxPunteggio = q.getPunteggioMax();
+
+        if (c == null || studente == null || maxPunteggio == 0)
+            return false;
+
+        double punteggioOttenuto = c.getPunteggio();
+        // per ora in centesimi - si può cambiare
+        double votoNormalizzato = (punteggioOttenuto / maxPunteggio) * 100;
+
         double mediaAttuale = studente.getMediaPunteggio();
         int totCompilazioni = compilazioneRepository.getCompilazioniStatus(studenteID, true).size();
-        int punteggioCompilazione = c.getPunteggio();
-        double nuovaMedia = ((mediaAttuale * totCompilazioni) + punteggioCompilazione) / (totCompilazioni + 1);
+        double nuovaMedia = ((mediaAttuale * totCompilazioni) + votoNormalizzato) / (totCompilazioni + 1);
 
         studente.setMediaPunteggio(nuovaMedia);
         c.setCompletato(true);

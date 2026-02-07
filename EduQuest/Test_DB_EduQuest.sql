@@ -57,6 +57,7 @@ CREATE TABLE domande (
     -- 1-Multipla, 2=Multipla-Risposta, 3=Vero/Falso
     testo VARCHAR(500) NOT NULL,
     questionarioID_FK INTEGER,
+    punteggio INTEGER DEFAULT 1,
     PRIMARY KEY(domandaID),
     CONSTRAINT FK_QuestionarioDiOrigine FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
@@ -138,7 +139,6 @@ INSERT INTO questionari (
         descrizione,
         materia,
         livelloDiff,
-        numeroDomande,
         dataCreazione,
         docenteID_FK
     )
@@ -179,17 +179,17 @@ VALUES (3, '2026-02-28', 1),
     -- Scade a fine mese, 1 solo tentativo
     (4, '2026-03-15', 3);
 -- Domande
-INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK)
-VALUES (1, 'Somma angoli interni triangolo?', 1),
+INSERT INTO domande (tipo, testo, questionarioID_FK, punteggio)
+VALUES (1, 'Somma angoli interni triangolo?', 1, 10),
     -- ID 1 (Quest 1)
-    (1, 'Chi ha scritto i Promessi Sposi?', 2),
+    (1, 'Chi ha scritto i Promessi Sposi?', 2, 5),
     -- ID 2 (Quest 2)
-    (1, 'In che raccolta è "X Agosto"?', 3),
+    (1, 'In che raccolta è "X Agosto"?', 3, 15),
     -- ID 3 (Quest 3)
     (
         3,
         'Una matrice quadrata è sempre invertibile?',
-        4
+        4, 20
     );
 INSERT INTO risposte (testo, isCorretta, domandaID_FK)
 VALUES ('180°', TRUE, 1),
@@ -214,6 +214,6 @@ INSERT INTO compilazioni (
         punteggio,
         numeroDomande
     )
-VALUES (1, 1, TRUE, 1, 1);
+VALUES (1, 1, TRUE, 10, 1);
 INSERT INTO compilazioni_risposte (compilazioneID_FK, rispostaID_FK)
 VALUES (1, 1);

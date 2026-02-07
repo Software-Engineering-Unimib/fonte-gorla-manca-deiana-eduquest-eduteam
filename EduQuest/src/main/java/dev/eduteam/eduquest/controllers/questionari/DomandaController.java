@@ -3,7 +3,6 @@ package dev.eduteam.eduquest.controllers.questionari;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Esercitazione;
 import dev.eduteam.eduquest.models.questionari.Questionario;
-import dev.eduteam.eduquest.repositories.questionari.EsercitazioneRepository;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
 import dev.eduteam.eduquest.services.questionari.EsercitazioneService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
@@ -134,6 +133,19 @@ public class DomandaController {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("modifica/{domandaID}/punteggio")
+    public ResponseEntity<Domanda> setPunteggioDomanda(
+            @PathVariable int domandaID,
+            @RequestParam int punteggio) {
+        boolean successo = domandaService.modificaPunteggio(domandaID, punteggio);
+
+        if (successo) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 

@@ -111,4 +111,15 @@ public class Questionario {
         this.livelloDiff = livello;
     }
 
+    public int getPunteggioMax() {
+        if (elencoDomande == null || elencoDomande.isEmpty()) {
+            return 0;
+        }
+        int totale = 0;
+        for (Domanda d : elencoDomande) {
+            totale += d.getPunteggio();
+        }
+        return totale;
+    }
+
 }
