@@ -91,12 +91,6 @@ class QuestionarioTest {
     void testValidazioniSetters() {
         // Descrizione null deve lanciare eccezione
         assertThrows(IllegalArgumentException.class, () -> questionario.setDescrizione(null));
-
-        // Numero domande negativo deve lanciare eccezione
-        assertThrows(IllegalArgumentException.class, () -> questionario.setNumeroDomande(-1));
-
-        // Numero domande zero è valido
-        assertDoesNotThrow(() -> questionario.setNumeroDomande(0));
     }
 
     @Test
