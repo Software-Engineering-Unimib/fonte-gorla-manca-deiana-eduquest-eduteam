@@ -31,7 +31,6 @@ CREATE TABLE questionari (
     descrizione VARCHAR(500) NOT NULL,
     materia VARCHAR(100) NOT NULL,
     livelloDiff ENUM('Facile', 'Medio', 'Difficile') NOT NULL,
-    numeroDomande INTEGER NOT NULL,
     dataCreazione DATE NOT NULL,
     docenteID_FK INTEGER NOT NULL,
     PRIMARY KEY(questionarioID),
@@ -57,7 +56,6 @@ CREATE TABLE domande (
     tipo TINYINT(8) NOT NULL,
     -- 1-Multipla, 2=Multipla-Risposta, 3=Vero/Falso
     testo VARCHAR(500) NOT NULL,
-    numeroRisposte INTEGER NOT NULL,
     questionarioID_FK INTEGER,
     PRIMARY KEY(domandaID),
     CONSTRAINT FK_QuestionarioDiOrigine FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -149,7 +147,6 @@ VALUES (
         'Test sui triangoli e poligoni',
         'Matematica',
         'Facile',
-        1,
         '2025-09-11',
         2
     ),
@@ -158,7 +155,6 @@ VALUES (
         'Prova di comprensione',
         'Italiano',
         'Medio',
-        1,
         '2025-06-05',
         2
     ),
@@ -167,7 +163,6 @@ VALUES (
         'La nebbia agli irti colli',
         'Letteratura',
         'Difficile',
-        1,
         '2026-01-24',
         3
     ),
@@ -176,7 +171,6 @@ VALUES (
         'Matrici e sistemi',
         'Matematica',
         'Difficile',
-        1,
         '2026-02-01',
         2
     );
@@ -186,16 +180,15 @@ VALUES (3, '2026-02-28', 1),
     (4, '2026-03-15', 3);
 -- Domande
 INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK)
-VALUES (1, 'Somma angoli interni triangolo?', 3, 1),
+VALUES (1, 'Somma angoli interni triangolo?', 1),
     -- ID 1 (Quest 1)
-    (1, 'Chi ha scritto i Promessi Sposi?', 2, 2),
+    (1, 'Chi ha scritto i Promessi Sposi?', 2),
     -- ID 2 (Quest 2)
-    (1, 'In che raccolta è "X Agosto"?', 3, 3),
+    (1, 'In che raccolta è "X Agosto"?', 3),
     -- ID 3 (Quest 3)
     (
         3,
         'Una matrice quadrata è sempre invertibile?',
-        2,
         4
     );
 INSERT INTO risposte (testo, isCorretta, domandaID_FK)

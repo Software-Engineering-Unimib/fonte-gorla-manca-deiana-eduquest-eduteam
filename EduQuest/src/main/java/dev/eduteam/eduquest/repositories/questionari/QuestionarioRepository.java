@@ -70,7 +70,6 @@ public class QuestionarioRepository {
         }
 
         q.setID(rs.getInt("questionarioID"));
-        q.setNumeroDomande(rs.getInt("numeroDomande"));
         q.setDataCreazione(rs.getDate("dataCreazione").toLocalDate());
         return q;
     }
@@ -151,7 +150,7 @@ public class QuestionarioRepository {
     }
 
     public Questionario insertQuestionario(Questionario questionario) {
-        String query = "INSERT INTO questionari (nome, descrizione, materia, livelloDiff, numeroDomande, dataCreazione, docenteID_FK) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO questionari (nome, descrizione, materia, livelloDiff, dataCreazione, docenteID_FK) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -160,9 +159,8 @@ public class QuestionarioRepository {
             ps.setString(2, questionario.getDescrizione());
             ps.setString(3, questionario.getMateria());
             ps.setString(4, questionario.getLivelloDifficulty().name());
-            ps.setInt(5, questionario.getNumeroDomande());
-            ps.setDate(6, java.sql.Date.valueOf(questionario.getDataCreazione()));
-            ps.setInt(7, questionario.getDocente().getAccountID());
+            ps.setDate(5, java.sql.Date.valueOf(questionario.getDataCreazione()));
+            ps.setInt(6, questionario.getDocente().getAccountID());
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {

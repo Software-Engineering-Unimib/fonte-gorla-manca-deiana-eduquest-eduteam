@@ -18,7 +18,6 @@ public class Questionario {
     private String nome;
     private String descrizione;
 
-    private int numeroDomande;
     private ArrayList<Domanda> elencoDomande;
 
     private LocalDate dataCreazione; // inizializzata di default nel costruttore senza parametri
@@ -31,7 +30,6 @@ public class Questionario {
         setNome(nome);
         setDescrizione(descrizione);
         this.elencoDomande = (domande != null) ? domande : new ArrayList<>();
-        setNumeroDomande(domande.size());
         setDataCreazione(LocalDate.now());
         setDocente(docente);
         setLivelloDiff(livelloDiff);
@@ -69,16 +67,10 @@ public class Questionario {
     public int getNumeroDomande() {
         // Se la lista esiste, restituisce la sua dimensione reale, altrimenti
         // restituisce il valore salvato nel campo.
-        return (elencoDomande != null && !elencoDomande.isEmpty()) ? elencoDomande.size() : numeroDomande;
-    }
-
-    public void setNumeroDomande(int numeroDomande) {
-
-        if (numeroDomande < 0) {
-            throw new IllegalArgumentException("Il numero di domande non puo' essere negativo");
+        if (elencoDomande != null) {
+            return elencoDomande.size();
         }
-
-        this.numeroDomande = numeroDomande;
+        return 0;
     }
 
     public ArrayList<Domanda> getElencoDomande() {
@@ -88,7 +80,6 @@ public class Questionario {
     // Serve solo internamente al Service
     public void setElencoDomande(ArrayList<Domanda> elencoDomande) {
         this.elencoDomande = (elencoDomande != null) ? elencoDomande : new ArrayList<>();
-        this.numeroDomande = this.elencoDomande.size();
     }
 
     public LocalDate getDataCreazione() {

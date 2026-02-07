@@ -16,7 +16,6 @@ public abstract class Domanda {
 
     protected int ID; // GLI ID SARANNO LEGATI ALLE DOMANDE SALVATI SUL DB
     private String testo;
-    protected int numeroRisposte;
     protected ArrayList<Risposta> elencoRisposte = new ArrayList<>();
 
     // METODI COMUNI A TUTTE LE DOMANDE
@@ -50,16 +49,7 @@ public abstract class Domanda {
     }
 
     public int getNumeroRisposte() {
-        return numeroRisposte;
-    }
-
-    public void setNumeroRisposte(int numeroRisposte) {
-
-        if (numeroRisposte < 0) {
-            throw new IllegalArgumentException("Il numero di risposte non puo' essere negativo");
-        }
-
-        this.numeroRisposte = numeroRisposte;
+        return elencoRisposte.size();
     }
 
     public ArrayList<Risposta> getElencoRisposte() {

@@ -26,7 +26,7 @@ public class DomandaRepository {
     // domanda
     public Domanda getDomandaByID(int domandaID) {
         Domanda domanda = null;
-        String query = "SELECT domandaID, tipo, testo, numeroRisposte, questionarioID_FK FROM domande WHERE domandaID = ?";
+        String query = "SELECT domandaID, tipo, testo, questionarioID_FK FROM domande WHERE domandaID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
@@ -40,7 +40,6 @@ public class DomandaRepository {
                     domanda = Domanda.createDomandaOfType(tipoEnum);
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
-                    domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
 
                     ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
                     domanda.setElencoRisposte(risposte);
@@ -58,7 +57,6 @@ public class DomandaRepository {
                 "domandaID, " +
                 "tipo, " +
                 "testo, " +
-                "numeroRisposte, " +
                 "questionarioID_FK FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
@@ -77,7 +75,6 @@ public class DomandaRepository {
                     domanda = Domanda.createDomandaOfType(tipoEnum);
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
-                    domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
 
                     ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
                     domanda.setElencoRisposte(risposte);
@@ -97,7 +94,6 @@ public class DomandaRepository {
                 "domandaID, " +
                 "tipo, " +
                 "testo, " +
-                "numeroRisposte, " +
                 "questionarioID_FK FROM domande WHERE questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
@@ -113,7 +109,6 @@ public class DomandaRepository {
                     Domanda domanda = Domanda.createDomandaOfType(tipoEnum);
                     domanda.setID(rs.getInt("domandaID"));
                     domanda.setTesto(rs.getString("testo"));
-                    domanda.setNumeroRisposte(rs.getInt("numeroRisposte"));
 
                     ArrayList<Risposta> risposte = rispostaRepository.getRisposteByDomanda(domanda.getID());
                     domanda.setElencoRisposte(risposte);
@@ -128,15 +123,14 @@ public class DomandaRepository {
     }
 
     public Domanda insertDomanda(Domanda d, int questionarioID) {
-        String query = "INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO domande (tipo, testo, questionarioID_FK) VALUES (?, ?, ?)";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, d.getTipoDomanda().ordinal() + 1);
             ps.setString(2, d.getTesto());
-            ps.setInt(3, d.getNumeroRisposte());
-            ps.setInt(4, questionarioID);
+            ps.setInt(3, questionarioID);
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {

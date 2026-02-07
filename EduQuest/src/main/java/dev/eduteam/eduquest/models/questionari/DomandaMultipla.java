@@ -8,8 +8,6 @@ public class DomandaMultipla extends Domanda {
     public DomandaMultipla(String testo) {
 
         tipoDomanda = Type.DOMANDA_MULTIPLA;
-
-        setNumeroRisposte(0);
         setTesto(testo);
     }
 }

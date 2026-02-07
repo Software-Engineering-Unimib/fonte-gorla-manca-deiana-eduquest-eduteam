@@ -24,7 +24,7 @@
 
     <p th:text="${d.testo}">Testo Domanda</p>
     <div class="card-meta">
-        <span>📝 <span th:text="${d.numeroRisposte}"></span> risposte</span>
+        <span>📝 <span th:text="${d.getNumeroRisposte()}"></span> risposte</span>
     </div>
     <div class="card-actions">
         <a th:href="@{/docente/dashboard/{questionarioID}/{domandaID}(questionarioID=${ID}, domandaID=${d.ID})}" class="btn btn-sm">Visualizza</a>

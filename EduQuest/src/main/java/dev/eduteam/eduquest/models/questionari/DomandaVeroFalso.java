@@ -6,7 +6,6 @@ public class DomandaVeroFalso extends Domanda {
 
     public DomandaVeroFalso(String testo) {
         tipoDomanda = Type.DOMANDA_VERO_FALSO;
-        setNumeroRisposte(2);
         setTesto(testo);
     }
 
