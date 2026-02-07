@@ -68,7 +68,6 @@ public class Questionario {
         // Se la lista esiste, restituisce la sua dimensione reale, altrimenti
         // restituisce il valore salvato nel campo.
         if (elencoDomande != null) {
-            return elencoDomande.size();
         }
         return 0;
     }

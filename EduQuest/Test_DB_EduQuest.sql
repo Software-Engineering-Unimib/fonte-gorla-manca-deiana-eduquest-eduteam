@@ -138,7 +138,6 @@ INSERT INTO questionari (
         descrizione,
         materia,
         livelloDiff,
-        numeroDomande,
         dataCreazione,
         docenteID_FK
     )
@@ -179,7 +178,7 @@ VALUES (3, '2026-02-28', 1),
     -- Scade a fine mese, 1 solo tentativo
     (4, '2026-03-15', 3);
 -- Domande
-INSERT INTO domande (tipo, testo, numeroRisposte, questionarioID_FK)
+INSERT INTO domande (tipo, testo, questionarioID_FK)
 VALUES (1, 'Somma angoli interni triangolo?', 1),
     -- ID 1 (Quest 1)
     (1, 'Chi ha scritto i Promessi Sposi?', 2),

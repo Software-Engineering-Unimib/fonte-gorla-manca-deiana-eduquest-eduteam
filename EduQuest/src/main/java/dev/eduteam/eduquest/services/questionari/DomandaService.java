@@ -32,7 +32,17 @@ public class DomandaService {
     public Domanda aggiungiDomanda(int questionarioID, Domanda.Type tipoDomanda) {
         Domanda nuovaDomanda = Domanda.createDomandaOfType(tipoDomanda);
         nuovaDomanda.setTesto("Inserisci qui il testo");
-        return domandaRepository.insertDomanda(nuovaDomanda, questionarioID);
+        nuovaDomanda = domandaRepository.insertDomanda(nuovaDomanda, questionarioID);
+
+        if (tipoDomanda == Domanda.Type.DOMANDA_VERO_FALSO) {
+            Risposta vero = new Risposta("Vero");
+            Risposta falso = new Risposta("Falso");
+            vero.setCorretta(true);
+            falso.setCorretta(false);
+            rispostaRepository.insertRisposta(vero, nuovaDomanda.getID());
+            rispostaRepository.insertRisposta(falso, nuovaDomanda.getID());
+        }
+        return nuovaDomanda;
     }
 
     public boolean rimuoviDomanda(int questionarioID, int domandaID) {

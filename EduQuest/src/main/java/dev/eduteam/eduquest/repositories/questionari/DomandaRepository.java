@@ -122,6 +122,26 @@ public class DomandaRepository {
         return elecoDomande;
     }
 
+    public Domanda getDomandaByRisposta(int rispostaID) {
+
+        Domanda domanda = null;
+        String query = "SELECT domandaID_FK FROM risposte WHERE rispostaID = " + rispostaID;
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int domandaID = rs.getInt("domandaID_FK");
+                    domanda = getDomandaByID(domandaID);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return domanda;
+    }
+
     public Domanda insertDomanda(Domanda d, int questionarioID) {
         String query = "INSERT INTO domande (tipo, testo, questionarioID_FK) VALUES (?, ?, ?)";
 

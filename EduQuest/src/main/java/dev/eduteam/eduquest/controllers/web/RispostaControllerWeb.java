@@ -87,60 +87,32 @@ public class RispostaControllerWeb {
     }
 
     @PostMapping("aggiungi")
-    public ResponseEntity<Risposta> aggiungiRisposta(
+    public String aggiungiRisposta(HttpSession session,
             @PathVariable int questionarioID,
             @PathVariable int domandaID) {
-
-        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
-        if (domanda == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Risposta ripostaAggiunta = rispostaService.aggiungiRisposta(domandaID);
-        if (ripostaAggiunta != null) {
-            return ResponseEntity.ok(ripostaAggiunta);
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @PostMapping("rimuovi/{rispostaID}")
-    public ResponseEntity<Void> rimuoviRisposta(
-            @PathVariable int domandaID,
-            @PathVariable int rispostaID) {
-
-        boolean rimosso = rispostaService.rimuoviRisposta(domandaID, rispostaID);
-        if (rimosso) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/modifica/{rispostaID}")
-    public String modificaQuestionario(@PathVariable int questionarioID,
-                                       @PathVariable int domandaID,
-                                       @PathVariable int rispostaID,
-                                       @RequestParam String testo,
-                                       @RequestParam(name="corretta", defaultValue="false") boolean corretta,
-                                       HttpSession session,
-                                       RedirectAttributes redirectAttributes) {
         Docente docente = (Docente) session.getAttribute("user");
 
         if (docente == null) {
             return "redirect:/login";
         }
 
-        // Validazione: campi obbligatori non vuoti
-        if (domandaID == 0 || testo.isBlank()) {
-            redirectAttributes.addFlashAttribute("error", "Il testo è obbligatorio.");
-            redirectAttributes.addFlashAttribute("nome", testo);
-            return "redirect:/docente/profilo";
+        rispostaService.aggiungiRisposta(domandaID);
+        return "redirect:/docente/dashboard/" + questionarioID + "/" + domandaID;
+    }
+
+    @PostMapping("rimuovi/{rispostaID}")
+    public String rimuoviRisposta(HttpSession session,
+            @PathVariable int questionarioID,
+            @PathVariable int domandaID,
+            @PathVariable int rispostaID) {
+
+        Docente docente = (Docente) session.getAttribute("user");
+
+        if (docente == null) {
+            return "redirect:/login";
         }
-        Risposta risposta = rispostaService.getRispostaById(rispostaID);
 
-        rispostaService.modificaRisposta(risposta, testo, corretta);
-
+        rispostaService.rimuoviRisposta(rispostaID, domandaID);
         return "redirect:/docente/dashboard/" + questionarioID + "/" + domandaID;
     }
 
@@ -177,5 +149,32 @@ public class RispostaControllerWeb {
             model.addAttribute("risposta", risposta);
         }
         return "risposta/modifica-risposta";
+    }
+
+    @PostMapping("/modifica/{rispostaID}")
+    public String modificaQuestionario(@PathVariable int questionarioID,
+                                       @PathVariable int domandaID,
+                                       @PathVariable int rispostaID,
+                                       @RequestParam String testo,
+                                       @RequestParam(name="corretta", defaultValue="false") boolean corretta,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        Docente docente = (Docente) session.getAttribute("user");
+
+        if (docente == null) {
+            return "redirect:/login";
+        }
+
+        // Validazione: campi obbligatori non vuoti
+        if (domandaID == 0 || testo.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Il testo è obbligatorio.");
+            redirectAttributes.addFlashAttribute("nome", testo);
+            return "redirect:/docente/profilo";
+        }
+        Risposta risposta = rispostaService.getRispostaById(rispostaID);
+
+        rispostaService.modificaRisposta(risposta, testo, corretta);
+
+        return "redirect:/docente/dashboard/" + questionarioID + "/" + domandaID;
     }
 }

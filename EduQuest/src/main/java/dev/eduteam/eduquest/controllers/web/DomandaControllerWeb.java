@@ -131,7 +131,7 @@ public class DomandaControllerWeb {
         if (docente == null) {
             return "redirect:/login";
         }
-        boolean rimosso = domandaService.rimuoviDomanda(questionarioID, domandaID);
+        domandaService.rimuoviDomanda(questionarioID, domandaID);
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 

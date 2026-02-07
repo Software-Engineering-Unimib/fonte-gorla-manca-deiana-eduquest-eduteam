@@ -1,6 +1,8 @@
 package dev.eduteam.eduquest.services.questionari;
 
+import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Risposta;
+import dev.eduteam.eduquest.repositories.questionari.DomandaRepository;
 import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 
 import java.util.ArrayList;
@@ -13,6 +15,9 @@ public class RispostaService {
 
     @Autowired
     private RispostaRepository rispostaRepository;
+
+    @Autowired
+    private DomandaRepository domandaRepository;
 
     /*
      * Non penso serva - creazione in repository
@@ -45,6 +50,17 @@ public class RispostaService {
     public boolean modificaRisposta(Risposta risposta, String testo, boolean corretta) {
         risposta.setTesto(testo);
         risposta.setCorretta(corretta);
+
+        Domanda domanda = domandaRepository.getDomandaByRisposta(risposta.getID());
+
+        if (domanda.getTipoDomanda() != Domanda.Type.DOMANDA_MULTIPLE_RISPOSTE) {
+
+            for (Risposta r : domanda.getElencoRisposte()) {
+                r.setCorretta(false);
+                rispostaRepository.updateRisposta(r);
+            }
+        }
+
         return rispostaRepository.updateRisposta(risposta);
     }
 

@@ -17,7 +17,6 @@
             <div class="section-header">
                 <h3>
                     📝 <span th:text="${domanda.testo}"></span>
-                    <a th:href="@{/docente/dashboard/nuovo}" class="btn btn-primary">+ Nuova Risposta</a>
                 </h3>
 
             </div>
@@ -32,6 +31,11 @@
                     <section th:replace="~{fragments/risposta :: rispostaCard(${questionario}, ${domanda}, ${r}, ${risposte.indexOf(r)})}"></section>
                 </div>
             </div>
+        </section>
+        <section th:if='${domanda.tipoDomanda.toString() != "DOMANDA_VERO_FALSO"}' class="dashboard-section">
+            <form th:action="@{|/docente/dashboard/${questionario.ID}/${domanda.ID}/aggiungi|}" method="post" class="section-header">
+                <button type="submit" class="btn btn-primary">+ Nuova Risposta</button>
+            </form>
         </section>
     </div>
 </main>

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import dev.eduteam.eduquest.models.questionari.Domanda;
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.questionari.Risposta;
@@ -95,6 +96,8 @@ public class RispostaRepository {
             return null;
         }
     }
+
+
 
     public boolean removeRisposta(int rispostaID, int domandaID) {
         boolean result = false;
