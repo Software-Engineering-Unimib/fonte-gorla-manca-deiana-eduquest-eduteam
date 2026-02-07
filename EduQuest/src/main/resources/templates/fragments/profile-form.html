@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Fragment per i campi comuni del form profilo -->
+<div th:fragment="formCampiComuni(user)" class="form-fields-comuni">
+    <div class="form-row">
+        <div class="form-group">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" required 
+                   th:value="${user.nome}" placeholder="Il tuo nome">
+        </div>
+        
+        <div class="form-group">
+            <label for="cognome">Cognome</label>
+            <input type="text" id="cognome" name="cognome" required 
+                   th:value="${user.cognome}" placeholder="Il tuo cognome">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="userName">Username</label>
+        <input type="text" id="userName" name="userName" 
+               th:value="${user.userName}" disabled class="input-disabled">
+        <small class="form-hint">Lo username non può essere modificato</small>
+    </div>
+    
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required 
+               th:value="${user.email}" placeholder="La tua email">
+    </div>
+    
+    <hr class="form-divider">
+    <p class="form-section-title">Cambia Password (opzionale)</p>
+    
+    <div class="form-group">
+        <label for="passwordAttuale">Password Attuale</label>
+        <input type="password" id="passwordAttuale" name="passwordAttuale" 
+               placeholder="Inserisci la password attuale per confermare le modifiche">
+        <small class="form-hint">Richiesta per salvare qualsiasi modifica</small>
+    </div>
+    
+    <div class="form-group">
+        <label for="nuovaPassword">Nuova Password</label>
+        <input type="password" id="nuovaPassword" name="nuovaPassword" 
+               placeholder="Lascia vuoto per mantenere la password attuale">
+        <small class="form-hint">8-20 caratteri, almeno una maiuscola, un numero e un simbolo</small>
+    </div>
+</div>
+</html>

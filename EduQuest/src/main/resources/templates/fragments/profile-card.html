@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="profileCard(user, isDocente)" class="profile-card">
+    <h3>👤 Il Tuo Profilo</h3>
+    <div class="profile-info">
+        <p><strong>Username:</strong> <span th:text="${user.userName}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+        
+        <!-- Campo specifico per Docente -->
+        <th:block th:if="${isDocente}">
+            <p><strong>Materia:</strong> <span th:text="${user.insegnamento != null ? user.insegnamento : 'Non specificata'}"></span></p>
+        </th:block>
+        
+        <!-- Campo specifico per Studente -->
+        <th:block th:if="${!isDocente}">
+            <p><strong>Media Voti:</strong> <span th:text="${user.mediaPunteggio}"></span></p>
+        </th:block>
+    </div>
+    <a th:if="${isDocente}" th:href="@{/docente/profilo}" class="btn btn-secondary">Modifica Profilo</a>
+    <a th:if="${!isDocente}" th:href="@{/studente/profilo}" class="btn btn-secondary">Modifica Profilo</a>
+</section>
+</html>

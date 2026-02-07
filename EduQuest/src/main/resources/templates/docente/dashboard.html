@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Dashboard Docente')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="dashboard">
+            <header class="dashboard-header">
+                <h1>Dashboard Docente</h1>
+                <p>Benvenuto, <span th:text="${user.nome + ' ' + user.cognome}"></span>!</p>
+            </header>
+
+            
+            <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> 
+            
+            <section class="dashboard-section">
+
+                <h3>📋 I Tuoi Questionari</h3>
+                
+                <div th:if="${questionari == null or questionari.isEmpty()}" class="empty-state">
+                    <p>Non hai ancora creato nessun questionario.</p>
+                    <form th:action="@{/docente/dashboard/crea}" method="post" class="form">
+                        <div class="form-actions">
+
+                            <button type="submit" class="btn btn-primary">Crea il tuo primo Questionario</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div th:if="${questionari != null and !questionari.isEmpty()}" class="questionari-list">
+                    <div th:each="q : ${questionari}" class="questionario-card">
+                        <section th:replace="~{fragments/questionario :: questionarioCard(${q})}"></section>
+                    </div>
+                </div>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/crea}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuovo Questionario</button>
+                </form>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/creaEsercitazione}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuova Esercitazione</button>
+                </form>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/creaCompitino}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuovo Compitino</button>
+                </form>
+
+            </section>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

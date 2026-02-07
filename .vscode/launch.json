@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-EduQuestApplication<EduQuest>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "dev.eduteam.eduquest.EduQuestApplication",
+            "projectName": "EduQuest",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
