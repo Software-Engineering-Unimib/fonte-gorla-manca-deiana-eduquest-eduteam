@@ -2,7 +2,6 @@ package dev.eduteam.eduquest.services;
 
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.questionari.Compitino;
-import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.CompitinoRepository;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
