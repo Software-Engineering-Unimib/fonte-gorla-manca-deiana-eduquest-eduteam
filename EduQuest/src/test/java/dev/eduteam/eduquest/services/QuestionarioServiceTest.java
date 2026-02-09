@@ -118,7 +118,7 @@ class QuestionarioServiceTest {
         Difficulty nuovaDiff = Difficulty.Facile;
         when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
 
-        boolean result = questionarioService.modificaInfo(questionario, nuovoNome, nuovaDescrizione, nuovaDiff);
+        boolean result = questionarioService.modificaInfoQuestionario(questionario, nuovoNome, nuovaDescrizione, nuovaDiff);
         assertTrue(result);
         assertEquals(nuovoNome, questionario.getNome());
         assertEquals(nuovaDescrizione, questionario.getDescrizione());
@@ -129,7 +129,7 @@ class QuestionarioServiceTest {
     @Test
     void testModificaInfoDescrizioneNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> questionarioService.modificaInfo(questionario, "Nome", null, Difficulty.Medio));
+                () -> questionarioService.modificaInfoQuestionario(questionario, "Nome", null, Difficulty.Medio));
     }
 
     @Test
