@@ -20,13 +20,15 @@ public class CompitinoRepository extends QuestionarioRepository {
         // Garantiamo che un compitino non può esistere
         // se non esiste il questionario corrispondente
         if (base != null) {
-            String query = "INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax) VALUES (?, ?, ?)";
+            String query = "INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax, puntiBonus, assegnatiPtBonus) VALUES (?, ?, ?, ?, ?)";
 
             try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                     PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, base.getID());
                 ps.setDate(2, java.sql.Date.valueOf(c.getDataFine()));
                 ps.setInt(3, c.getTentativiMax());
+                ps.setInt(4, c.getPuntiBonus());
+                ps.setBoolean(5, c.getAssegnatiPtBonus());
 
                 ps.executeUpdate();
                 return c;
@@ -56,14 +58,16 @@ public class CompitinoRepository extends QuestionarioRepository {
 
     public boolean updateCompitino(Compitino comp) {
         boolean result = false;
-        String query = "UPDATE compitini SET dataFine = ?, tentativiMax = ? WHERE questionarioID_FK = ?";
+        String query = "UPDATE compitini SET dataFine = ?, tentativiMax = ?, puntiBonus = ?, assegnatiPtBonus = ? WHERE questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setDate(1, Date.valueOf(comp.getDataFine()));
             ps.setInt(2, comp.getTentativiMax());
-            ps.setInt(3, comp.getID());
+            ps.setInt(3, comp.getPuntiBonus());
+            ps.setBoolean(4, comp.getAssegnatiPtBonus());
+            ps.setInt(5, comp.getID());
 
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;

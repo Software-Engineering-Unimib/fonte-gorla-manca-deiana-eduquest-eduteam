@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.accounts.Studente;
-import dev.eduteam.eduquest.models.questionari.Compilazione;
 import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 
 @Repository

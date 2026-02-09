@@ -68,13 +68,17 @@ public class CompitinoService {
     }
 
     // Uniti i due metodi di modifica e sistemata logica in controller
-    public boolean modificaInfoCompitino(Compitino questionario, String nome, String descrizione, Difficulty livelloDiff, LocalDate dataFine, int tentativiMax) {
+    public boolean modificaInfoCompitino(Compitino questionario, String nome, String descrizione,
+            Difficulty livelloDiff, LocalDate dataFine, int tentativiMax,
+            int puntiBonus, boolean assegnatiPtBonus) {
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
         questionario.setLivelloDiff(livelloDiff);
         questionarioRepository.updateQuestionario(questionario);
         questionario.setDataFine(dataFine);
         questionario.setTentativiMax(tentativiMax);
+        questionario.setPuntiBonus(puntiBonus);
+        questionario.setAssegnatiPtBonus(assegnatiPtBonus);
         return compitinoRepository.updateCompitino(questionario);
     }
 }

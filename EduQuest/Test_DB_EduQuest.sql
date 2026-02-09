@@ -40,6 +40,8 @@ CREATE TABLE compitini (
     questionarioID_FK INTEGER NOT NULL,
     dataFine DATE NOT NULL,
     tentativiMax INTEGER DEFAULT 1,
+    puntiBonus INTEGER DEFAULT 0,
+    assegnatiPtBonus BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (questionarioID_FK),
     CONSTRAINT FK_QuestionarioCompitino FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
@@ -174,10 +176,10 @@ VALUES (
         '2026-02-01',
         2
     );
-INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax)
-VALUES (3, '2026-02-28', 1),
+INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax, puntiBonus, assegnatiPtBonus)
+VALUES (3, '2026-02-28', 1, 5, FALSE),
     -- Scade a fine mese, 1 solo tentativo
-    (4, '2026-03-15', 3);
+    (4, '2026-03-15', 3, 10, FALSE);
 -- Domande
 INSERT INTO domande (tipo, testo, questionarioID_FK, punteggio)
 VALUES (1, 'Somma angoli interni triangolo?', 1, 10),
