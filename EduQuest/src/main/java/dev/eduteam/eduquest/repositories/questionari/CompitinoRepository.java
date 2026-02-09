@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.questionari.Compitino;
@@ -75,5 +78,23 @@ public class CompitinoRepository extends QuestionarioRepository {
             System.out.println(e.getMessage());
         }
         return result;
+    }
+
+    // Funzioni Dashboard
+    public List<Integer> getIDCompitiniScadutiDaAssegnare() {
+        List<Integer> ids = new ArrayList<>();
+        String query = "SELECT questionarioID_FK FROM compitini " +
+                "WHERE dataFine < CURDATE() AND assegnatiPunti = FALSE";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                ids.add(rs.getInt("questionarioID_FK"));
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return ids;
     }
 }

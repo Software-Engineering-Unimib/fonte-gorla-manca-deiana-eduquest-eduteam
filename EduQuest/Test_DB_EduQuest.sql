@@ -15,6 +15,7 @@ CREATE TABLE accounts (
 CREATE TABLE studenti (
     accountID_FK INTEGER NOT NULL,
     mediaPunteggio DOUBLE DEFAULT 0.0,
+    eduPoints INT DEFAULT 0,
     PRIMARY KEY(accountID_FK),
     CONSTRAINT FK_AccountStudente FOREIGN KEY (accountID_FK) REFERENCES accounts(accountID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
@@ -64,12 +65,12 @@ CREATE TABLE domande (
     CONSTRAINT FK_QuestionarioDiOrigine FOREIGN KEY (questionarioID_FK) REFERENCES questionari(questionarioID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 CREATE TABLE feedback (
-                          feedbackID INTEGER AUTO_INCREMENT,
-                          testo VARCHAR(1000) NOT NULL,
+    feedbackID INTEGER AUTO_INCREMENT,
+    testo VARCHAR(1000) NOT NULL,
     -- Relazione 1:1 tra Domanda e Feedback
-                          domandaID_FK INTEGER NOT NULL UNIQUE,
-                          PRIMARY KEY (feedbackID),
-                          CONSTRAINT FK_DomandaFeedback FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
+    domandaID_FK INTEGER NOT NULL UNIQUE,
+    PRIMARY KEY (feedbackID),
+    CONSTRAINT FK_DomandaFeedback FOREIGN KEY (domandaID_FK) REFERENCES domande(domandaID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
 CREATE TABLE risposte (
     rispostaID INTEGER auto_increment,
@@ -84,12 +85,12 @@ CREATE TABLE compilazioni (
     compilazioneID INTEGER AUTO_INCREMENT,
     studenteID_FK INTEGER NOT NULL,
     questionarioID_FK INTEGER NOT NULL,
-    completato BOOLEAN DEFAULT FALSE,
     -- Mappa il boolean completato
-    punteggio INTEGER DEFAULT 0,
+    completato BOOLEAN DEFAULT FALSE,
     -- Mappa int punteggio
-    numeroDomande INTEGER,
+    punteggio INTEGER DEFAULT 0,
     -- Mappa int numeroDomande (anche se ridondante rispetto a questionari)
+    numeroDomande INTEGER,
     PRIMARY KEY(compilazioneID),
     -- Vincoli di integrità referenziale
     CONSTRAINT FK_StudenteCompilazione FOREIGN KEY (studenteID_FK) REFERENCES studenti(accountID_FK) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -176,7 +177,13 @@ VALUES (
         '2026-02-01',
         2
     );
-INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax, puntiBonus, assegnatiPtBonus)
+INSERT INTO compitini (
+        questionarioID_FK,
+        dataFine,
+        tentativiMax,
+        puntiBonus,
+        assegnatiPtBonus
+    )
 VALUES (3, '2026-02-28', 1, 5, FALSE),
     -- Scade a fine mese, 1 solo tentativo
     (4, '2026-03-15', 3, 10, FALSE);
@@ -191,7 +198,8 @@ VALUES (1, 'Somma angoli interni triangolo?', 1, 10),
     (
         3,
         'Una matrice quadrata è sempre invertibile?',
-        4, 20
+        4,
+        20
     );
 INSERT INTO risposte (testo, isCorretta, domandaID_FK)
 VALUES ('180°', TRUE, 1),
