@@ -16,18 +16,29 @@ Per analizzare il progetto sulla propria macchina (es. all'indirizzo `http://loc
 
 #### **Passaggio 1: Generazione report di copertura (JaCoCo)**
 È fondamentale eseguire i test unitari per generare i dati di copertura necessari ad ottenere il **Rating A** nella categoria *Coverage*:
-```powershell 
-.\mvnw.cmd clean verify
+```powershell
+.\mvnw.cmd clean verify 
 ```
+---
 
+#### **Passaggio 2: Andare all'indirizzo http://localhost:9000**
+* Creare un nuovo progetto con: 
+    * projectKey = Eduquest
+    * projectName = Eduquest
+* Ottenere il TOKEN_SONAR(salvare in un posto sicuro)
 
-** 2. Esecuzione dell'analisi (Scegliere uno dei due metodi): **
+#### **Passaggio 3: Esecuzione dell'analisi (Scegliere uno dei due metodi):**
+* Tornare nel proprio IDE
+* Scegliere uno dei due metodi per eseguire l'analisi
 Metodo 1 (Maven globale):
 ```bash
-mvn sonar:sonar "-Dsonar.token=sqp_297bf92638a2f554246f2f3d9184e84a4bfac9c3" 
+mvn sonar:sonar "-Dsonar.token=[TOKEN_GENERATO_PRECEDENTEMENTE]" 
 ```
 
-Metodo 2 (Maven globale):
+Metodo 2 (Maven Wrapper):
+* Entrare nel terminale e spostarsi nella directory: "\Eduquest"
 ```bash
-.\mvnw.cmd sonar:sonar "-Dsonar.token=sqp_297bf92638a2f554246f2f3d9184e84a4bfac9c3"
+.\mvnw.cmd sonar:sonar "-Dsonar.token=[TOKEN_GENERATO_PRECEDENTEMENTE]"
 ```
+
+* Aspettare circa 20 secondi e su localhost dovrebbe comparire l'analisi

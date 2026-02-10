@@ -47,9 +47,10 @@ public class DocenteRepository {
             int generatedID = accountRepository.insertAccount(docente, "Docente");
             docente.setAccountID(generatedID);
             // Inserimento nella tabella 'docenti'
-            try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-                String query = "INSERT INTO docenti (accountID_FK, insegnamento) VALUES (?, ?)";
-                PreparedStatement ps = conn.prepareStatement(query);
+            String query = "INSERT INTO docenti (accountID_FK, insegnamento) VALUES (?, ?)";
+            try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                    PreparedStatement ps = conn.prepareStatement(query)) {
+
                 ps.setInt(1, docente.getAccountID());
                 ps.setString(2, docente.getInsegnamento());
                 ps.executeUpdate();
