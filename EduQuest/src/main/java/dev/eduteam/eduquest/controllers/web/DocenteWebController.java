@@ -44,7 +44,8 @@ public class DocenteWebController {
             return "redirect:/studente/dashboard";
         }
 
-        Docente docente = (Docente) user;
+        Docente docente = docenteService.getByID(user.getAccountID());
+
         model.addAttribute("user", docente);
         
         // Carica i questionari del docente
@@ -124,8 +125,8 @@ public class DocenteWebController {
 
             // Aggiorna il campo specifico del docente: insegnamento
             if (insegnamento != null && !insegnamento.isBlank()) {
-                docenteService.aggiornaInsegnamento(docente.getAccountID(), insegnamento);
                 docenteAggiornato.setInsegnamento(insegnamento);
+                docenteService.aggiornaDocente(docenteAggiornato);
             }
 
             // Aggiorna la sessione con i nuovi dati
