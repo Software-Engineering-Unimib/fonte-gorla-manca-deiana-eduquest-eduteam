@@ -114,14 +114,26 @@ public class CompilazioneService {
             return false;
 
         double punteggioOttenuto = c.getPunteggio();
-        // per ora in centesimi - si può cambiare
         double votoNormalizzato = (punteggioOttenuto / maxPunteggio) * 100;
 
         double mediaAttuale = studente.getMediaPunteggio();
         int totCompilazioni = compilazioneRepository.getCompilazioniStatus(studenteID, true).size();
         double nuovaMedia = ((mediaAttuale * totCompilazioni) + votoNormalizzato) / (totCompilazioni + 1);
-
         studente.setMediaPunteggio(nuovaMedia);
+
+        int eduPointsDaAssegnare = 0;
+        if (votoNormalizzato == 100)
+            eduPointsDaAssegnare = 15;
+        else if (votoNormalizzato > 75)
+            eduPointsDaAssegnare = 10;
+        else if (votoNormalizzato > 50)
+            eduPointsDaAssegnare = 5;
+
+        if (eduPointsDaAssegnare > 0) {
+            int eduPointsAttuali = studente.getEduPoints();
+            studente.setEduPoints(eduPointsAttuali + eduPointsDaAssegnare);
+        }
+
         c.setCompletato(true);
         return (studenteRepository.updateStudente(studente)
                 && compilazioneRepository.upateStatusCompilazione(compilazioneID, true));
