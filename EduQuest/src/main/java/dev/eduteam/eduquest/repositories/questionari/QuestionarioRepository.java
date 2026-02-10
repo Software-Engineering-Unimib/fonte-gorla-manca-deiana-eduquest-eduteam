@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Repository
@@ -109,7 +108,6 @@ public class QuestionarioRepository {
                 "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK " +
                 "WHERE questionarioID = " + id;
 
-
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
 
@@ -175,7 +173,6 @@ public class QuestionarioRepository {
             System.out.println(e.getMessage());
             return null;
         }
-
 
     }
 

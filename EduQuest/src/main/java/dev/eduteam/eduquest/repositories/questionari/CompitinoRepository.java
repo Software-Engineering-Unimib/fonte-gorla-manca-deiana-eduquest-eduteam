@@ -4,23 +4,17 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
-import dev.eduteam.eduquest.models.questionari.Esercitazione;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import dev.eduteam.eduquest.models.questionari.Compitino;
-import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Questionario;
-import dev.eduteam.eduquest.models.questionari.Questionario.Difficulty;
 import dev.eduteam.eduquest.repositories.ConnectionSingleton;
-import dev.eduteam.eduquest.repositories.accounts.DocenteRepository;
 
 @Repository
 public class CompitinoRepository extends QuestionarioRepository {
-
 
     public Compitino insertCompitino(Compitino c) {
         // Usiamo il metodo padre per salvare nella tabella "questionari" i dati comuni
@@ -29,13 +23,15 @@ public class CompitinoRepository extends QuestionarioRepository {
         // Garantiamo che un compitino non può esistere
         // se non esiste il questionario corrispondente
         if (base != null) {
-            String query = "INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax) VALUES (?, ?, ?)";
+            String query = "INSERT INTO compitini (questionarioID_FK, dataFine, tentativiMax, puntiBonus, assegnatiPtBonus) VALUES (?, ?, ?, ?, ?)";
 
             try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                     PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, base.getID());
                 ps.setDate(2, java.sql.Date.valueOf(c.getDataFine()));
                 ps.setInt(3, c.getTentativiMax());
+                ps.setInt(4, c.getPuntiBonus());
+                ps.setBoolean(5, c.getAssegnatiPtBonus());
 
                 ps.executeUpdate();
                 return c;
@@ -65,14 +61,16 @@ public class CompitinoRepository extends QuestionarioRepository {
 
     public boolean updateCompitino(Compitino comp) {
         boolean result = false;
-        String query = "UPDATE compitini SET dataFine = ?, tentativiMax = ? WHERE questionarioID_FK = ?";
+        String query = "UPDATE compitini SET dataFine = ?, tentativiMax = ?, puntiBonus = ?, assegnatiPtBonus = ? WHERE questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setDate(1, Date.valueOf(comp.getDataFine()));
             ps.setInt(2, comp.getTentativiMax());
-            ps.setInt(3, comp.getID());
+            ps.setInt(3, comp.getPuntiBonus());
+            ps.setBoolean(4, comp.getAssegnatiPtBonus());
+            ps.setInt(5, comp.getID());
 
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
@@ -80,5 +78,23 @@ public class CompitinoRepository extends QuestionarioRepository {
             System.out.println(e.getMessage());
         }
         return result;
+    }
+
+    // Funzioni Dashboard
+    public List<Integer> getIDCompitiniScadutiDaAssegnare() {
+        List<Integer> ids = new ArrayList<>();
+        String query = "SELECT questionarioID_FK FROM compitini " +
+                "WHERE dataFine < CURDATE() AND assegnatiPunti = FALSE";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                ids.add(rs.getInt("questionarioID_FK"));
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return ids;
     }
 }

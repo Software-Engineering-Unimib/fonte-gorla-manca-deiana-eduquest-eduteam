@@ -207,4 +207,32 @@ public class CompilazioneRepository {
         }
         return null;
     }
+
+    // Funzioni Dashboard
+
+    // DashboardService si occuperà di recuperare le info dei questionari delle
+    // compilazioni nella lista tonrata dal metodo
+    public ArrayList<Compilazione> getTopCompilazioniStudente(int studenteID, int numCompilazioni) {
+        ArrayList<Compilazione> elencoTopCompilazioni = new ArrayList<Compilazione>();
+        String query = "SELECT * FROM compilazioni" +
+                "WHERE studenteID_FK = ? AND completato = 1 " +
+                "ORDER BY punteggio DESC " +
+                "LIMIT ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, studenteID);
+            ps.setInt(2, numCompilazioni);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    elencoTopCompilazioni.add(mapResultSetToCompilazione(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Errore nel recupero top 3 compilazioni per studente " + e.getMessage());
+        }
+        return elencoTopCompilazioni;
+    }
 }

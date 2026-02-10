@@ -9,7 +9,6 @@ import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,7 +80,11 @@ public class QuestionarioService {
     }
 
     // Uniti i due metodi di modifica e sistemata logica in controller
-    public boolean modificaInfoQuestionario(Questionario questionario, String nome, String descrizione, Difficulty livelloDiff) {
+    public boolean modificaInfoQuestionario(Questionario questionario, String nome, String descrizione,
+            Difficulty livelloDiff) {
+        if (descrizione == null) {
+            throw new IllegalArgumentException("La descrizione non può essere null");
+        }
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
         questionario.setLivelloDiff(livelloDiff);

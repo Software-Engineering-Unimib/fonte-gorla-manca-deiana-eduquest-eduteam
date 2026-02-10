@@ -32,28 +32,34 @@ public class DomandaService {
     public Domanda aggiungiDomanda(int questionarioID, Domanda.Type tipoDomanda) {
         Domanda nuovaDomanda = Domanda.createDomandaOfType(tipoDomanda);
         nuovaDomanda.setTesto("Inserisci qui il testo");
-        nuovaDomanda = domandaRepository.insertDomanda(nuovaDomanda, questionarioID);
-
-        if (tipoDomanda == Domanda.Type.DOMANDA_VERO_FALSO) {
-            Risposta vero = new Risposta("Vero");
-            Risposta falso = new Risposta("Falso");
-            vero.setCorretta(true);
-            falso.setCorretta(false);
-            rispostaRepository.insertRisposta(vero, nuovaDomanda.getID());
-            rispostaRepository.insertRisposta(falso, nuovaDomanda.getID());
-        }
-        return nuovaDomanda;
+        nuovaDomanda.setPunteggio(1);
+        return domandaRepository.insertDomanda(nuovaDomanda, questionarioID);
     }
 
     public boolean rimuoviDomanda(int questionarioID, int domandaID) {
         return domandaRepository.removeDomanda(domandaID, questionarioID);
     }
 
+    // TODO Valutare se unire modificaTesto e modificaPunteggio
     public boolean modificaTesto(int domandaID, String testo) {
+        if (testo == null) {
+            throw new IllegalArgumentException("Il testo della domanda non può essere null");
+        }
+
         Domanda domanda = domandaRepository.getDomandaByID(domandaID);
 
         if (domanda != null) {
             domanda.setTesto(testo);
+            return domandaRepository.updateDomanda(domanda);
+        }
+        return false;
+    }
+
+    public boolean modificaPunteggio(int domandaID, int nuovoPunteggio) {
+        Domanda domanda = domandaRepository.getDomandaByID(domandaID);
+
+        if (domanda != null) {
+            domanda.setPunteggio(nuovoPunteggio);
             return domandaRepository.updateDomanda(domanda);
         }
         return false;

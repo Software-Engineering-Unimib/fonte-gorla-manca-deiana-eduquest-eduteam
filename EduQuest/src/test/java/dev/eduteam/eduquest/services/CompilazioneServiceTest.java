@@ -41,6 +41,9 @@ class CompilazioneServiceTest {
         @Mock
         private CompitinoService compitinoService;
 
+        @Mock
+        private dev.eduteam.eduquest.services.questionari.DomandaService domandaService;
+
         @InjectMocks
         private CompilazioneService compilazioneService;
 
@@ -64,6 +67,9 @@ class CompilazioneServiceTest {
                 Domanda d1 = mock(Domanda.class);
                 Domanda d2 = mock(Domanda.class);
                 Domanda d3 = mock(Domanda.class);
+                when(d1.getPunteggio()).thenReturn(3);
+                when(d2.getPunteggio()).thenReturn(3);
+                when(d3.getPunteggio()).thenReturn(4);
                 domande.add(d1);
                 domande.add(d2);
                 domande.add(d3);
@@ -103,6 +109,10 @@ class CompilazioneServiceTest {
                 ArrayList<Risposta> risposteValide = new ArrayList<>();
                 risposteValide.add(risposta);
 
+                Domanda domanda = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_MULTIPLA);
+                domanda.setID(1);
+                domanda.setPunteggio(5);
+
                 when(compilazioneRepository.getCompilazioneByID(1))
                                 .thenReturn(compilazione);
                 when(compilazioneRepository.getRisposteCompilazione(1, 3))
@@ -115,6 +125,8 @@ class CompilazioneServiceTest {
                                 .thenReturn(true);
                 when(compilazioneRepository.aggiornaPunteggio(anyInt(), anyInt()))
                                 .thenReturn(true);
+                when(domandaService.getDomandaByIdCompleta(1, 1))
+                                .thenReturn(domanda);
 
                 boolean risultato = compilazioneService.inserisciRispostaComp(1, 1, 1);
 
@@ -124,6 +136,10 @@ class CompilazioneServiceTest {
 
         @Test
         void testInserisciRispostaCompRispostaInvalida() {
+                Domanda domanda = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_MULTIPLA);
+                domanda.setID(1);
+                domanda.setPunteggio(5);
+
                 when(compilazioneRepository.getCompilazioneByID(1))
                                 .thenReturn(compilazione);
                 when(compilazioneRepository.getRisposteCompilazione(1, 3))
@@ -132,6 +148,8 @@ class CompilazioneServiceTest {
                                 .thenReturn(risposta);
                 when(rispostaRepository.getRisposteByDomanda(1))
                                 .thenReturn(new ArrayList<>());
+                when(domandaService.getDomandaByIdCompleta(1, 1))
+                                .thenReturn(domanda);
 
                 boolean risultato = compilazioneService.inserisciRispostaComp(1, 1, 1);
 
@@ -146,6 +164,10 @@ class CompilazioneServiceTest {
                 ArrayList<Risposta> risposteValide = new ArrayList<>();
                 risposteValide.add(risposta);
 
+                Domanda domanda = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_MULTIPLA);
+                domanda.setID(1);
+                domanda.setPunteggio(5);
+
                 when(compilazioneRepository.getCompilazioneByID(1))
                                 .thenReturn(compilazione);
                 when(compilazioneRepository.getRisposteCompilazione(1, 3))
@@ -156,6 +178,8 @@ class CompilazioneServiceTest {
                                 .thenReturn(risposteValide);
                 when(compilazioneRepository.salvaRisposta(1, 1))
                                 .thenReturn(false);
+                when(domandaService.getDomandaByIdCompleta(1, 1))
+                                .thenReturn(domanda);
 
                 boolean risultato = compilazioneService.inserisciRispostaComp(1, 1, 1);
 
@@ -200,6 +224,8 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
+                when(questionarioRepository.getQuestionarioByID(1))
+                                .thenReturn(questionario);
                 when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))
@@ -210,8 +236,35 @@ class CompilazioneServiceTest {
                 boolean risultato = compilazioneService.chiudiCompilazione(1, 1);
 
                 assertTrue(risultato);
-                // nuova media: (0*1 + 2) / (1+1) = 1.0
-                assertEquals(1.0, studente.getMediaPunteggio(), 0.001);
+                // votoNormalizzato = (2/10)*100 = 20; nuova media: (0*1 + 20) / (1+1) = 10.0
+                assertEquals(10.0, studente.getMediaPunteggio(), 0.001);
+                verify(studenteRepository, times(1)).updateStudente(any(Studente.class));
+                verify(compilazioneRepository, times(1)).upateStatusCompilazione(1, true);
+        }
+
+        @Test
+        void testChiudiCompilazioneAggiornaMediaConMediaPreesistente() {
+                // Studente con media già presente e due compilazioni già completate
+                compilazione.setPunteggio(8); // punteggio ottenuto nella compilazione corrente
+                studente.setMediaPunteggio(70.0); // media già esistente
+
+                ArrayList<Compilazione> compilazioni = new ArrayList<>();
+                compilazioni.add(new Compilazione(studente, questionario));
+                compilazioni.add(new Compilazione(studente, questionario));
+
+                when(compilazioneRepository.getCompilazioneByID(1)).thenReturn(compilazione);
+                when(studenteRepository.getStudenteByAccountID(1)).thenReturn(studente);
+                when(questionarioRepository.getQuestionarioByID(1)).thenReturn(questionario);
+                when(compilazioneRepository.getCompilazioniStatus(1, true)).thenReturn(compilazioni);
+                when(studenteRepository.updateStudente(any(Studente.class))).thenReturn(true);
+                when(compilazioneRepository.upateStatusCompilazione(1, true)).thenReturn(true);
+
+                boolean risultato = compilazioneService.chiudiCompilazione(1, 1);
+
+                assertTrue(risultato);
+                // Calcolo atteso: votoNormalizzato = (8/10)*100 = 80
+                // nuovaMedia = ((70 * 2) + 80) / (2 + 1) = 220/3 = 73.333...
+                assertEquals(73.33333333333333, studente.getMediaPunteggio(), 0.001);
                 verify(studenteRepository, times(1)).updateStudente(any(Studente.class));
                 verify(compilazioneRepository, times(1)).upateStatusCompilazione(1, true);
         }
@@ -226,6 +279,8 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
+                when(questionarioRepository.getQuestionarioByID(1))
+                                .thenReturn(questionario);
                 when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))

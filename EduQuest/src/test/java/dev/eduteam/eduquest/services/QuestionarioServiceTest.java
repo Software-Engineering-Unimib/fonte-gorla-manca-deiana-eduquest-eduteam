@@ -118,7 +118,8 @@ class QuestionarioServiceTest {
         Difficulty nuovaDiff = Difficulty.Facile;
         when(questionarioRepository.updateQuestionario(questionario)).thenReturn(true);
 
-        boolean result = questionarioService.modificaInfoQuestionario(questionario, nuovoNome, nuovaDescrizione, nuovaDiff);
+        boolean result = questionarioService.modificaInfoQuestionario(questionario, nuovoNome, nuovaDescrizione,
+                nuovaDiff);
         assertTrue(result);
         assertEquals(nuovoNome, questionario.getNome());
         assertEquals(nuovaDescrizione, questionario.getDescrizione());

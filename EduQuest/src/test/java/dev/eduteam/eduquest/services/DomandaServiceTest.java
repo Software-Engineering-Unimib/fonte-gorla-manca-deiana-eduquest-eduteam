@@ -47,7 +47,6 @@ class DomandaServiceTest {
         ArrayList<Domanda> domande = new ArrayList<>();
         domande.add(domanda);
         when(domandaRepository.getDomandeByQuestionario(questionarioID)).thenReturn(domande);
-        when(rispostaRepository.getRisposteByDomanda(domanda.getID())).thenReturn(new ArrayList<>());
 
         ArrayList<Domanda> result = domandaService.getDomandeComplete(questionarioID);
         assertNotNull(result);
@@ -60,7 +59,6 @@ class DomandaServiceTest {
         int questionarioID = 1;
         int domandaID = 1;
         when(domandaRepository.getDomandaByID(questionarioID, domandaID)).thenReturn(domanda);
-        when(rispostaRepository.getRisposteByDomanda(domandaID)).thenReturn(new ArrayList<>());
 
         Domanda result = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
         assertNotNull(result);
@@ -130,11 +128,9 @@ class DomandaServiceTest {
 
     @Test
     void testModificaTestoNull() {
-        int domandaID = 1;
-        when(domandaRepository.getDomandaByID(domandaID)).thenReturn(domanda);
-
+        // Il servizio lancia l'eccezione senza accedere al repository se testo == null
         assertThrows(IllegalArgumentException.class,
-                () -> domandaService.modificaTesto(domandaID, null));
+                () -> domandaService.modificaTesto(1, null));
     }
 
     @Test

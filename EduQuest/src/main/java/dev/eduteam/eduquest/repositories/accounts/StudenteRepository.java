@@ -18,21 +18,29 @@ public class StudenteRepository {
     @Autowired
     private AccountRepository accountRepository;
 
+    private Studente mapResultSetToStudente(ResultSet rs) throws Exception {
+        Studente s = new Studente(rs.getString("nome"), rs.getString("cognome"),
+                rs.getString("userName"), rs.getString("email"), rs.getString("password"));
+        s.setAccountID(rs.getInt("accountID"));
+        s.setMediaPunteggio(rs.getDouble("mediaPunteggio"));
+        s.setEduPoints(rs.getInt("eduPoints"));
+
+        return s;
+    }
+
     public Studente getStudenteByAccountID(int accountID) {
-        String query = "SELECT a.*, s.mediaPunteggio FROM accounts a " +
+        String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints FROM accounts a " +
                 "INNER JOIN studenti s ON a.accountID = s.accountID_FK WHERE a.accountID = ?";
 
-        try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-            PreparedStatement ps = conn.prepareStatement(query);
-            ps.setInt(1, accountID);
-            ResultSet rs = ps.executeQuery();
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
 
-            if (rs.next()) {
-                Studente s = new Studente(rs.getString("nome"), rs.getString("cognome"),
-                        rs.getString("userName"), rs.getString("email"), rs.getString("password"));
-                s.setAccountID(rs.getInt("accountID"));
-                s.setMediaPunteggio(rs.getDouble("mediaPunteggio"));
-                return s;
+            ps.setInt(1, accountID);
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    return mapResultSetToStudente(rs);
+                }
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -45,12 +53,13 @@ public class StudenteRepository {
             // Inserimento nella tabella 'account' tramite la repository comune
             int generatedID = accountRepository.insertAccount(studente, "Studente");
             studente.setAccountID(generatedID);
+            String query = "INSERT INTO studenti (accountID_FK, mediaPunteggio, eduPoints) VALUES (?, ?, ?)";
             // Inserimento nella tabella 'studenti'
-            try (Connection conn = ConnectionSingleton.getInstance().getConnection()) {
-                String query = "INSERT INTO studenti (accountID_FK, mediaPunteggio) VALUES (?, ?)";
-                PreparedStatement ps = conn.prepareStatement(query);
+            try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                    PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, studente.getAccountID());
                 ps.setDouble(2, studente.getMediaPunteggio());
+                ps.setInt(3, studente.getEduPoints());
                 ps.executeUpdate();
             }
             return studente;
@@ -62,7 +71,7 @@ public class StudenteRepository {
 
     public List<Studente> getAllStudenti() {
         List<Studente> studenti = new ArrayList<>();
-        String query = "SELECT a.*, s.mediaPunteggio FROM accounts a " +
+        String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints FROM accounts a " +
                 "INNER JOIN studenti s ON a.accountID = s.accountID_FK";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
@@ -70,11 +79,7 @@ public class StudenteRepository {
                 ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Studente s = new Studente(rs.getString("nome"), rs.getString("cognome"),
-                        rs.getString("userName"), rs.getString("email"), rs.getString("password"));
-                s.setAccountID(rs.getInt("accountID"));
-                s.setMediaPunteggio(rs.getDouble("mediaPunteggio"));
-                studenti.add(s);
+                studenti.add(mapResultSetToStudente(rs));
             }
         } catch (Exception e) {
             System.err.println("Errore getAllStudenti: " + e.getMessage());
@@ -88,16 +93,129 @@ public class StudenteRepository {
             accountRepository.updateAccount(studente);
 
             // Aggiorna i dati specifici nella tabella studenti
-            String query = "UPDATE studenti SET mediaPunteggio = ? WHERE accountID_FK = ?";
+            String query = "UPDATE studenti SET mediaPunteggio = ?, eduPoints = ? WHERE accountID_FK = ?";
             try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                     PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setDouble(1, studente.getMediaPunteggio());
-                ps.setInt(2, studente.getAccountID());
+                ps.setInt(2, studente.getEduPoints());
+                ps.setInt(3, studente.getAccountID());
                 return ps.executeUpdate() > 0;
             }
         } catch (Exception e) {
             System.err.println("Errore updateStudente: " + e.getMessage());
             return false;
         }
+    }
+
+    // Funzioni Dashboard
+    public ArrayList<Studente> getTopStudentiPerMedia(int numStudenti) {
+        ArrayList<Studente> elencoTopStudenti = new ArrayList<Studente>();
+        String query = "SELECT a.*, s.mediaPunteggio " +
+                "FROM studenti s " +
+                "JOIN accounts a ON s.accountID_FK = a.accountID " +
+                "ORDER BY s.mediaPunteggio DESC " +
+                "LIMIT ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, numStudenti);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    elencoTopStudenti.add(mapResultSetToStudente(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Errore nel recupero top 3 studenti per media " + e.getMessage());
+        }
+        return elencoTopStudenti;
+    }
+
+    public ArrayList<Studente> getTopStudentiPerEduPoints(int numStudenti) {
+        ArrayList<Studente> elencoTopStudenti = new ArrayList<Studente>();
+        String query = "SELECT a.*, s.eduPoints " +
+                "FROM studenti s " +
+                "JOIN accounts a ON s.accountID_FK = a.accountID " +
+                "ORDER BY s.eduPoints DESC " +
+                "LIMIT ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, numStudenti);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    elencoTopStudenti.add(mapResultSetToStudente(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Errore nel recupero top 3 studenti per eduPoints " + e.getMessage());
+        }
+        return elencoTopStudenti;
+    }
+
+    // Classe di supporto per tornare i risultati del metodo
+    // getStatisticheBaseStudente
+    public class RiepilogoStudente {
+        public double media;
+        public int eduPoints;
+        public int numeroCompilazioni;
+    }
+
+    public RiepilogoStudente getStatisticheBaseStudente(int studenteID) {
+        // Vengono contate solo le compilazioni completate
+        String query = "SELECT s.mediaPunteggio, s.eduPoints, COUNT(CASE WHEN c.completato = 1 THEN 1 END) as totale " +
+                "FROM studenti s " +
+                "LEFT JOIN compilazioni c ON s.accountID_FK = c.studenteID_FK " +
+                "WHERE s.accountID_FK = ? " +
+                "GROUP BY s.accountID_FK, s.mediaPunteggio, s.eduPoints";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, studenteID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    RiepilogoStudente r = new RiepilogoStudente();
+                    r.media = rs.getDouble("mediaPunteggio");
+                    r.eduPoints = rs.getInt("eduPoints");
+                    r.numeroCompilazioni = rs.getInt("totale");
+                    return r;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore recupero statistiche studente: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public List<Studente> getVincitoriBonusCompitino(int questionarioID, int limit) {
+        List<Studente> vincitori = new ArrayList<>();
+        String query = "SELECT a.*, MAX(c.punteggio) as migliorVoto, s.puntiBonus " +
+                "FROM compilazioni c " +
+                "JOIN studenti s ON c.studenteID_FK = s.accountID_FK " +
+                "JOIN accounts a ON s.accountID_FK = a.accountID " +
+                "WHERE c.questionarioID_FK = ? AND c.completato = TRUE " +
+                "GROUP BY c.studenteID_FK " +
+                "ORDER BY migliorVoto DESC " +
+                "LIMIT ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, questionarioID);
+            ps.setInt(2, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    vincitori.add(mapResultSetToStudente(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore calcolo vincitori bonus: " + e.getMessage());
+        }
+        return vincitori;
     }
 }

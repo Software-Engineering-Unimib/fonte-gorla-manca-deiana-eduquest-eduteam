@@ -32,15 +32,14 @@ public class StudenteService {
     public boolean aggiornaStudente(Studente studente) {
         return studenteRepository.updateStudente(studente);
     }
-    /*
-     * L'aggiornaMedia verrà implementata quando avremo la compilazione
-     * public boolean aggiornaMedia(int id, double nuovoVoto) {
-     * Studente s = studenteRepository.getStudenteByAccountID(id);
-     * if (s != null) {
-     * double vecchiaMedia = s.getMediaPunteggio();
-     * s.setMediaPunteggio(vecchiaMedia);
-     * }
-     * }
-     */
+
+    public boolean aggiornaMedia(int id, double nuovaMedia) {
+        Studente s = studenteRepository.getStudenteByAccountID(id);
+        if (s != null) {
+            s.setMediaPunteggio(nuovaMedia);
+            return studenteRepository.updateStudente(s);
+        }
+        return false;
+    }
 
 }

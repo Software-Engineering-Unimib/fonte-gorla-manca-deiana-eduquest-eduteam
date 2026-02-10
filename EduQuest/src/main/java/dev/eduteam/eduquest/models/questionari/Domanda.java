@@ -11,6 +11,7 @@ public abstract class Domanda {
     }
 
     protected Type tipoDomanda;
+    protected int punteggio;
 
     // VARIABILI COMUNI A TUTTE LE DOMANDE
 
@@ -56,7 +57,9 @@ public abstract class Domanda {
         return elencoRisposte;
     }
 
-    public void setElencoRisposte(ArrayList<Risposta> risposte) { elencoRisposte = risposte; }
+    public void setElencoRisposte(ArrayList<Risposta> risposte) {
+        elencoRisposte = risposte;
+    }
 
     public void addRisposta(Risposta risposta) {
         elencoRisposte.add(risposta);
@@ -64,5 +67,15 @@ public abstract class Domanda {
 
     public Type getTipoDomanda() {
         return tipoDomanda;
+    }
+
+    public int getPunteggio() {
+        return punteggio;
+    }
+
+    public void setPunteggio(int punteggio) {
+        if (punteggio <= 0)
+            this.punteggio = 1; // impostato come punteggio di default 1
+        this.punteggio = punteggio;
     }
 }

@@ -2,7 +2,6 @@ package dev.eduteam.eduquest.services.questionari;
 
 import java.util.ArrayList;
 
-import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +60,8 @@ public class EsercitazioneService {
     }
 
     // Uniti i due metodi di modifica e sistemata logica in controller
-    public boolean modificaInfoEsercitazione(Esercitazione questionario, String nome, String descrizione, Difficulty livelloDiff, String noteDidattiche) {
+    public boolean modificaInfoEsercitazione(Esercitazione questionario, String nome, String descrizione,
+            Difficulty livelloDiff, String noteDidattiche) {
         questionario.setNome(nome);
         questionario.setDescrizione(descrizione);
         questionario.setLivelloDiff(livelloDiff);

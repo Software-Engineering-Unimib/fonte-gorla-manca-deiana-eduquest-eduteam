@@ -52,7 +52,8 @@ public class QuestionarioControllerWeb {
         }
 
         if (!user.isDocente()) {
-            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO'
+                                                   // COMPILARE IL QUESTIONARIO
         }
 
         Docente docente = (Docente) user;
@@ -74,11 +75,11 @@ public class QuestionarioControllerWeb {
 
     @PostMapping("/modifica/questionario/{questionarioID}")
     public String modificaQuestionario(@PathVariable int questionarioID,
-                                  @RequestParam String nome,
-                                  @RequestParam String descrizione,
-                                  @RequestParam String difficolta,
-                                  HttpSession session,
-                                  RedirectAttributes redirectAttributes) {
+            @RequestParam String nome,
+            @RequestParam String descrizione,
+            @RequestParam String difficolta,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Docente docente = (Docente) session.getAttribute("user");
 
         if (docente == null) {
@@ -94,20 +95,20 @@ public class QuestionarioControllerWeb {
             redirectAttributes.addFlashAttribute("cognome", descrizione);
             return "redirect:/docente/profilo";
         }
-        questionarioService.modificaInfoQuestionario(questionarioService.getQuestionarioCompleto(questionarioID), nome, descrizione, diff);
-
+        questionarioService.modificaInfoQuestionario(questionarioService.getQuestionarioCompleto(questionarioID), nome,
+                descrizione, diff);
 
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
     @PostMapping("/modifica/esercitazione/{questionarioID}")
     public String modificaEsercitazione(@PathVariable int questionarioID,
-                                       @RequestParam String nome,
-                                       @RequestParam String descrizione,
-                                       @RequestParam String difficolta,
-                                        @RequestParam String noteDidattiche,
-                                       HttpSession session,
-                                       RedirectAttributes redirectAttributes) {
+            @RequestParam String nome,
+            @RequestParam String descrizione,
+            @RequestParam String difficolta,
+            @RequestParam String noteDidattiche,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Docente docente = (Docente) session.getAttribute("user");
 
         if (docente == null) {
@@ -123,19 +124,23 @@ public class QuestionarioControllerWeb {
             redirectAttributes.addFlashAttribute("cognome", descrizione);
             return "redirect:/docente/profilo";
         }
-        esercitazioneService.modificaInfoEsercitazione((Esercitazione) questionarioService.getQuestionarioCompleto(questionarioID), nome, descrizione, diff, noteDidattiche);
+        esercitazioneService.modificaInfoEsercitazione(
+                (Esercitazione) questionarioService.getQuestionarioCompleto(questionarioID), nome, descrizione, diff,
+                noteDidattiche);
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
     @PostMapping("/modifica/compitino/{questionarioID}")
     public String modificaCompitino(@PathVariable int questionarioID,
-                                        @RequestParam String nome,
-                                        @RequestParam String descrizione,
-                                        @RequestParam String difficolta,
-                                        @RequestParam LocalDate dataFine,
-                                        @RequestParam int tentativiMax,
-                                        HttpSession session,
-                                        RedirectAttributes redirectAttributes) {
+            @RequestParam String nome,
+            @RequestParam String descrizione,
+            @RequestParam String difficolta,
+            @RequestParam LocalDate dataFine,
+            @RequestParam int tentativiMax,
+            @RequestParam int puntiBonus,
+            @RequestParam boolean assegnatiPtBonus,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Docente docente = (Docente) session.getAttribute("user");
 
         if (docente == null) {
@@ -151,7 +156,8 @@ public class QuestionarioControllerWeb {
             redirectAttributes.addFlashAttribute("cognome", descrizione);
             return "redirect:/docente/profilo";
         }
-        compitinoService.modificaInfoCompitino((Compitino) questionarioService.getQuestionarioCompleto(questionarioID), nome, descrizione, diff, dataFine, tentativiMax);
+        compitinoService.modificaInfoCompitino((Compitino) questionarioService.getQuestionarioCompleto(questionarioID),
+                nome, descrizione, diff, dataFine, tentativiMax, puntiBonus, assegnatiPtBonus);
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
@@ -168,7 +174,8 @@ public class QuestionarioControllerWeb {
         }
 
         if (!user.isDocente()) {
-            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO'
+                                                   // COMPILARE IL QUESTIONARIO
         }
 
         Docente docente = (Docente) user;
@@ -182,7 +189,7 @@ public class QuestionarioControllerWeb {
             model.addAttribute("questionario", questionario);
         }
 
-        if (questionario instanceof  Esercitazione) {
+        if (questionario instanceof Esercitazione) {
 
             return "questionario/modifica-esercitazione";
         } else if (questionario instanceof Compitino) {
@@ -212,9 +219,10 @@ public class QuestionarioControllerWeb {
         if (docente == null) {
             return "redirect:/login";
         }
-        esercitazioneService.creaEsercitazione(docente.getAccountID(), Questionario.Difficulty.Facile,"");
+        esercitazioneService.creaEsercitazione(docente.getAccountID(), Questionario.Difficulty.Facile, "");
         return "redirect:/docente/dashboard";
     }
+
     @PostMapping("creaCompitino")
     public String creaCompitino(HttpSession session) {
 
@@ -223,10 +231,9 @@ public class QuestionarioControllerWeb {
         if (docente == null) {
             return "redirect:/login";
         }
-        compitinoService.creaCompitino(docente.getAccountID(), Questionario.Difficulty.Facile, LocalDate.now(),1);
+        compitinoService.creaCompitino(docente.getAccountID(), Questionario.Difficulty.Facile, LocalDate.now(), 1);
         return "redirect:/docente/dashboard";
     }
-
 
     // Post -> Delete per standard REST
     @PostMapping("/rimuovi/{ID}")
