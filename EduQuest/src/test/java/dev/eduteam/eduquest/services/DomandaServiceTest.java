@@ -96,7 +96,7 @@ class DomandaServiceTest {
         when(domandaRepository.getDomandaByID(domandaID)).thenReturn(domanda);
         when(domandaRepository.updateDomanda(domanda)).thenReturn(true);
 
-        boolean result = domandaService.modificaTesto(domandaID, nuovoTesto);
+        boolean result = domandaService.modificaDomanda(domandaID, nuovoTesto, domanda.getPunteggio());
         assertTrue(result);
         assertEquals(nuovoTesto, domanda.getTesto());
         verify(domandaRepository).updateDomanda(domanda);
@@ -130,7 +130,7 @@ class DomandaServiceTest {
     void testModificaTestoNull() {
         // Il servizio lancia l'eccezione senza accedere al repository se testo == null
         assertThrows(IllegalArgumentException.class,
-                () -> domandaService.modificaTesto(1, null));
+                () -> domandaService.modificaDomanda(1, null, 1));
     }
 
     @Test
