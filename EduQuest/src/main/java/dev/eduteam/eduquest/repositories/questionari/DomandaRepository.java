@@ -130,10 +130,12 @@ public class DomandaRepository {
     public Domanda getDomandaByRisposta(int rispostaID) {
 
         Domanda domanda = null;
-        String query = "SELECT domandaID_FK FROM risposte WHERE rispostaID = " + rispostaID;
+        String query = "SELECT domandaID_FK FROM risposte WHERE rispostaID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, rispostaID);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

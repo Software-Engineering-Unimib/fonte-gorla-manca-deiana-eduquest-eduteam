@@ -106,11 +106,12 @@ public class QuestionarioRepository {
                 "FROM questionari q " +
                 "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK " +
                 "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK " +
-                "WHERE questionarioID = " + id;
+                "WHERE q.questionarioID = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
 
+            ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSetToQuestionario(rs);
@@ -131,10 +132,12 @@ public class QuestionarioRepository {
                 "FROM questionari q " +
                 "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK " +
                 "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK " +
-                "WHERE docenteID_FK = " + docenteID;
+                "WHERE q.docenteID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);) {
+
+            ps.setInt(1, docenteID);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
