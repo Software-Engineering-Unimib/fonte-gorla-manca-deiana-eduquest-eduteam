@@ -80,7 +80,8 @@ public class DocenteWebController {
             return "redirect:/studente/profilo";
         }
 
-        Docente docente = (Docente) user;
+        Docente docente = docenteService.getByID(user.getAccountID());
+
         model.addAttribute("user", docente);
         return "docente/profilo";
     }

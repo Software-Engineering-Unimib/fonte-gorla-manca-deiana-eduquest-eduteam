@@ -110,10 +110,13 @@ public class DomandaController {
 
     @PostMapping("modifica/{domandaID}/testo")
     public ResponseEntity<Domanda> setTestoDomanda(
+            @PathVariable int questionarioID,
             @PathVariable int domandaID,
             @RequestParam(name = "testo") String testo) {
 
-        boolean successo = domandaService.modificaTesto(domandaID, testo);
+        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
+
+        boolean successo = domandaService.modificaDomanda(domandaID, testo, domanda.getPunteggio());
 
         if (successo) {
             return ResponseEntity.ok().build();
@@ -138,9 +141,13 @@ public class DomandaController {
 
     @PostMapping("modifica/{domandaID}/punteggio")
     public ResponseEntity<Domanda> setPunteggioDomanda(
+            @PathVariable int questionarioID,
             @PathVariable int domandaID,
             @RequestParam int punteggio) {
-        boolean successo = domandaService.modificaPunteggio(domandaID, punteggio);
+
+        Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
+
+        boolean successo = domandaService.modificaDomanda(domandaID, domanda.getTesto(), punteggio);
 
         if (successo) {
             return ResponseEntity.ok().build();

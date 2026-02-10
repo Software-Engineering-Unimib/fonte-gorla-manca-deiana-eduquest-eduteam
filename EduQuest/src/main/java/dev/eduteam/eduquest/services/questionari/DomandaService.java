@@ -40,26 +40,17 @@ public class DomandaService {
         return domandaRepository.removeDomanda(domandaID, questionarioID);
     }
 
-    // TODO Valutare se unire modificaTesto e modificaPunteggio
-    public boolean modificaTesto(int domandaID, String testo) {
+    public boolean modificaDomanda(int domandaID, String testo, int nuovoPunteggio) {
+
         if (testo == null) {
             throw new IllegalArgumentException("Il testo della domanda non può essere null");
         }
-
         Domanda domanda = domandaRepository.getDomandaByID(domandaID);
 
         if (domanda != null) {
             domanda.setTesto(testo);
-            return domandaRepository.updateDomanda(domanda);
-        }
-        return false;
-    }
-
-    public boolean modificaPunteggio(int domandaID, int nuovoPunteggio) {
-        Domanda domanda = domandaRepository.getDomandaByID(domandaID);
-
-        if (domanda != null) {
             domanda.setPunteggio(nuovoPunteggio);
+
             return domandaRepository.updateDomanda(domanda);
         }
         return false;

@@ -56,7 +56,8 @@ public class QuestionarioControllerWeb {
                                                    // COMPILARE IL QUESTIONARIO
         }
 
-        Docente docente = (Docente) user;
+        Docente docente = docenteService.getByID(user.getAccountID());
+
         Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         if (questionario != null) {
 
@@ -178,7 +179,8 @@ public class QuestionarioControllerWeb {
                                                    // COMPILARE IL QUESTIONARIO
         }
 
-        Docente docente = (Docente) user;
+        Docente docente = docenteService.getByID(user.getAccountID());
+
         Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         if (questionario != null) {
 

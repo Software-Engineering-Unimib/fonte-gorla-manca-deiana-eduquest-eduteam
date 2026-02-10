@@ -70,7 +70,7 @@ public class RispostaControllerWeb {
             return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
         }
 
-        Docente docente = (Docente) user;
+        Docente docente = docenteService.getByID(user.getAccountID());
 
         Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
         Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
@@ -133,7 +133,8 @@ public class RispostaControllerWeb {
             return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
         }
 
-        Docente docente = (Docente) user;
+        Docente docente = docenteService.getByID(user.getAccountID());
+
         Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
         Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
         Risposta risposta = rispostaService.getRispostaById(rispostaID);

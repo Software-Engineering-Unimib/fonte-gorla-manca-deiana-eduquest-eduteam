@@ -64,7 +64,8 @@ public class DomandaControllerWeb {
                 return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
             }
 
-            Docente docente = (Docente) user;
+            Docente docente = docenteService.getByID(user.getAccountID());
+
             Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
             if (questionario != null) {
 
@@ -135,29 +136,6 @@ public class DomandaControllerWeb {
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
-    @PostMapping("/modifica/{domandaID}")
-    public String modificaQuestionario(@PathVariable int questionarioID,
-                                       @PathVariable int domandaID,
-                                       @RequestParam String testo,
-                                       HttpSession session,
-                                       RedirectAttributes redirectAttributes) {
-        Docente docente = (Docente) session.getAttribute("user");
-
-        if (docente == null) {
-            return "redirect:/login";
-        }
-
-        // Validazione: campi obbligatori non vuoti
-        if (domandaID == 0 || testo.isBlank()) {
-            redirectAttributes.addFlashAttribute("error", "Il testo è obbligatorio.");
-            redirectAttributes.addFlashAttribute("nome", testo);
-            return "redirect:/docente/profilo";
-        }
-        domandaService.modificaTesto(domandaID, testo);
-
-        return "redirect:/docente/dashboard/" + questionarioID;
-    }
-
     @GetMapping("/modifica/{domandaID}")
     public String modificaQuestionario(@PathVariable int questionarioID,
                                        @PathVariable int domandaID,
@@ -174,7 +152,8 @@ public class DomandaControllerWeb {
             return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
         }
 
-        Docente docente = (Docente) user;
+        Docente docente = docenteService.getByID(user.getAccountID());
+
         Questionario questionario = questionarioService.getQuestionarioCompleto(questionarioID);
         Domanda domanda = domandaService.getDomandaByIdCompleta(questionarioID, domandaID);
         if (questionario != null) {
@@ -189,4 +168,27 @@ public class DomandaControllerWeb {
         return "domanda/modifica-domanda";
     }
 
+    @PostMapping("/modifica/{domandaID}")
+    public String modificaQuestionario(@PathVariable int questionarioID,
+                                       @PathVariable int domandaID,
+                                       @RequestParam String testo,
+                                       @RequestParam int punteggio,
+                                       HttpSession session,
+                                       RedirectAttributes redirectAttributes) {
+        Docente docente = (Docente) session.getAttribute("user");
+
+        if (docente == null) {
+            return "redirect:/login";
+        }
+
+        // Validazione: campi obbligatori non vuoti
+        if (domandaID == 0 || testo.isBlank()) {
+            redirectAttributes.addFlashAttribute("error", "Il testo è obbligatorio.");
+            redirectAttributes.addFlashAttribute("nome", testo);
+            return "redirect:/docente/profilo";
+        }
+        domandaService.modificaDomanda(domandaID, testo, punteggio);
+
+        return "redirect:/docente/dashboard/" + questionarioID;
+    }
 }

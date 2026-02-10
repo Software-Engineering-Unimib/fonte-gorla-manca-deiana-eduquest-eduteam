@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <section th:fragment="rispostaCard(q, d, r, index)">
 
-    <h4>Risposta <span th:text="${index}"></span></h4>
+    <h4>Risposta <span th:text="${index + 1}"></span></h4>
     <p th:text="${r.testo}">Testo Risposta</p>
     <div class="card-meta">
         <div th:if="${r.corretta == true}" class="empty-state">

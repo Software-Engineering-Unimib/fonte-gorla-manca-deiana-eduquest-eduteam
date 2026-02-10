@@ -7,14 +7,14 @@
     <div class="form-group">
         <label for="rispostaID">ID Risposta</label>
         <input type="number" id="rispostaID" name="rispostaID"
-               th:value="${questionario.ID}" disabled class="input-disabled">
+               th:value="${risposta.ID}" disabled class="input-disabled">
         <small class="form-hint">L'ID della risposta non può essere modificata</small>
     </div>
 
     <div class="form-group">
         <label for="testo">Testo</label>
         <input type="text" id="testo" name="testo" required
-               th:value="${questionario.descrizione}" placeholder="Testo della domanda">
+               th:value="${risposta.testo}" placeholder="Testo della risposta">
     </div>
 
     <div class="form-group">

@@ -58,7 +58,7 @@ public class DomandaRepository {
                 "domandaID, " +
                 "tipo, " +
                 "testo, " +
-                "questionarioID_FK " +
+                "questionarioID_FK, " +
                 "punteggio FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
@@ -97,7 +97,7 @@ public class DomandaRepository {
                 "domandaID, " +
                 "tipo, " +
                 "testo, " +
-                "questionarioID_FK " +
+                "questionarioID_FK, " +
                 "punteggio FROM domande WHERE questionarioID_FK = ?";
 
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();

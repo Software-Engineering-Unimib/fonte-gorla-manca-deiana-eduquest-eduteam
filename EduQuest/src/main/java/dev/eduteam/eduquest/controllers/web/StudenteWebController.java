@@ -1,5 +1,6 @@
 package dev.eduteam.eduquest.controllers.web;
 
+import dev.eduteam.eduquest.services.accounts.StudenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,9 @@ public class StudenteWebController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private StudenteService studenteService;
+
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         Account user = (Account) session.getAttribute("user");
@@ -33,7 +37,8 @@ public class StudenteWebController {
             return "redirect:/docente/dashboard";
         }
 
-        Studente studente = (Studente) user;
+        Studente studente = studenteService.getById(user.getAccountID());
+
         model.addAttribute("user", studente);
         
         // Placeholder per statistiche e questionari disponibili
@@ -57,7 +62,8 @@ public class StudenteWebController {
             return "redirect:/docente/profilo";
         }
 
-        Studente studente = (Studente) user;
+        Studente studente = studenteService.getById(user.getAccountID());
+
         model.addAttribute("user", studente);
         return "studente/profilo";
     }

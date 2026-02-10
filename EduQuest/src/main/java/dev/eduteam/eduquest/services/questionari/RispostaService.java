@@ -53,7 +53,7 @@ public class RispostaService {
 
         Domanda domanda = domandaRepository.getDomandaByRisposta(risposta.getID());
 
-        if (domanda.getTipoDomanda() != Domanda.Type.DOMANDA_MULTIPLE_RISPOSTE) {
+        if (domanda.getTipoDomanda() != Domanda.Type.DOMANDA_MULTIPLE_RISPOSTE && corretta) {
 
             for (Risposta r : domanda.getElencoRisposte()) {
                 r.setCorretta(false);

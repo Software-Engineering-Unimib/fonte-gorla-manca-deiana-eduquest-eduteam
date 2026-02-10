@@ -36,7 +36,12 @@ public class QuestionarioService {
     }
 
     public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
-        return questionarioRepository.getQuestionariByDocente(docenteID);
+        ArrayList<Questionario> questionari = questionarioRepository.getQuestionariByDocente(docenteID);
+        for (Questionario q : questionari) {
+            ArrayList<Domanda> domande = domandaService.getDomandeComplete(q.getID());
+            q.setElencoDomande(domande);
+        }
+        return questionari;
     }
 
     public List<Questionario> getQuestionariDisponibliPerStudente(int studenteID) {
