@@ -1,1 +1,4 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/Q0FUR8_P)
+
+Per ragioni di sicurezza durante l'analisi con SonarCube, il token di accesso a SonarCube non è stato incluso nel pom.xml, per eseguire l'analisi, utilizzare il comando: mvn sonar:sonar "-Dsonar.token=sqp_57c463dfd3bfc9f6f25bc57464a063ab102b8cd5"
+Oppure entrare nella cartella del progetto dove si trova mvnw.cmd e usare il comando: .\mvnw.cmd sonar:sonar "-Dsonar.token=sqp_57c463dfd3bfc9f6f25bc57464a063ab102b8cd5"
