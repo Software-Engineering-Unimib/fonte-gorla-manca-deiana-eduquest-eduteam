@@ -92,10 +92,11 @@ public class DocenteWebController {
                                   @RequestParam String email,
                                   @RequestParam String passwordAttuale,
                                   @RequestParam(required = false) String nuovaPassword,
-                                  @RequestParam(required = false) String insegnamento,
+                                  @RequestParam String insegnamento,
                                   HttpSession session,
                                   RedirectAttributes redirectAttributes) {
-        Docente docente = (Docente) session.getAttribute("user");
+        Account user = (Account) session.getAttribute("user");
+        Docente docente = docenteService.getByID(user.getAccountID());
         
         if (docente == null) {
             return "redirect:/login";
@@ -122,7 +123,7 @@ public class DocenteWebController {
                 nuovaPassword != null && !nuovaPassword.isBlank() ? nuovaPassword : null
             );
 
-            Docente docenteAggiornato = (Docente) accountAggiornato;
+            Docente docenteAggiornato = docenteService.getByID(accountAggiornato.getAccountID());
 
             // Aggiorna il campo specifico del docente: insegnamento
             if (insegnamento != null && !insegnamento.isBlank()) {
@@ -130,11 +131,12 @@ public class DocenteWebController {
                 docenteService.aggiornaDocente(docenteAggiornato);
             }
 
+
             // Aggiorna la sessione con i nuovi dati
-            session.setAttribute("user", docenteAggiornato);
+            session.setAttribute("user", accountAggiornato);
             
             redirectAttributes.addFlashAttribute("success", "Profilo aggiornato con successo!");
-            return "redirect:/docente/profilo";
+            return "redirect:/docente/dashboard";
             
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
