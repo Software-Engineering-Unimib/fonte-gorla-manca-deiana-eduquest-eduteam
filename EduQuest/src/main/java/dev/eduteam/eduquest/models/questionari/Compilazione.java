@@ -15,6 +15,8 @@ public class Compilazione {
     public Compilazione(Studente studente, Questionario questionario) {
         setStudente(studente);
         setQuestionario(questionario);
+        this.numeroDomande = questionario.getNumeroDomande();
+        this.risposte = new Risposta[numeroDomande];
     }
 
     public int getID() {
@@ -39,8 +41,6 @@ public class Compilazione {
 
     public void setQuestionario(Questionario questionario) {
         this.questionario = questionario;
-        this.numeroDomande = questionario.getNumeroDomande();
-        this.risposte = new Risposta[numeroDomande];
     }
 
     public Risposta[] getRisposte() {

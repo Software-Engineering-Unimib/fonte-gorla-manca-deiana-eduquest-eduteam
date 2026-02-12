@@ -2,11 +2,14 @@ package dev.eduteam.eduquest.controllers.web;
 
 import dev.eduteam.eduquest.models.accounts.Account;
 import dev.eduteam.eduquest.models.accounts.Docente;
+import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compitino;
 import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Esercitazione;
 import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.services.accounts.DocenteService;
+import dev.eduteam.eduquest.services.accounts.StudenteService;
+import dev.eduteam.eduquest.services.questionari.CompilazioneService;
 import dev.eduteam.eduquest.services.questionari.CompitinoService;
 import dev.eduteam.eduquest.services.questionari.EsercitazioneService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
@@ -24,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("docente/dashboard/")
+@RequestMapping("")
 public class QuestionarioControllerWeb {
 
     @Autowired
@@ -39,7 +42,13 @@ public class QuestionarioControllerWeb {
     @Autowired
     private DocenteService docenteService;
 
-    @GetMapping("{ID}")
+    @Autowired
+    private StudenteService studenteService;
+
+    @Autowired
+    private CompilazioneService compilazioneService;
+
+    @GetMapping("docente/dashboard/{ID}")
     public String getQuestionario(
             HttpSession session,
             Model model,
@@ -52,8 +61,7 @@ public class QuestionarioControllerWeb {
         }
 
         if (!user.isDocente()) {
-            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO'
-                                                   // COMPILARE IL QUESTIONARIO
+            return "redirect:/studente/dashboard/" + ID;
         }
 
         Docente docente = docenteService.getByID(user.getAccountID());
@@ -74,7 +82,7 @@ public class QuestionarioControllerWeb {
         return "questionario/singolo-questionario";
     }
 
-    @PostMapping("/modifica/questionario/{questionarioID}")
+    @PostMapping("docente/dashboard/modifica/questionario/{questionarioID}")
     public String modificaQuestionario(@PathVariable int questionarioID,
             @RequestParam String nome,
             @RequestParam String descrizione,
@@ -102,7 +110,7 @@ public class QuestionarioControllerWeb {
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
-    @PostMapping("/modifica/esercitazione/{questionarioID}")
+    @PostMapping("docente/dashboard/modifica/esercitazione/{questionarioID}")
     public String modificaEsercitazione(@PathVariable int questionarioID,
             @RequestParam String nome,
             @RequestParam String descrizione,
@@ -131,7 +139,7 @@ public class QuestionarioControllerWeb {
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
-    @PostMapping("/modifica/compitino/{questionarioID}")
+    @PostMapping("docente/dashboard/modifica/compitino/{questionarioID}")
     public String modificaCompitino(@PathVariable int questionarioID,
             @RequestParam String nome,
             @RequestParam String descrizione,
@@ -162,7 +170,7 @@ public class QuestionarioControllerWeb {
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
-    @GetMapping("/modifica/{ID}")
+    @GetMapping("docente/dashboard/modifica/{ID}")
     public String modificaQuestionario(
             HttpSession session,
             Model model,
@@ -175,8 +183,7 @@ public class QuestionarioControllerWeb {
         }
 
         if (!user.isDocente()) {
-            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO'
-                                                   // COMPILARE IL QUESTIONARIO
+            return "redirect:/studente/dashboard/" + ID;
         }
 
         Docente docente = docenteService.getByID(user.getAccountID());
@@ -201,7 +208,7 @@ public class QuestionarioControllerWeb {
         return "questionario/modifica-questionario";
     }
 
-    @PostMapping("crea")
+    @PostMapping("docente/dashboard/crea")
     public String creaQuestionario(HttpSession session) {
 
         Docente docente = (Docente) session.getAttribute("user");
@@ -213,7 +220,7 @@ public class QuestionarioControllerWeb {
         return "redirect:/docente/dashboard";
     }
 
-    @PostMapping("creaEsercitazione")
+    @PostMapping("docente/dashboard/creaEsercitazione")
     public String creaEsercitazione(HttpSession session) {
 
         Docente docente = (Docente) session.getAttribute("user");
@@ -225,7 +232,7 @@ public class QuestionarioControllerWeb {
         return "redirect:/docente/dashboard";
     }
 
-    @PostMapping("creaCompitino")
+    @PostMapping("docente/dashboard/creaCompitino")
     public String creaCompitino(HttpSession session) {
 
         Docente docente = (Docente) session.getAttribute("user");
@@ -238,7 +245,7 @@ public class QuestionarioControllerWeb {
     }
 
     // Post -> Delete per standard REST
-    @PostMapping("/rimuovi/{ID}")
+    @PostMapping("docente/dashboard/rimuovi/{ID}")
     public String rimuoviQuestionario(HttpSession session, @PathVariable int ID) {
         Docente docente = (Docente) session.getAttribute("user");
 
@@ -247,6 +254,39 @@ public class QuestionarioControllerWeb {
         }
         questionarioService.rimuoviQuestionario(ID);
         return "redirect:/docente/dashboard";
+    }
+
+    // -- METODI STUDENTE --
+
+    @GetMapping("studente/dashboard/{ID}")
+    public String getQuestionarioStudente(
+            HttpSession session,
+            Model model,
+            @PathVariable int ID) {
+
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (user.isDocente()) {
+            return "redirect:/docente/dashboard/" + ID;
+        }
+
+        Studente studente = studenteService.getById(user.getAccountID());
+
+        Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
+        if (questionario != null) {
+
+            boolean esisteCompilazione = compilazioneService.esisteCompilazione(studente.getAccountID(), ID);
+
+            model.addAttribute("user", studente);
+            model.addAttribute("questionario", questionario);
+            model.addAttribute("esisteCompilazione", esisteCompilazione);
+
+        }
+        return "questionario/singolo-questionario-studente";
     }
 
 }

@@ -35,33 +35,41 @@ public class CompilazioneService {
     private CompitinoService compitinoService;
 
     @Autowired
+    private QuestionarioService questionarioService;
+
+    @Autowired
     private DomandaService domandaService;
 
     public boolean inserisciRispostaComp(int compilazioneID, int domandaID, int rispostaID) {
+
         Compilazione compilazione = compilazioneRepository.getCompilazioneByID(compilazioneID);
         popolaCompilazione(compilazione);
         Risposta[] risposte = compilazione.getRisposte();
+
         // mi serve la domanda attuale per sapere quanto vale
         Domanda domandaAttuale = domandaService.getDomandaByIdCompleta(compilazione.getQuestionario().getID(),
                 domandaID);
         Risposta risposta = rispostaRepository.getRispostaByID(rispostaID);
-        if (!isValida(domandaID, rispostaID))
+        if (!isValida(domandaID, rispostaID)) {
+            System.out.println("Hello");
             return false;
+        }
 
         for (int i = 0; i < risposte.length; i++) {
             if (risposte[i] == null) {
+                System.out.println("Slot " + i + " delle compilazioni inserendo " +  rispostaID);
                 risposte[i] = risposta;
                 // controllo se è corretta e setto il punteggio
                 if (risposta.isCorretta()) {
                     compilazione.setPunteggio(compilazione.getPunteggio() + domandaAttuale.getPunteggio());
                 }
-                if (compilazioneRepository.salvaRisposta(compilazioneID, rispostaID))
+                if (compilazioneRepository.salvaRisposta(compilazioneID, rispostaID)) {
                     return compilazioneRepository.aggiornaPunteggio(compilazioneID, compilazione.getPunteggio());
+                }
                 return false;
             }
         }
         return false;
-
     }
 
     public ArrayList<Compilazione> getCompilazioniCompletate(int studenteID) {
@@ -75,7 +83,7 @@ public class CompilazioneService {
         }
 
         Studente s = studenteRepository.getStudenteByAccountID(studenteID);
-        Questionario q = questionarioRepository.getQuestionarioByID(questionarioID);
+        Questionario q = questionarioService.getQuestionarioCompleto(questionarioID);
         if (s == null || q == null) {
             return null;
         }
@@ -89,17 +97,20 @@ public class CompilazioneService {
     private void popolaCompilazione(Compilazione c) {
         Risposta[] r1 = c.getRisposte();
         Risposta[] r2 = compilazioneRepository.getRisposteCompilazione(c.getID(), c.getNumeroDomande());
-        for (int i = 0; i < r1.length; i++) {
+        for (int i = 0; i < r2.length; i++) {
             r1[i] = r2[i];
         }
     }
 
     // Controlla la risposta data sia valida per la corrente domanda
     private boolean isValida(int domandaID, int rispostaID) {
-        List<Risposta> valide = rispostaRepository.getRisposteByDomanda(domandaID);
-        Risposta risposta = rispostaRepository.getRispostaByID(rispostaID);
-        if (valide.contains(risposta))
-            return true;
+        ArrayList<Risposta> valide = rispostaRepository.getRisposteByDomanda(domandaID);
+
+        for (Risposta r : valide) {
+            if (r.getID() == rispostaID) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -150,5 +161,9 @@ public class CompilazioneService {
             popolaCompilazione(c);
         }
         return c;
+    }
+
+    public boolean esisteCompilazione(int studenteID, int questionarioID) {
+        return compilazioneRepository.esisteCompilazione(studenteID, questionarioID);
     }
 }

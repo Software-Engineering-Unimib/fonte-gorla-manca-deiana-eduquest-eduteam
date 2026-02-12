@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.eduteam.eduquest.models.questionari.Domanda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +27,9 @@ public class CompilazioneRepository {
     QuestionarioRepository questionarioRepository;
 
     @Autowired
+    DomandaRepository domandaRepository;
+
+    @Autowired
     RispostaRepository rispostaRepository;
 
     private Compilazione mapResultSetToCompilazione(ResultSet rs) throws Exception {
@@ -34,6 +38,7 @@ public class CompilazioneRepository {
 
         Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
         Questionario questionario = questionarioRepository.getQuestionarioByID(questionarioID);
+        questionario.setElencoDomande(domandaRepository.getDomandeByQuestionario(questionarioID));
 
         Compilazione c = new Compilazione(studente, questionario);
         c.setID(rs.getInt("compilazioneID"));
@@ -206,6 +211,27 @@ public class CompilazioneRepository {
             System.err.println("Errore, nessuna compilazione in sospeso: " + e.getMessage());
         }
         return null;
+    }
+
+    public boolean esisteCompilazione(int studenteID, int questionarioID) {
+
+        String query = "SELECT COUNT(compilazioneID) FROM compilazioni WHERE studenteID_FK = ? AND questionarioID_FK = ?;";
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, studenteID);
+            ps.setInt(2, questionarioID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    if (rs.getInt(1) == 0) {
+                        return false;
+                    }
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore, nessuna compilazione in sospeso: " + e.getMessage());
+        }
+        return false;
     }
 
     // Funzioni Dashboard
