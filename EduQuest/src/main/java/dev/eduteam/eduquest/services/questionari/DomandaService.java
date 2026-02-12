@@ -33,6 +33,7 @@ public class DomandaService {
         Domanda nuovaDomanda = Domanda.createDomandaOfType(tipoDomanda);
         nuovaDomanda.setTesto("Inserisci qui il testo");
         nuovaDomanda.setPunteggio(1);
+
         return domandaRepository.insertDomanda(nuovaDomanda, questionarioID);
     }
 

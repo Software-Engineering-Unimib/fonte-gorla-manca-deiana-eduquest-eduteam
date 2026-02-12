@@ -43,6 +43,19 @@ public class RispostaService {
         return rispostaRepository.insertRisposta(nuovaRisposta, domandaID);
     }
 
+    public ArrayList<Risposta> aggiungiRisposteVeroFalso(int domandaID) {
+
+        ArrayList<Risposta> risposte = new ArrayList<Risposta>();
+
+        Risposta vero = new Risposta("Vero");
+        Risposta falso = new Risposta("Falso");
+        vero.setCorretta(true);
+        falso.setCorretta(false);
+        risposte.add(rispostaRepository.insertRisposta(vero, domandaID));
+        risposte.add(rispostaRepository.insertRisposta(falso, domandaID));
+        return risposte;
+    }
+
     public boolean rimuoviRisposta(int domandaID, int rispostaID) {
         return rispostaRepository.removeRisposta(domandaID, rispostaID);
     }

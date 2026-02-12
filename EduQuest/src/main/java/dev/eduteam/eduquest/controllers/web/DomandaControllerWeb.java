@@ -8,6 +8,7 @@ import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.services.accounts.DocenteService;
 import dev.eduteam.eduquest.services.questionari.DomandaService;
 import dev.eduteam.eduquest.services.questionari.QuestionarioService;
+import dev.eduteam.eduquest.services.questionari.RispostaService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ import java.util.ArrayList;
 @Controller
 @RequestMapping("docente/dashboard/{questionarioID}/")
 public class DomandaControllerWeb {
+
+    @Autowired
+    private RispostaService rispostaService;
 
     @Autowired
     private DomandaService domandaService;
@@ -117,7 +121,10 @@ public class DomandaControllerWeb {
         if (docente == null) {
             return "redirect:/login";
         }
-        domandaService.aggiungiDomanda(questionarioID, Domanda.Type.DOMANDA_VERO_FALSO);
+        Domanda domanda = domandaService.aggiungiDomanda(questionarioID, Domanda.Type.DOMANDA_VERO_FALSO);
+
+        domanda.setElencoRisposte(rispostaService.aggiungiRisposteVeroFalso(domanda.getID()));
+
         return "redirect:/docente/dashboard/" + questionarioID;
     }
 
