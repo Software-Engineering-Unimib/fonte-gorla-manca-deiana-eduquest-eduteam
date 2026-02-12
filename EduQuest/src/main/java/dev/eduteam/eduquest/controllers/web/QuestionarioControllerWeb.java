@@ -3,10 +3,7 @@ package dev.eduteam.eduquest.controllers.web;
 import dev.eduteam.eduquest.models.accounts.Account;
 import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.accounts.Studente;
-import dev.eduteam.eduquest.models.questionari.Compitino;
-import dev.eduteam.eduquest.models.questionari.Domanda;
-import dev.eduteam.eduquest.models.questionari.Esercitazione;
-import dev.eduteam.eduquest.models.questionari.Questionario;
+import dev.eduteam.eduquest.models.questionari.*;
 import dev.eduteam.eduquest.services.accounts.DocenteService;
 import dev.eduteam.eduquest.services.accounts.StudenteService;
 import dev.eduteam.eduquest.services.questionari.CompilazioneService;
@@ -22,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -279,14 +277,47 @@ public class QuestionarioControllerWeb {
         Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         if (questionario != null) {
 
-            boolean esisteCompilazione = compilazioneService.esisteCompilazione(studente.getAccountID(), ID);
+            boolean rimangonoTentativi = compitinoService.isCompilabileByStudente(user.getAccountID(), questionario.getID());
+            boolean esisteCompilazione = compilazioneService.esisteCompilazione(studente.getAccountID(), questionario.getID());
 
             model.addAttribute("user", studente);
             model.addAttribute("questionario", questionario);
+            model.addAttribute("rimangonoTentativi", rimangonoTentativi);
             model.addAttribute("esisteCompilazione", esisteCompilazione);
 
         }
         return "questionario/singolo-questionario-studente";
+    }
+
+    @GetMapping("studente/dashboard/compilazioni")
+    public String getCompilazioniInSospeso(
+            HttpSession session,
+            Model model) {
+
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (user.isDocente()) {
+            return "redirect:/docente/dashboard";
+        }
+
+        Studente studente = studenteService.getById(user.getAccountID());
+
+        ArrayList<Compilazione> compilazioni = compilazioneService.getCompilazioniInSospeso(user.getAccountID());
+        ArrayList<Questionario> questionari = new ArrayList<Questionario>();
+        for (Compilazione c : compilazioni) {
+            System.out.println("AAA");
+            questionari.add(c.getQuestionario());
+        }
+
+        model.addAttribute("user", studente);
+        model.addAttribute("compilazioni", compilazioni);
+        model.addAttribute("questionari", questionari);
+
+        return "questionario/compilazioni-sospese";
     }
 
 }

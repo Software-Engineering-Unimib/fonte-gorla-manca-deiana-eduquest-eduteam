@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 
+import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,6 +24,7 @@ import dev.eduteam.eduquest.repositories.questionari.CompilazioneRepository;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 import dev.eduteam.eduquest.services.questionari.CompilazioneService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class CompilazioneServiceTest {
 

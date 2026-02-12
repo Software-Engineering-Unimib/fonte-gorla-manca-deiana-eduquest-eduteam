@@ -99,7 +99,6 @@ public class QuestionarioRepository {
 
     // la Primary key di un questionario è questionarioID, NON SERVE IL DOCENTE
     public Questionario getQuestionarioByID(int id) {
-        Questionario questionario = null;
         String query = "SELECT q.*, " +
                 "c.dataFine, c.tentativiMax, " +
                 "e.noteDidattiche " +
@@ -120,7 +119,7 @@ public class QuestionarioRepository {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return questionario;
+        return null;
     }
 
     public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {

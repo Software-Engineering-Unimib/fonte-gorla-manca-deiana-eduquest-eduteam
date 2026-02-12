@@ -20,6 +20,9 @@ import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 public class CompilazioneService {
 
     @Autowired
+    private QuestionarioService questionarioService;
+
+    @Autowired
     private CompilazioneRepository compilazioneRepository;
 
     @Autowired
@@ -35,9 +38,6 @@ public class CompilazioneService {
     private CompitinoService compitinoService;
 
     @Autowired
-    private QuestionarioService questionarioService;
-
-    @Autowired
     private DomandaService domandaService;
 
     public boolean inserisciRispostaComp(int compilazioneID, int domandaID, int rispostaID) {
@@ -51,13 +51,11 @@ public class CompilazioneService {
                 domandaID);
         Risposta risposta = rispostaRepository.getRispostaByID(rispostaID);
         if (!isValida(domandaID, rispostaID)) {
-            System.out.println("Hello");
             return false;
         }
 
         for (int i = 0; i < risposte.length; i++) {
             if (risposte[i] == null) {
-                System.out.println("Slot " + i + " delle compilazioni inserendo " +  rispostaID);
                 risposte[i] = risposta;
                 // controllo se è corretta e setto il punteggio
                 if (risposta.isCorretta()) {

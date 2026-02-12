@@ -60,17 +60,17 @@
                 <p>Questionario non trovato</p>
             </div>
 
-            <div th:if="${esisteCompilazione == false}" class="questionari-list">
+            <div th:if="${esisteCompilazione != true && rimangonoTentativi == true}" class="questionari-list">
 
                 <form th:action="@{|/studente/compila/${questionario.ID}|}" method="post">
                     <button type="submit" class="btn btn-primary">Compila Questionario</button>
                 </form>
             </div>
-
+        </section>
+        <section class="dashboard-section">
             <div th:if="${esisteCompilazione == true}" class="questionari-list">
-
-                <form th:action="@{|/studente/compila/${questionario.ID}|}" method="post">
-                    <button type="submit" class="btn btn-primary">Continua Compilazione</button>
+                <h3>Hai delle compilazioni in sospeso!!</h3>
+                <a th:href="@{|compilazioni|}" class="btn btn-primary">Dashboard Compilazioni in sospeso</a>
                 </form>
             </div>
         </section>
