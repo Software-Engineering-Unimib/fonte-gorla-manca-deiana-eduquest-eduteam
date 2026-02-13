@@ -110,7 +110,7 @@ public class StudenteRepository {
     // Funzioni Dashboard
     public ArrayList<Studente> getTopStudentiPerMedia(int numStudenti) {
         ArrayList<Studente> elencoTopStudenti = new ArrayList<Studente>();
-        String query = "SELECT a.*, s.mediaPunteggio " +
+        String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints " +
                 "FROM studenti s " +
                 "JOIN accounts a ON s.accountID_FK = a.accountID " +
                 "ORDER BY s.mediaPunteggio DESC " +
@@ -134,7 +134,7 @@ public class StudenteRepository {
 
     public ArrayList<Studente> getTopStudentiPerEduPoints(int numStudenti) {
         ArrayList<Studente> elencoTopStudenti = new ArrayList<Studente>();
-        String query = "SELECT a.*, s.eduPoints " +
+        String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints " +
                 "FROM studenti s " +
                 "JOIN accounts a ON s.accountID_FK = a.accountID " +
                 "ORDER BY s.eduPoints DESC " +

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Classifiche')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>&#x1F3C6; Classifiche</h1>
+            <p>Scopri chi sono i migliori studenti!</p>
+        </div>
+
+        <!-- Tab di selezione tipo classifica -->
+        <section class="dashboard-section">
+            <div class="classifica-tabs">
+                <a th:href="@{/classifiche(tipo='edupoints')}"
+                   th:class="${tipoSelezionato == 'edupoints'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+                   &#x1F3AF; EduPoints</a>
+                <a th:href="@{/classifiche(tipo='media')}"
+                   th:class="${tipoSelezionato == 'media'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+                   &#x1F4CA; Media Punteggio</a>
+                <a th:href="@{/classifiche(tipo='compilazioni')}"
+                   th:class="${tipoSelezionato == 'compilazioni'} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+                   &#x1F4DD; Migliori Compilazioni</a>
+            </div>
+        </section>
+
+        <!-- Classifica per EduPoints o Media -->
+        <section th:if="${classifica != null}" class="dashboard-section">
+            <h3 th:text="'&#x1F3C5; Classifica per ' + ${tipoClassifica}"></h3>
+            <div th:if="${classifica.isEmpty()}" class="empty-state">
+                <p>Nessun dato disponibile per questa classifica.</p>
+            </div>
+            <div th:if="${!classifica.isEmpty()}" class="classifica-list">
+                <div th:each="studente, iter : ${classifica}" class="classifica-row">
+                    <span th:if="${iter.index == 0}" class="medaglia">&#x1F947;</span>
+                    <span th:if="${iter.index == 1}" class="medaglia">&#x1F948;</span>
+                    <span th:if="${iter.index == 2}" class="medaglia">&#x1F949;</span>
+                    <span th:if="${iter.index > 2}" class="posizione-numero" th:text="${iter.index + 1}"></span>
+                    <span class="classifica-nome" th:text="${studente.nome + ' ' + studente.cognome}"></span>
+                    <span class="classifica-username" th:text="'@' + ${studente.userName}"></span>
+                    <span th:if="${tipoSelezionato == 'edupoints'}" class="classifica-punteggio"
+                          th:text="${studente.eduPoints} + ' EP'"></span>
+                    <span th:if="${tipoSelezionato == 'media'}" class="classifica-punteggio"
+                          th:text="${#numbers.formatDecimal(studente.mediaPunteggio, 1, 1)}"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Classifica Compilazioni -->
+        <section th:if="${classificaCompilazioni != null}" class="dashboard-section">
+            <h3>&#x1F3C5; Migliori Compilazioni</h3>
+            <div th:if="${classificaCompilazioni.isEmpty()}" class="empty-state">
+                <p>Nessuna compilazione completata.</p>
+            </div>
+            <div th:if="${!classificaCompilazioni.isEmpty()}" class="classifica-list">
+                <div th:each="comp, iter : ${classificaCompilazioni}" class="classifica-row">
+                    <span th:if="${iter.index == 0}" class="medaglia">&#x1F947;</span>
+                    <span th:if="${iter.index == 1}" class="medaglia">&#x1F948;</span>
+                    <span th:if="${iter.index == 2}" class="medaglia">&#x1F949;</span>
+                    <span th:if="${iter.index > 2}" class="posizione-numero" th:text="${iter.index + 1}"></span>
+                    <span class="classifica-nome" th:text="${comp.studente.nome + ' ' + comp.studente.cognome}"></span>
+                    <span class="classifica-username" th:text="'@' + ${comp.studente.userName}"></span>
+                    <span class="classifica-detail" th:text="${comp.questionario.nome}"></span>
+                    <span class="classifica-punteggio" th:text="${comp.punteggio} + ' pts'"></span>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

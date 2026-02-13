@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Classifica Questionario')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>&#x1F3C6; Classifica Questionario</h1>
+        </div>
+
+        <section class="dashboard-section">
+            <div th:if="${classificaCompilazioni == null or classificaCompilazioni.isEmpty()}" class="empty-state">
+                <p>Nessuna compilazione per questo questionario.</p>
+            </div>
+            <div th:if="${classificaCompilazioni != null and !classificaCompilazioni.isEmpty()}" class="classifica-list">
+                <div th:each="comp, iter : ${classificaCompilazioni}" class="classifica-row">
+                    <span th:if="${iter.index == 0}" class="medaglia">&#x1F947;</span>
+                    <span th:if="${iter.index == 1}" class="medaglia">&#x1F948;</span>
+                    <span th:if="${iter.index == 2}" class="medaglia">&#x1F949;</span>
+                    <span th:if="${iter.index > 2}" class="posizione-numero" th:text="${iter.index + 1}"></span>
+                    <span class="classifica-nome" th:text="${comp.studente.nome + ' ' + comp.studente.cognome}"></span>
+                    <span class="classifica-username" th:text="'@' + ${comp.studente.userName}"></span>
+                    <span class="classifica-punteggio" th:text="${comp.punteggio} + ' pts'"></span>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a onclick="history.back()" class="btn btn-secondary">&#x2190; Indietro</a>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -15,6 +15,7 @@
         <th:block th:if="${session.user != null}">
             <span class="nav-user">Ciao, <span th:text="${session.user.nome}"></span>!</span>
             <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/classifiche}" class="nav-link">🏆 Classifiche</a>
             <a th:href="@{/logout}" class="nav-link">Esci</a>
         </th:block>
     </div>

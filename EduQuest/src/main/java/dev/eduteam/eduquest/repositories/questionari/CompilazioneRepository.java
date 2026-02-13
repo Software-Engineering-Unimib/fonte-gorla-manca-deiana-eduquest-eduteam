@@ -247,7 +247,7 @@ public class CompilazioneRepository {
     // compilazioni nella lista tonrata dal metodo
     public ArrayList<Compilazione> getTopCompilazioniStudente(int studenteID, int numCompilazioni) {
         ArrayList<Compilazione> elencoTopCompilazioni = new ArrayList<Compilazione>();
-        String query = "SELECT * FROM compilazioni" +
+        String query = "SELECT * FROM compilazioni " +
                 "WHERE studenteID_FK = ? AND completato = 1 " +
                 "ORDER BY punteggio DESC " +
                 "LIMIT ?";
@@ -267,5 +267,54 @@ public class CompilazioneRepository {
             System.out.println("Errore nel recupero top 3 compilazioni per studente " + e.getMessage());
         }
         return elencoTopCompilazioni;
+    }
+
+    // Classifica globale: migliori compilazioni tra tutti gli studenti
+    public ArrayList<Compilazione> getTopCompilazioniGlobale(int numCompilazioni) {
+        ArrayList<Compilazione> classifica = new ArrayList<>();
+        String query = "SELECT * FROM compilazioni " +
+                "WHERE completato = 1 " +
+                "ORDER BY punteggio DESC " +
+                "LIMIT ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, numCompilazioni);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    classifica.add(mapResultSetToCompilazione(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore recupero classifica globale: " + e.getMessage());
+        }
+        return classifica;
+    }
+
+    // Classifica per un singolo questionario: migliori punteggi
+    public ArrayList<Compilazione> getTopCompilazioniPerQuestionario(int questionarioID, int numCompilazioni) {
+        ArrayList<Compilazione> classifica = new ArrayList<>();
+        String query = "SELECT * FROM compilazioni " +
+                "WHERE questionarioID_FK = ? AND completato = 1 " +
+                "ORDER BY punteggio DESC " +
+                "LIMIT ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, questionarioID);
+            ps.setInt(2, numCompilazioni);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    classifica.add(mapResultSetToCompilazione(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore recupero classifica questionario: " + e.getMessage());
+        }
+        return classifica;
     }
 }

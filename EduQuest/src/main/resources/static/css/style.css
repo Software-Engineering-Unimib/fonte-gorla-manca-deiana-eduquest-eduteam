@@ -538,3 +538,89 @@ body {
         width: 100%;
     }
 }
+
+/* ===== Classifiche ===== */
+.classifica-tabs {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.classifica-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.classifica-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.classifica-row:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.medaglia {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.posizione-numero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--border-color);
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.classifica-nome {
+    font-weight: 600;
+}
+
+.classifica-username {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.classifica-detail {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.classifica-punteggio {
+    margin-left: auto;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .classifica-tabs {
+        flex-direction: column;
+    }
+
+    .classifica-row {
+        flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+    }
+
+    .classifica-punteggio {
+        font-size: 1rem;
+    }
+}
