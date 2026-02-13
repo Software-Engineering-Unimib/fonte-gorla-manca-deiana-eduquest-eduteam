@@ -102,14 +102,47 @@ public class CompilazioneWebController {
 
         return "redirect:/studente/compila/" + ID;
     }
+
     @PostMapping("{ID}/conferma")
     public String confermaCompilazione(@PathVariable int ID,
                                   @RequestParam int compilazioneID,
-                                  @RequestParam int studenteID,
-                                  HttpSession session) {
+                                  @RequestParam int studenteID) {
 
-        compilazioneService.chiudiCompilazione(compilazioneID, studenteID);
+        compilazioneService.chiudiCompilazione(studenteID, compilazioneID);
 
-        return "redirect:/studente/dashboard";
+        return "redirect:/studente/compila/" + ID + "/riepilogo/" + compilazioneID;
+    }
+
+    @GetMapping("{ID}/riepilogo/{compilazioneID}")
+    public String getRiepilogo(
+            HttpSession session,
+            Model model,
+            @PathVariable int ID,
+            @PathVariable int compilazioneID) {
+
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (user.isDocente()) {
+            return "redirect:/docente/dashboard/" + ID;
+        }
+
+        Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
+        Compilazione compilazione = compilazioneService.getCompilazioneByID(compilazioneID);
+        Risposta[] risposteComp = compilazione.getRisposte();
+
+        if (questionario != null) {
+
+            ArrayList<Domanda> domande = questionario.getElencoDomande();
+            model.addAttribute("compilazione", compilazione);
+            model.addAttribute("questionario", questionario);
+            model.addAttribute("risposte", risposteComp);
+            model.addAttribute("domande", domande);
+
+        }
+        return "questionario/riepilogo-questionario";
     }
 }

@@ -278,7 +278,7 @@ public class QuestionarioControllerWeb {
         if (questionario != null) {
 
             boolean rimangonoTentativi = compitinoService.isCompilabileByStudente(user.getAccountID(), questionario.getID());
-            boolean esisteCompilazione = compilazioneService.esisteCompilazione(studente.getAccountID(), questionario.getID());
+            boolean esisteCompilazione = compilazioneService.esisteCompilazioneSospesa(studente.getAccountID(), questionario.getID());
 
             model.addAttribute("user", studente);
             model.addAttribute("questionario", questionario);
@@ -309,7 +309,6 @@ public class QuestionarioControllerWeb {
         ArrayList<Compilazione> compilazioni = compilazioneService.getCompilazioniInSospeso(user.getAccountID());
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
         for (Compilazione c : compilazioni) {
-            System.out.println("AAA");
             questionari.add(c.getQuestionario());
         }
 

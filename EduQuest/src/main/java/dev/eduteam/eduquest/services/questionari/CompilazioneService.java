@@ -29,9 +29,6 @@ public class CompilazioneService {
     private StudenteRepository studenteRepository;
 
     @Autowired
-    private QuestionarioRepository questionarioRepository;
-
-    @Autowired
     private RispostaRepository rispostaRepository;
 
     @Autowired
@@ -116,11 +113,15 @@ public class CompilazioneService {
         Compilazione c = compilazioneRepository.getCompilazioneByID(compilazioneID);
         Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
 
-        Questionario q = questionarioRepository.getQuestionarioByID(c.getQuestionario().getID());
+        Questionario q = questionarioService.getQuestionarioCompleto(c.getQuestionario().getID());
         int maxPunteggio = q.getPunteggioMax();
 
-        if (c == null || studente == null || maxPunteggio == 0)
+        if (studente == null || maxPunteggio == 0) {
+
+            System.out.println("Studente: " + studente);
+            System.out.println("Punteggio: " + maxPunteggio);
             return false;
+        }
 
         double punteggioOttenuto = c.getPunteggio();
         double votoNormalizzato = (punteggioOttenuto / maxPunteggio) * 100;
@@ -144,8 +145,7 @@ public class CompilazioneService {
         }
 
         c.setCompletato(true);
-        return (studenteRepository.updateStudente(studente)
-                && compilazioneRepository.upateStatusCompilazione(compilazioneID, true));
+        return (studenteRepository.updateStudente(studente) && compilazioneRepository.updateStatusCompilazione(compilazioneID, true));
     }
 
     public ArrayList<Compilazione> getCompilazioniInSospeso(int studenteID) {
@@ -161,7 +161,23 @@ public class CompilazioneService {
         return c;
     }
 
-    public boolean esisteCompilazione(int studenteID, int questionarioID) {
-        return compilazioneRepository.esisteCompilazione(studenteID, questionarioID);
+    public boolean esisteCompilazioneSospesa(int studenteID, int questionarioID) {
+        ArrayList<Compilazione> compilazioni = getCompilazioniInSospeso(studenteID);
+
+        for (Compilazione c : compilazioni) {
+            if (c.getQuestionario().getID() == questionarioID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Compilazione getCompilazioneByID(int compilazioneID) {
+        Compilazione c = compilazioneRepository.getCompilazioneByID(compilazioneID);
+        if (c != null) {
+            // devo caricare le risposte salvate fino ad ora
+            popolaCompilazione(c);
+        }
+        return c;
     }
 }

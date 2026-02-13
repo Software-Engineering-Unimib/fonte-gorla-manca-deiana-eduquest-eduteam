@@ -174,22 +174,29 @@ public class CompilazioneRepository {
             ps.setInt(1, nuovPunteggio);
             ps.setInt(2, compilazioneID);
 
-            return ps.executeUpdate() > 0;
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
         } catch (Exception e) {
             System.out.println("Errore aggiornamento punteggio: " + e.getMessage());
             return false;
         }
     }
 
-    public boolean upateStatusCompilazione(int compilazioneID, boolean isCompletato) {
-        String query = "UPDATE compilazioni SET completato = ? WHERE compilazioneID = ? ";
+    public boolean updateStatusCompilazione(int compilazioneID, boolean isCompletato) {
+        String query = "UPDATE compilazioni SET completato = ? WHERE compilazioneID = ?";
+
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement(query)) {
 
-            ps.setBoolean(1, isCompletato);
+            if (isCompletato) {
+                ps.setInt(1, 1);
+            } else {
+                ps.setInt(1, 0);
+            }
             ps.setInt(2, compilazioneID);
 
-            return ps.executeUpdate() > 0;
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
         } catch (Exception e) {
             System.out.println("Errore aggiornamento status compilazione: " + e.getMessage());
             return false;

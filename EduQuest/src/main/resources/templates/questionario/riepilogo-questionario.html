@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: head('EduQuest - Questionario')}"></head>
+<head th:replace="~{fragments/header :: head('EduQuest - Riepilogo')}"></head>
 <body>
 <nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
@@ -32,6 +32,7 @@
 
             <div class="section-header">
                 <h4>
+                    <span>💯 <span th:text="${compilazione.getPunteggio()}"></span> / <span th:text="${questionario.getPunteggioMax()}"></span></span>
                     <span>📅 <span th:text="${questionario.dataCreazione}"></span></span>
                     <span>📒 Materia: <span th:text="${questionario.materia}"></span></span>
                     <span>🚩 Difficoltà: <span th:text="${questionario.getLivelloDifficulty()}"></span></span>
@@ -60,18 +61,10 @@
                 <p>Questionario non trovato</p>
             </div>
 
-            <div th:if="${rimangonoTentativi == true}" class="questionari-list">
-
-                <form th:action="@{|/studente/compila/${questionario.ID}|}" method="post">
-                    <button type="submit" class="btn btn-primary">Compila Questionario</button>
-                </form>
-            </div>
-        </section>
-        <section th:if="${esisteCompilazione == true}" class="dashboard-section">
-            <div class="questionari-list">
-                <h3>Hai delle compilazioni in sospeso!!</h3>
-                <a th:href="@{|compilazioni|}" class="btn btn-primary">Dashboard Compilazioni in sospeso</a>
-                </form>
+            <div th:if="${questionario != null}" class="questionari-list">
+                <div th:each="d : ${domande}" class="questionario-card">
+                    <section th:replace="~{fragments/domanda-riepilogo :: domandaCard(${risposte[domande.indexOf(d)]}, ${d}, ${domande.indexOf(d)})}"></section>
+                </div>
             </div>
         </section>
     </div>
