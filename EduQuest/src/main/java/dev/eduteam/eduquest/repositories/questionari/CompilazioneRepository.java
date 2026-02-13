@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.eduteam.eduquest.models.questionari.Domanda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -224,7 +223,7 @@ public class CompilazioneRepository {
 
         String query = "SELECT COUNT(compilazioneID) FROM compilazioni WHERE studenteID_FK = ? AND questionarioID_FK = ?;";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+                PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setInt(1, studenteID);
             ps.setInt(2, questionarioID);
             try (ResultSet rs = ps.executeQuery()) {

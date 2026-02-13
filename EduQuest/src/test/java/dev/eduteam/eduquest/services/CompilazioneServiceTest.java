@@ -24,7 +24,6 @@ import dev.eduteam.eduquest.repositories.questionari.CompilazioneRepository;
 import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 import dev.eduteam.eduquest.services.questionari.CompilazioneService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 class CompilazioneServiceTest {
 
@@ -36,6 +35,9 @@ class CompilazioneServiceTest {
 
         @Mock
         private QuestionarioRepository questionarioRepository;
+
+        @Mock
+        private QuestionarioService questionarioService;
 
         @Mock
         private RispostaRepository rispostaRepository;
@@ -90,7 +92,7 @@ class CompilazioneServiceTest {
         void testCreaCompilazioneSuccess() {
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
-                when(questionarioRepository.getQuestionarioByID(1))
+                when(questionarioService.getQuestionarioCompleto(1))
                                 .thenReturn(questionario);
                 when(compitinoService.isCompilabileByStudente(1, 1)).thenReturn(true);
                 when(compilazioneRepository.insertCompilazione(any(Compilazione.class)))
@@ -226,7 +228,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
-                when(questionarioRepository.getQuestionarioByID(1))
+                when(questionarioService.getQuestionarioCompleto(1))
                                 .thenReturn(questionario);
                 when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);
@@ -256,7 +258,7 @@ class CompilazioneServiceTest {
 
                 when(compilazioneRepository.getCompilazioneByID(1)).thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1)).thenReturn(studente);
-                when(questionarioRepository.getQuestionarioByID(1)).thenReturn(questionario);
+                when(questionarioService.getQuestionarioCompleto(1)).thenReturn(questionario);
                 when(compilazioneRepository.getCompilazioniStatus(1, true)).thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class))).thenReturn(true);
                 when(compilazioneRepository.updateStatusCompilazione(1, true)).thenReturn(true);
@@ -281,7 +283,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazione);
                 when(studenteRepository.getStudenteByAccountID(1))
                                 .thenReturn(studente);
-                when(questionarioRepository.getQuestionarioByID(1))
+                when(questionarioService.getQuestionarioCompleto(1))
                                 .thenReturn(questionario);
                 when(compilazioneRepository.getCompilazioniStatus(1, true))
                                 .thenReturn(compilazioni);

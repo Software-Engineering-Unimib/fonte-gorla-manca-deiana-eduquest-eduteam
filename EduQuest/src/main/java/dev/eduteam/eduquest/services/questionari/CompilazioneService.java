@@ -1,8 +1,6 @@
 package dev.eduteam.eduquest.services.questionari;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +11,6 @@ import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.models.questionari.Risposta;
 import dev.eduteam.eduquest.repositories.accounts.StudenteRepository;
 import dev.eduteam.eduquest.repositories.questionari.CompilazioneRepository;
-import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 
 @Service
@@ -145,7 +142,8 @@ public class CompilazioneService {
         }
 
         c.setCompletato(true);
-        return (studenteRepository.updateStudente(studente) && compilazioneRepository.updateStatusCompilazione(compilazioneID, true));
+        return (studenteRepository.updateStudente(studente)
+                && compilazioneRepository.updateStatusCompilazione(compilazioneID, true));
     }
 
     public ArrayList<Compilazione> getCompilazioniInSospeso(int studenteID) {
