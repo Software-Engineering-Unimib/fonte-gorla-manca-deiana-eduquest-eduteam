@@ -1,4 +1,4 @@
-package dev.eduteam.eduquest.models;
+package dev.eduteam.eduquest.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;

@@ -15,7 +15,7 @@ import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 public class FeedbackRepository {
 
     @Autowired
-    DomandaRepository domandaRepository;
+    public DomandaRepository domandaRepository;
 
     /*
      * Recupera il feedback per una determinata domanda
