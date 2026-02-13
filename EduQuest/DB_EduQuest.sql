@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS Test_EduQuest;
-CREATE DATABASE Test_EduQuest;
-USE Test_EduQuest;
+DROP DATABASE IF EXISTS DB_EduQuest;
+CREATE DATABASE DB_EduQuest;
+USE DB_EduQuest;
 -- Tabelle Account
 CREATE TABLE accounts (
     accountID INTEGER auto_increment,
@@ -104,14 +104,15 @@ CREATE TABLE compilazioni_risposte (
     CONSTRAINT FK_CompilazioneRif FOREIGN KEY (compilazioneID_FK) REFERENCES compilazioni(compilazioneID) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_RispostaSelezionata FOREIGN KEY (rispostaID_FK) REFERENCES risposte(rispostaID) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = INNODB;
--- Dati di test Account
+-- =========================
+-- Dati popolamento Account
 INSERT INTO accounts (nome, cognome, userName, email, password, tipo)
 VALUES (
         'Pinco',
         'Pallo',
         'PincoPallino1',
         'pincopallo@prova.edu',
-        'PasswordValida1!',
+        'Pass123!',
         'Studente'
     ),
     (
@@ -119,7 +120,7 @@ VALUES (
         'Rossi',
         'FrancoRossi2',
         'francorossi@prova.edu',
-        'PasswordValida2!',
+        'Pass123!',
         'Docente'
     ),
     (
@@ -127,16 +128,52 @@ VALUES (
         'Verdi',
         'MariaV88',
         'm.verdi@prova.edu',
-        'PasswordValida3!',
+        'Pass123!',
         'Docente'
+    ),
+    (
+        'Luca',
+        'Neri',
+        'LucaN8',
+        'luca.neri@prova.edu',
+        'Pass123!',
+        'Studente'
+    ),
+    (
+        'Giulia',
+        'Bianchi',
+        'GiusyB',
+        'g.bianchi@prova.edu',
+        'Pass123!',
+        'Studente'
+    ),
+    (
+        'Marco',
+        'Neri',
+        'MarkBlack',
+        'm.neri@prova.edu',
+        'Pass123!',
+        'Studente'
+    ),
+    (
+        'Elena',
+        'Sofia',
+        'EleSofi',
+        'e.sofia@prova.edu',
+        'Pass123!',
+        'Studente'
     );
-INSERT INTO studenti (accountID_FK, mediaPunteggio)
-VALUES (1, 0.0);
+INSERT INTO studenti (accountID_FK, mediaPunteggio, eduPoints)
+VALUES (1, 50.0, 50),
+    (4, 88.5, 250),
+    (5, 55.0, 40),
+    (6, 92.0, 310),
+    (7, 74.5, 150);
 INSERT INTO docenti (accountID_FK, insegnamento)
 VALUES (2, 'Matematica e Fisica'),
     (3, 'Lettere Classiche');
--- Dati di test Questionari
--- Questionari
+-- =========================
+-- Dati popolamento Questionari, Compitini ed Esercitazioni
 INSERT INTO questionari (
         nome,
         descrizione,
@@ -186,37 +223,81 @@ INSERT INTO compitini (
     )
 VALUES (3, '2026-02-28', 1, 5, FALSE),
     -- Scade a fine mese, 1 solo tentativo
-    (4, '2026-03-15', 3, 10, FALSE);
--- Domande
+    (4, '2026-03-15', 3, 10, TRUE);
+INSERT INTO esercitazioni (questionarioID_FK, noteDidattiche)
+VALUES (
+        1,
+        'Si consiglia l''uso della riga e del compasso virtuale.'
+    ),
+    (
+        2,
+        'Focus sulla parafrasi dei testi del XIX secolo.'
+    );
+-- =========================
+-- Domande, Risposte e Feedback
 INSERT INTO domande (tipo, testo, questionarioID_FK, punteggio)
-VALUES (1, 'Somma angoli interni triangolo?', 1, 10),
-    -- ID 1 (Quest 1)
+VALUES -- ID 1
+    (1, 'Somma angoli interni triangolo?', 1, 10),
+    -- ID 2
     (1, 'Chi ha scritto i Promessi Sposi?', 2, 5),
-    -- ID 2 (Quest 2)
+    -- ID 3
     (1, 'In che raccolta è "X Agosto"?', 3, 15),
-    -- ID 3 (Quest 3)
+    -- ID 4
     (
         3,
         'Una matrice quadrata è sempre invertibile?',
         4,
         20
+    ),
+    -- ID 5
+    (3, 'Il quadrato è un parallelogramma?', 1, 10),
+    -- ID 6
+    (
+        2,
+        'Quali sono temi tipici del Romanticismo?',
+        2,
+        25
+    ),
+    -- ID 7
+    (
+        3,
+        'Il termine "Innominato" appare nei Promessi Sposi?',
+        2,
+        10
     );
 INSERT INTO risposte (testo, isCorretta, domandaID_FK)
 VALUES ('180°', TRUE, 1),
     ('90°', FALSE, 1),
     ('360°', FALSE, 1),
-    -- Risposte per Domanda 1
     ('Manzoni', TRUE, 2),
     ('Dante', FALSE, 2),
-    -- Risposte per Domanda 2
     ('Myricae', TRUE, 3),
     ('Alcyone', FALSE, 3),
-    ('Canti', FALSE, 3),
-    -- Risposte per Domanda 3
     ('Vero', FALSE, 4),
-    ('Falso', TRUE, 4);
--- Risposte per Domanda 4
--- Compilazioni
+    ('Falso', TRUE, 4),
+    ('Vero', TRUE, 5),
+    ('Falso', FALSE, 5),
+    ('Soggettivismo', TRUE, 6),
+    ('Razionalismo estremo', FALSE, 6),
+    ('Ritorno alla natura', TRUE, 6),
+    ('Vero', TRUE, 7),
+    ('Falso', FALSE, 7);
+INSERT INTO feedback (testo, domandaID_FK)
+VALUES ('Corretto! La somma è sempre (n-2)*180.', 1),
+    (
+        'Alessandro Manzoni è il padre della lingua italiana moderna.',
+        2
+    ),
+    (
+        'Il Romanticismo privilegia l''emozione e il legame con la natura incontaminata.',
+        6
+    ),
+    (
+        'L''Innominato è uno dei personaggi più complessi del romanzo manzoniano.',
+        7
+    );
+-- =========================
+-- Compilazioni e statistiche
 INSERT INTO compilazioni (
         studenteID_FK,
         questionarioID_FK,
@@ -224,6 +305,17 @@ INSERT INTO compilazioni (
         punteggio,
         numeroDomande
     )
-VALUES (1, 1, TRUE, 10, 1);
+VALUES -- ID 1
+    (1, 1, TRUE, 100, 2),
+    -- ID 2
+    (1, 2, TRUE, 0, 1),
+    -- ID 3
+    (4, 1, TRUE, 95, 3),
+    -- ID 4 (in sospeso)
+    (5, 3, FALSE, 0, 1);
 INSERT INTO compilazioni_risposte (compilazioneID_FK, rispostaID_FK)
-VALUES (1, 1);
+VALUES (1, 1),
+    (1, 10),
+    (2, 5),
+    (3, 1),
+    (3, 10);
