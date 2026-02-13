@@ -232,7 +232,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))
                                 .thenReturn(true);
-                when(compilazioneRepository.upateStatusCompilazione(1, true))
+                when(compilazioneRepository.updateStatusCompilazione(1, true))
                                 .thenReturn(true);
 
                 boolean risultato = compilazioneService.chiudiCompilazione(1, 1);
@@ -241,7 +241,7 @@ class CompilazioneServiceTest {
                 // votoNormalizzato = (2/10)*100 = 20; nuova media: (0*1 + 20) / (1+1) = 10.0
                 assertEquals(10.0, studente.getMediaPunteggio(), 0.001);
                 verify(studenteRepository, times(1)).updateStudente(any(Studente.class));
-                verify(compilazioneRepository, times(1)).upateStatusCompilazione(1, true);
+                verify(compilazioneRepository, times(1)).updateStatusCompilazione(1, true);
         }
 
         @Test
@@ -259,7 +259,7 @@ class CompilazioneServiceTest {
                 when(questionarioRepository.getQuestionarioByID(1)).thenReturn(questionario);
                 when(compilazioneRepository.getCompilazioniStatus(1, true)).thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class))).thenReturn(true);
-                when(compilazioneRepository.upateStatusCompilazione(1, true)).thenReturn(true);
+                when(compilazioneRepository.updateStatusCompilazione(1, true)).thenReturn(true);
 
                 boolean risultato = compilazioneService.chiudiCompilazione(1, 1);
 
@@ -268,7 +268,7 @@ class CompilazioneServiceTest {
                 // nuovaMedia = ((70 * 2) + 80) / (2 + 1) = 220/3 = 73.333...
                 assertEquals(73.33333333333333, studente.getMediaPunteggio(), 0.001);
                 verify(studenteRepository, times(1)).updateStudente(any(Studente.class));
-                verify(compilazioneRepository, times(1)).upateStatusCompilazione(1, true);
+                verify(compilazioneRepository, times(1)).updateStatusCompilazione(1, true);
         }
 
         @Test
@@ -287,7 +287,7 @@ class CompilazioneServiceTest {
                                 .thenReturn(compilazioni);
                 when(studenteRepository.updateStudente(any(Studente.class)))
                                 .thenReturn(true);
-                when(compilazioneRepository.upateStatusCompilazione(1, true))
+                when(compilazioneRepository.updateStatusCompilazione(1, true))
                                 .thenReturn(false);
 
                 boolean risultato = compilazioneService.chiudiCompilazione(1, 1);
