@@ -140,4 +140,34 @@ public class QuestionarioRepositoryTest {
         verify(mockPreparedStatement).setString(1, "Nuovo");
         verify(mockPreparedStatement).setInt(4, 500);
     }
+
+    @Test
+    void searchQuestionari_Success() throws Exception {
+        String keyword = "Java";
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(true, true, false);
+
+        when(mockResultSet.getInt("docenteID_FK")).thenReturn(1, 1);
+        when(mockResultSet.getString("livelloDiff")).thenReturn("Medio", "Facile");
+        when(mockResultSet.getString("nome")).thenReturn("Test Java 1", "Esame Java");
+        when(mockResultSet.getString("descrizione")).thenReturn("Desc 1", "Desc 2");
+        when(mockResultSet.getInt("questionarioID")).thenReturn(1, 2);
+
+        Date oggi = Date.valueOf(LocalDate.now());
+        when(mockResultSet.getDate("dataCreazione")).thenReturn(oggi, oggi);
+
+        when(mockResultSet.getObject("dataFine")).thenReturn(null, oggi);
+        when(mockResultSet.getDate("dataFine")).thenReturn(oggi);
+        when(mockResultSet.getInt("tentativiMax")).thenReturn(3);
+        when(mockResultSet.getObject("noteDidattiche")).thenReturn(null);
+        when(docenteRepository.getDocenteByAccountID(1)).thenReturn(mockDocente);
+
+        ArrayList<Questionario> result = questionarioRepository.searchQuestionari(keyword);
+
+        assertNotNull(result);
+        assertEquals(2, result.size(), "La lista dovrebbe contenere 2 elementi");
+    }
 }

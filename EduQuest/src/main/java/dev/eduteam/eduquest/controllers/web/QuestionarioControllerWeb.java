@@ -13,16 +13,13 @@ import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequestMapping("")
@@ -277,8 +274,10 @@ public class QuestionarioControllerWeb {
         Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         if (questionario != null) {
 
-            boolean rimangonoTentativi = compitinoService.isCompilabileByStudente(user.getAccountID(), questionario.getID());
-            boolean esisteCompilazione = compilazioneService.esisteCompilazioneSospesa(studente.getAccountID(), questionario.getID());
+            boolean rimangonoTentativi = compitinoService.isCompilabileByStudente(user.getAccountID(),
+                    questionario.getID());
+            boolean esisteCompilazione = compilazioneService.esisteCompilazioneSospesa(studente.getAccountID(),
+                    questionario.getID());
 
             model.addAttribute("user", studente);
             model.addAttribute("questionario", questionario);

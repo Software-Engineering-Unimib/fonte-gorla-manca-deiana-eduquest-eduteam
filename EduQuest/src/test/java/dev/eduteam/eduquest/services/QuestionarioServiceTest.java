@@ -320,4 +320,22 @@ class QuestionarioServiceTest {
         assertNotNull(result);
         assertEquals(14, result.getID());
     }
+
+    @Test
+    void cercaQuestionari_ShouldCallRepository() {
+        String keyword = "Java";
+        List<Questionario> mockList = new ArrayList<>();
+
+        Questionario q = mock(Questionario.class);
+        mockList.add(q);
+
+        when(questionarioRepository.searchQuestionari(keyword)).thenReturn((ArrayList<Questionario>) mockList);
+
+        List<Questionario> result = questionarioService.cercaQuestionari(keyword);
+
+        assertNotNull(result, "La lista risultante non deve essere null");
+        assertEquals(1, result.size(), "La lista deve contenere un elemento");
+
+        verify(questionarioRepository, times(1)).searchQuestionari(keyword);
+    }
 }

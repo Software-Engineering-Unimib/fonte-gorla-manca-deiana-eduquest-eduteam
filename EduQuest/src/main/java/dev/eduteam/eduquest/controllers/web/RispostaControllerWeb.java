@@ -12,7 +12,6 @@ import dev.eduteam.eduquest.services.questionari.RispostaService;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -67,7 +66,8 @@ public class RispostaControllerWeb {
         }
 
         if (!user.isDocente()) {
-            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO'
+                                                   // COMPILARE IL QUESTIONARIO
         }
 
         Docente docente = docenteService.getByID(user.getAccountID());
@@ -118,10 +118,10 @@ public class RispostaControllerWeb {
 
     @GetMapping("/modifica/{rispostaID}")
     public String modificaQuestionario(@PathVariable int questionarioID,
-                                       @PathVariable int domandaID,
-                                       @PathVariable int rispostaID,
-                                       HttpSession session,
-                                       Model model) {
+            @PathVariable int domandaID,
+            @PathVariable int rispostaID,
+            HttpSession session,
+            Model model) {
 
         Account user = (Account) session.getAttribute("user");
 
@@ -130,7 +130,8 @@ public class RispostaControllerWeb {
         }
 
         if (!user.isDocente()) {
-            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO' COMPILARE IL QUESTIONARIO
+            return "redirect:/studente/dashboard"; // TEMPORANEO, DEVE RIMANDARE ALLA PAGINA DOVE LO STUDENTE PUO'
+                                                   // COMPILARE IL QUESTIONARIO
         }
 
         Docente docente = docenteService.getByID(user.getAccountID());
@@ -154,12 +155,12 @@ public class RispostaControllerWeb {
 
     @PostMapping("/modifica/{rispostaID}")
     public String modificaQuestionario(@PathVariable int questionarioID,
-                                       @PathVariable int domandaID,
-                                       @PathVariable int rispostaID,
-                                       @RequestParam String testo,
-                                       @RequestParam(name="corretta", defaultValue="false") boolean corretta,
-                                       HttpSession session,
-                                       RedirectAttributes redirectAttributes) {
+            @PathVariable int domandaID,
+            @PathVariable int rispostaID,
+            @RequestParam String testo,
+            @RequestParam(name = "corretta", defaultValue = "false") boolean corretta,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
         Docente docente = (Docente) session.getAttribute("user");
 
         if (docente == null) {

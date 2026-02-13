@@ -6,6 +6,8 @@ import static org.mockito.Mockito.*;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -68,6 +70,28 @@ public class StudenteRepositoryTest {
         assertNotNull(s);
         assertEquals("Giulia", s.getNome());
         assertEquals(9.0, s.getMediaPunteggio());
+        verify(mockPreparedStatement).setInt(1, 1);
+    }
+
+    @Test
+    void insertStudente_Success() throws Exception {
+        Studente s = new Studente("Mario", "Rossi", "mario", "m@r.it", "pwd");
+        s.setMediaPunteggio(7.5);
+        s.setEduPoints(100);
+
+        when(accountRepository.insertAccount(any(Studente.class), eq("Studente"))).thenReturn(10);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+
+        Studente result = studenteRepository.insertStudente(s);
+
+        assertNotNull(result);
+        assertEquals(10, result.getAccountID());
+
+        verify(mockPreparedStatement).setInt(1, 10);
+        verify(mockPreparedStatement).setDouble(2, 7.5);
+        verify(mockPreparedStatement).setInt(3, 100);
     }
 
     @Test
@@ -87,6 +111,7 @@ public class StudenteRepositoryTest {
     void getStatisticheBaseStudente_Success() throws Exception {
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getDouble("mediaPunteggio")).thenReturn(8.0);
         when(mockResultSet.getInt("eduPoints")).thenReturn(200);
@@ -96,6 +121,7 @@ public class StudenteRepositoryTest {
 
         assertNotNull(stats);
         assertEquals(8.0, stats.media);
+        assertEquals(200, stats.eduPoints);
         assertEquals(15, stats.numeroCompilazioni);
     }
 
@@ -103,6 +129,7 @@ public class StudenteRepositoryTest {
     void updateStudente_Success() throws Exception {
         Studente s = new Studente("N", "C", "u", "e", "p");
         s.setAccountID(1);
+        s.setMediaPunteggio(8.5);
 
         when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
@@ -110,6 +137,22 @@ public class StudenteRepositoryTest {
         boolean updated = studenteRepository.updateStudente(s);
 
         assertTrue(updated);
+
         verify(accountRepository).updateAccount(s);
+        verify(mockPreparedStatement).setDouble(1, 8.5);
+        verify(mockPreparedStatement).setInt(3, 1);
+    }
+
+    @Test
+    void getVincitoriBonusCompitino_Success() throws Exception {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        setupMockResultSet("Luigi", 0.0, 0);
+
+        List<Studente> vincitori = studenteRepository.getVincitoriBonusCompitino(101, 3);
+
+        assertEquals(1, vincitori.size());
+        assertEquals("Luigi", vincitori.get(0).getNome());
     }
 }

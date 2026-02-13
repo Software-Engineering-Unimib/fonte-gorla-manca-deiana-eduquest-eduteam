@@ -1,7 +1,6 @@
 package dev.eduteam.eduquest.controllers.web;
 
 import dev.eduteam.eduquest.models.accounts.Account;
-import dev.eduteam.eduquest.models.accounts.Docente;
 import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.models.questionari.Compilazione;
 import dev.eduteam.eduquest.models.questionari.Domanda;
@@ -15,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
 @Controller
 @RequestMapping("studente/compila/")
@@ -79,7 +75,7 @@ public class CompilazioneWebController {
 
     @PostMapping("{ID}")
     public String creaCompilazione(@PathVariable int ID,
-                                       HttpSession session) {
+            HttpSession session) {
         Studente studente = (Studente) session.getAttribute("user");
 
         if (studente == null) {
@@ -93,10 +89,10 @@ public class CompilazioneWebController {
 
     @PostMapping("rispondi/{ID}")
     public String rispondiDomanda(@PathVariable int ID,
-                                  @RequestParam int compilazioneID,
-                                  @RequestParam int domandaID,
-                                  @RequestParam int rispostaID,
-                                  HttpSession session) {
+            @RequestParam int compilazioneID,
+            @RequestParam int domandaID,
+            @RequestParam int rispostaID,
+            HttpSession session) {
 
         compilazioneService.inserisciRispostaComp(compilazioneID, domandaID, rispostaID);
 
@@ -105,8 +101,8 @@ public class CompilazioneWebController {
 
     @PostMapping("{ID}/conferma")
     public String confermaCompilazione(@PathVariable int ID,
-                                  @RequestParam int compilazioneID,
-                                  @RequestParam int studenteID) {
+            @RequestParam int compilazioneID,
+            @RequestParam int studenteID) {
 
         compilazioneService.chiudiCompilazione(studenteID, compilazioneID);
 
