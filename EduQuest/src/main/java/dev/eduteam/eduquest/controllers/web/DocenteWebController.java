@@ -33,7 +33,8 @@ public class DocenteWebController {
     private DocenteService docenteService;
 
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public String dashboard(HttpSession session, Model model,
+                            @RequestParam(required = false) String cerca) {
         Account user = (Account) session.getAttribute("user");
         
         if (user == null) {
@@ -48,15 +49,25 @@ public class DocenteWebController {
 
         model.addAttribute("user", docente);
         
-        // Carica i questionari del docente
+        // Carica i questionari del docente (con ricerca opzionale)
         try {
             List<Questionario> questionari = questionarioService.getQuestionariByDocente(docente.getAccountID());
+
+            if (cerca != null && !cerca.trim().isEmpty()) {
+                String keyword = cerca.trim().toLowerCase();
+                questionari = questionari.stream()
+                        .filter(q -> (q.getNome() != null && q.getNome().toLowerCase().contains(keyword))
+                                || (q.getDescrizione() != null && q.getDescrizione().toLowerCase().contains(keyword))
+                                || (q.getMateria() != null && q.getMateria().toLowerCase().contains(keyword)))
+                        .collect(java.util.stream.Collectors.toList());
+            }
 
             model.addAttribute("questionari", questionari);
         } catch (Exception e) {
             // Se non ci sono questionari, la lista sarà null
             model.addAttribute("questionari", null);
         }
+        model.addAttribute("cerca", cerca);
 
         return "docente/dashboard";
     }

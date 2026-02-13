@@ -214,4 +214,33 @@ public class QuestionarioRepository {
         return result;
     }
 
+    public ArrayList<Questionario> searchQuestionari(String keyword) {
+        ArrayList<Questionario> questionari = new ArrayList<>();
+        String query = "SELECT q.*, " +
+                "c.dataFine, c.tentativiMax, " +
+                "e.noteDidattiche " +
+                "FROM questionari q " +
+                "LEFT JOIN compitini c ON q.questionarioID = c.questionarioID_FK " +
+                "LEFT JOIN esercitazioni e ON q.questionarioID = e.questionarioID_FK " +
+                "WHERE q.nome LIKE ? OR q.descrizione LIKE ? OR q.materia LIKE ?";
+
+        try (Connection conn = ConnectionSingleton.getInstance().getConnection();
+                PreparedStatement ps = conn.prepareStatement(query)) {
+
+            String pattern = "%" + keyword + "%";
+            ps.setString(1, pattern);
+            ps.setString(2, pattern);
+            ps.setString(3, pattern);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    questionari.add(mapResultSetToQuestionario(rs));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Errore ricerca questionari: " + e.getMessage());
+        }
+        return questionari;
+    }
+
 }

@@ -133,4 +133,8 @@ public class QuestionarioService {
         return null;
     }
 
+    public List<Questionario> cercaQuestionari(String keyword) {
+        return questionarioRepository.searchQuestionari(keyword);
+    }
+
 }

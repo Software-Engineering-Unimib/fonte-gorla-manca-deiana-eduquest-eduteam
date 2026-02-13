@@ -33,9 +33,21 @@
             
             <section class="dashboard-section">
                 <h3>📋 Questionari Disponibili</h3>
-                
+
+                <form th:action="@{/studente/dashboard}" method="get" class="search-bar" style="margin-bottom: 1rem;">
+                    <input type="text" name="cerca" th:value="${cerca}"
+                           placeholder="Cerca per nome, descrizione o materia..." class="search-input" />
+                    <button type="submit" class="btn btn-primary btn-sm">&#x1F50E; Cerca</button>
+                    <a th:if="${cerca != null and !cerca.isEmpty()}" th:href="@{/studente/dashboard}"
+                       class="btn btn-secondary btn-sm">&#x2716; Reset</a>
+                </form>
+
+                <p th:if="${cerca != null and !cerca.isEmpty()}" style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.75rem;"
+                   th:text="'Risultati per: &quot;' + ${cerca} + '&quot; (' + ${questionariDisponibili.size()} + ')'"></p>
+
                 <div th:if="${questionariDisponibili == null or questionariDisponibili.empty}" class="empty-state">
-                    <p>Non ci sono questionari disponibili al momento.</p>
+                    <p th:if="${cerca != null and !cerca.isEmpty()}">Nessun questionario trovato per la tua ricerca.</p>
+                    <p th:if="${cerca == null or cerca.isEmpty()}">Non ci sono questionari disponibili al momento.</p>
                 </div>
                 
                 <div th:if="${questionariDisponibili != null and !questionariDisponibili.empty}" class="questionari-list">

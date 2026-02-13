@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Ricerca Questionari')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>&#x1F50D; Ricerca Questionari</h1>
+            <p>Cerca un questionario per nome, descrizione o materia</p>
+        </div>
+
+        <!-- Barra di ricerca -->
+        <section class="dashboard-section">
+            <form th:action="@{/classifiche/questionari}" method="get" class="search-bar">
+                <input type="text" name="cerca" th:value="${cerca}"
+                       placeholder="Cerca questionario..." class="search-input" />
+                <button type="submit" class="btn btn-primary">&#x1F50E; Cerca</button>
+            </form>
+        </section>
+
+        <!-- Risultati -->
+        <section class="dashboard-section">
+            <h3 th:if="${cerca != null and !cerca.isEmpty()}"
+                th:text="'Risultati per: &quot;' + ${cerca} + '&quot; (' + ${questionari.size()} + ')'"></h3>
+            <h3 th:if="${cerca == null or cerca.isEmpty()}">Tutti i questionari</h3>
+
+            <div th:if="${questionari.isEmpty()}" class="empty-state">
+                <p>Nessun questionario trovato.</p>
+            </div>
+
+            <div th:if="${!questionari.isEmpty()}" class="questionari-list">
+                <div th:each="q : ${questionari}" class="questionario-card">
+                    <h4 th:text="${q.nome}"></h4>
+                    <p th:text="${q.descrizione}"></p>
+                    <div class="card-meta">
+                        <span th:text="'&#x1F4DA; ' + ${q.materia != null ? q.materia : 'N/D'}"></span>
+                        <span th:text="'&#x1F4C5; ' + ${q.dataCreazione}"></span>
+                        <span th:text="'&#x2699; ' + ${q.livelloDifficulty}"></span>
+                        <span th:text="'&#x2753; ' + ${q.numeroDomande} + ' domande'"></span>
+                    </div>
+                    <div class="card-actions">
+                        <a th:href="@{/classifiche/questionario/{id}(id=${q.ID})}"
+                           class="btn btn-primary btn-sm">&#x1F3C6; Classifica</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

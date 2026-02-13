@@ -8,6 +8,7 @@
     <div class="dashboard">
         <div class="dashboard-header">
             <h1>&#x1F3C6; Classifica Questionario</h1>
+            <p th:if="${questionario != null}" th:text="${questionario.nome}"></p>
         </div>
 
         <section class="dashboard-section">
@@ -26,7 +27,7 @@
                 </div>
             </div>
             <div class="form-actions">
-                <a onclick="history.back()" class="btn btn-secondary">&#x2190; Indietro</a>
+                <a th:href="@{/classifiche/questionari}" class="btn btn-secondary">&#x2190; Torna alla ricerca</a>
             </div>
         </section>
     </div>

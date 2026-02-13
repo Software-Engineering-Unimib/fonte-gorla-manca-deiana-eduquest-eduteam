@@ -39,7 +39,8 @@ public class StudenteWebController {
     private CompilazioneService compilazioneService;
 
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public String dashboard(HttpSession session, Model model,
+                            @RequestParam(required = false) String cerca) {
         Account user = (Account) session.getAttribute("user");
         
         if (user == null) {
@@ -58,9 +59,22 @@ public class StudenteWebController {
         ArrayList<Compilazione> compilazioniCompletate = compilazioneService.getCompilazioniCompletate(studente.getAccountID());
         model.addAttribute("questionariCompletati", compilazioniCompletate.size());
 
-        // Questionari disponibili per lo studente
-        List<Questionario> questionariDisponibili = questionarioService.getQuestionariDisponibliPerStudente(studente.getAccountID());
+        // Questionari disponibili per lo studente (con ricerca opzionale)
+        List<Questionario> questionariDisponibili;
+        if (cerca != null && !cerca.trim().isEmpty()) {
+            // Filtra i questionari disponibili in base alla ricerca
+            List<Questionario> tutti = questionarioService.getQuestionariDisponibliPerStudente(studente.getAccountID());
+            String keyword = cerca.trim().toLowerCase();
+            questionariDisponibili = tutti.stream()
+                    .filter(q -> (q.getNome() != null && q.getNome().toLowerCase().contains(keyword))
+                            || (q.getDescrizione() != null && q.getDescrizione().toLowerCase().contains(keyword))
+                            || (q.getMateria() != null && q.getMateria().toLowerCase().contains(keyword)))
+                    .collect(java.util.stream.Collectors.toList());
+        } else {
+            questionariDisponibili = questionarioService.getQuestionariDisponibliPerStudente(studente.getAccountID());
+        }
         model.addAttribute("questionariDisponibili", questionariDisponibili);
+        model.addAttribute("cerca", cerca);
 
         return "studente/dashboard";
     }
