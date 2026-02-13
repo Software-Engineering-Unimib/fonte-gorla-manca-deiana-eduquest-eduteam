@@ -33,6 +33,22 @@
                     <button type="submit" class="btn btn-primary">Salva Modifiche</button>
                 </div>
             </form>
+
+            <hr class="form-divider">
+
+            <div class="danger-zone">
+                <h3>Zona Pericolosa</h3>
+                <p>L'eliminazione dell'account è permanente e non può essere annullata. Tutti i tuoi dati verranno rimossi.</p>
+                <form th:action="@{/studente/elimina-account}" method="post" class="form"
+                      onsubmit="return confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.');">
+                    <div class="form-group">
+                        <label for="passwordConferma">Conferma Password</label>
+                        <input type="password" id="passwordConferma" name="passwordConferma" required
+                               placeholder="Inserisci la tua password per confermare">
+                    </div>
+                    <button type="submit" class="btn btn-danger">Elimina Account</button>
+                </form>
+            </div>
         </div>
     </main>
     

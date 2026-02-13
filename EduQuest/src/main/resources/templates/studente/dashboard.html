@@ -24,6 +24,10 @@
                         <span class="stat-value" th:text="${user.mediaPunteggio}">0.0</span>
                         <span class="stat-label">Media Voto</span>
                     </div>
+                    <div class="stat-card">
+                        <span class="stat-value" th:text="${user.eduPoints}">0</span>
+                        <span class="stat-label">EduPoints</span>
+                    </div>
                 </div>
             </section>
             
@@ -39,11 +43,11 @@
                         <h4 th:text="${q.nome}">Nome Questionario</h4>
                         <p th:text="${q.descrizione}">Descrizione</p>
                         <div class="card-meta">
-                            <span>📝 <span th:text="${q.numDomande}"></span> domande</span>
+                            <span>📝 <span th:text="${q.numeroDomande}"></span> domande</span>
                             <span>👨‍🏫 <span th:text="${q.docente.cognome}"></span></span>
                         </div>
                         <div class="card-actions">
-                            <a th:href="@{/studente/questionari/{id}/inizia(id=${q.questionarioID})}" class="btn btn-primary btn-sm">Inizia</a>
+                            <a th:href="@{/studente/questionari/{id}/inizia(id=${q.ID})}" class="btn btn-primary btn-sm">Inizia</a>
                         </div>
                     </div>
                 </div>

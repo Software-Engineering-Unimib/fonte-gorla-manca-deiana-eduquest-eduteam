@@ -147,4 +147,26 @@ public class DocenteWebController {
             return "redirect:/docente/profilo";
         }
     }
+
+    // ==================== ELIMINA ACCOUNT ====================
+
+    @PostMapping("/elimina-account")
+    public String eliminaAccount(@RequestParam String passwordConferma,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            accountService.eliminaAccount(user.getUserName(), passwordConferma);
+            session.invalidate();
+            return "redirect:/login?accountEliminato";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/docente/profilo";
+        }
+    }
 }

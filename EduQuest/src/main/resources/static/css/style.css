@@ -5,6 +5,8 @@
     --secondary-color: #6B7280;
     --success-color: #10B981;
     --error-color: #EF4444;
+    --danger-color: #EF4444;
+    --danger-hover: #DC2626;
     --warning-color: #F59E0B;
     --background: #F9FAFB;
     --surface: #FFFFFF;
@@ -141,7 +143,7 @@ body {
     padding: 0.75rem 1.5rem;
     border-radius: var(--border-radius-two);
     font-weight: 500;
-    margin: auto
+    margin: auto;
     text-decoration: none;
     cursor: pointer;
     border: none;
@@ -166,6 +168,15 @@ body {
 
 .btn-secondary:hover {
     background: var(--border-color);
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: var(--danger-hover);
 }
 
 .btn-full {
@@ -496,6 +507,26 @@ body {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
+}
+
+/* ===== Danger Zone ===== */
+
+.danger-zone {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 2px solid var(--danger-color);
+    border-radius: var(--border-radius);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.danger-zone h3 {
+    color: var(--danger-color);
+    margin-bottom: 0.5rem;
+}
+
+.danger-zone p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 768px) {

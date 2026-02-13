@@ -1,6 +1,10 @@
 package dev.eduteam.eduquest.controllers.web;
 
+import dev.eduteam.eduquest.models.questionari.Compilazione;
+import dev.eduteam.eduquest.models.questionari.Questionario;
 import dev.eduteam.eduquest.services.accounts.StudenteService;
+import dev.eduteam.eduquest.services.questionari.CompilazioneService;
+import dev.eduteam.eduquest.services.questionari.QuestionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +19,9 @@ import dev.eduteam.eduquest.models.accounts.Studente;
 import dev.eduteam.eduquest.services.accounts.AccountService;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 @RequestMapping("/studente")
 public class StudenteWebController {
@@ -24,6 +31,12 @@ public class StudenteWebController {
 
     @Autowired
     private StudenteService studenteService;
+
+    @Autowired
+    private QuestionarioService questionarioService;
+
+    @Autowired
+    private CompilazioneService compilazioneService;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -40,10 +53,14 @@ public class StudenteWebController {
         Studente studente = studenteService.getById(user.getAccountID());
 
         model.addAttribute("user", studente);
-        
-        // Placeholder per statistiche e questionari disponibili
-        model.addAttribute("questionariCompletati", 0);
-        model.addAttribute("questionariDisponibili", null);
+
+        // Statistiche reali: questionari completati
+        ArrayList<Compilazione> compilazioniCompletate = compilazioneService.getCompilazioniCompletate(studente.getAccountID());
+        model.addAttribute("questionariCompletati", compilazioniCompletate.size());
+
+        // Questionari disponibili per lo studente
+        List<Questionario> questionariDisponibili = questionarioService.getQuestionariDisponibliPerStudente(studente.getAccountID());
+        model.addAttribute("questionariDisponibili", questionariDisponibili);
 
         return "studente/dashboard";
     }
@@ -115,6 +132,28 @@ public class StudenteWebController {
             redirectAttributes.addFlashAttribute("nome", nome);
             redirectAttributes.addFlashAttribute("cognome", cognome);
             redirectAttributes.addFlashAttribute("email", email);
+            return "redirect:/studente/profilo";
+        }
+    }
+
+    // ==================== ELIMINA ACCOUNT ====================
+
+    @PostMapping("/elimina-account")
+    public String eliminaAccount(@RequestParam String passwordConferma,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
+        Account user = (Account) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            accountService.eliminaAccount(user.getUserName(), passwordConferma);
+            session.invalidate();
+            return "redirect:/login?accountEliminato";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/studente/profilo";
         }
     }
