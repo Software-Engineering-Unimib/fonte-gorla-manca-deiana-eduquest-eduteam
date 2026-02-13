@@ -19,16 +19,6 @@ public class RispostaService {
     @Autowired
     private DomandaRepository domandaRepository;
 
-    /*
-     * Non penso serva - creazione in repository
-     * public Risposta creaRisposta() {
-     * int ID = (int) (Math.random() * 100000); // TEMPORARIO
-     * Risposta risposta = new Risposta("");
-     * risposta.setID(ID); // TEMPORARIO
-     * return risposta;
-     * }
-     */
-
     public ArrayList<Risposta> getRisposteByDomanda(int domandaID) {
         return rispostaRepository.getRisposteByDomanda(domandaID);
     }

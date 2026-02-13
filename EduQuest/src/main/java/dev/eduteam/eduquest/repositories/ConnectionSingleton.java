@@ -22,13 +22,15 @@ public class ConnectionSingleton {
     public Connection getConnection() throws SQLException {
         MysqlDataSource ds = new MysqlDataSource();
         ds.setServerName("localhost");
-        ds.setPortNumber(3306);
-        // Problema accessso al DB, la password cambia...   
 
-        // Forse si può utilizzare un file di configurazione application.properties -GD
+        // -------------------------
+        // Parametri modificabili in base al proprio MySQL
+        ds.setPortNumber(3306);
         ds.setUser("root");
-        ds.setPassword("nicksql");
-        ds.setDatabaseName("Test_EduQuest");
+        ds.setPassword("toor");
+        // -------------------------
+
+        ds.setDatabaseName("DB_EduQuest");
         ds.setUseSSL(false);
         ds.setAllowPublicKeyRetrieval(true);
 

@@ -21,9 +21,4 @@ public class Esercitazione extends Questionario {
     public void setNoteDidattiche(String note) {
         this.noteDidattiche = note;
     }
-
-    /*
-     * TODO Si potrebbe aggiungere un metodo che in base al punteggio ottenuto (in
-     * %) ti consiglia se ripassare l'argomento
-     */
 }

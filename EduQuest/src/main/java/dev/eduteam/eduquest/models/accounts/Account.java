@@ -1,15 +1,11 @@
 package dev.eduteam.eduquest.models.accounts;
 
-// import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public abstract class Account {
     protected int accountID;
     protected String nome;
     protected String cognome;
     protected String userName;
     protected String email;
-    // @JsonIgnore // non voglio che la password sia visibile, cosi funziona, TBD
-    // come rendere la password non visibile
     protected String password;
 
     public Account() {

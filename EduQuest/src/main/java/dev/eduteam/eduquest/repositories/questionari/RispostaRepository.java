@@ -13,8 +13,6 @@ import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 @Repository
 public class RispostaRepository {
 
-    // Non è necessario domandaID perchè la primary ket di risposte è solo
-    // rispostaID
     public Risposta getRispostaByID(int rispostaID) {
         Risposta risposta = null;
         String query = "SELECT " +

@@ -106,7 +106,7 @@ public class DocenteRepository {
     public Questionario getQuestionarioPiuComp(int docenteID) {
         Docente docente = getDocenteByAccountID(docenteID);
         if (docente == null)
-            return null; // meglio controllare prima se non esiste, almeno non crasha
+            return null;
 
         String query = "SELECT q.*, COUNT(c.compilazioneID) AS num_compilazioni " +
                 "FROM questionari q " +
@@ -142,7 +142,7 @@ public class DocenteRepository {
     public Questionario getQuestionarioMigliorMediaPunt(int docenteID) {
         Docente docente = getDocenteByAccountID(docenteID);
         if (docente == null)
-            return null; // come sopra, meglio controllare prima se non esiste, almeno non crasha
+            return null;
 
         String query = "SELECT q.*, AVG(c.punteggio) AS media " +
                 "FROM questionari q " +

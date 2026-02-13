@@ -1,5 +1,7 @@
 package dev.eduteam.eduquest.services.questionari;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -106,6 +108,8 @@ public class CompilazioneService {
         return false;
     }
 
+    //----------------
+
     public boolean chiudiCompilazione(int studenteID, int compilazioneID) {
         Compilazione c = compilazioneRepository.getCompilazioneByID(compilazioneID);
         Studente studente = studenteRepository.getStudenteByAccountID(studenteID);
@@ -135,7 +139,10 @@ public class CompilazioneService {
         double votoNormalizzato = (punteggioOttenuto / maxPunteggio) * 100;
         double mediaAttuale = studente.getMediaPunteggio();
         int totCompilazioni = compilazioneRepository.getCompilazioniStatus(studente.getAccountID(), true).size();
-        double nuovaMedia = ((mediaAttuale * totCompilazioni) + votoNormalizzato) / (totCompilazioni + 1);
+        double nuovaMediaGrezza = ((mediaAttuale * totCompilazioni) + votoNormalizzato) / (totCompilazioni + 1);
+        double nuovaMedia = BigDecimal.valueOf(nuovaMediaGrezza)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
         studente.setMediaPunteggio(nuovaMedia);
 
         int eduPointsDaAssegnare = 0;

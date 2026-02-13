@@ -9,7 +9,6 @@ import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +28,8 @@ public class QuestionarioService {
     @Autowired
     private DomandaService domandaService;
 
+    // Restituisce una lista mista di Questionario e Compitini
     public ArrayList<Questionario> getQuestionari() {
-        // Restituisce una lista mista di Questionario e Compitini
         ArrayList<Questionario> questionari = questionarioRepository.getQuestionari();
         for (Questionario q : questionari) {
             ArrayList<Domanda> domande = domandaService.getDomandeComplete(q.getID());
@@ -60,15 +59,10 @@ public class QuestionarioService {
     }
 
     public Questionario getQuestionarioCompleto(int ID) {
-        // Grazie alla LEFT JOIN nel repo, 'questionario' potrebbe essere un'istanza di
-        // Compitino
         Questionario questionario = questionarioRepository.getQuestionarioByID(ID);
 
-        // Controllo che questionario non sia null prima di usarlo
         if (questionario != null) {
-            // Recupero le domande (che a loro volta hanno già le risposte caricate)
             ArrayList<Domanda> domande = domandaService.getDomandeComplete(ID);
-            // "Allego" le domande al questionario prima di restituirlo
             questionario.setElencoDomande(domande);
         }
         return questionario;
@@ -84,11 +78,9 @@ public class QuestionarioService {
     }
 
     public boolean rimuoviQuestionario(int ID) {
-        // Il CASCADE sul DB cancellerà anche eventuali righe in 'compitini'
         return questionarioRepository.removeQuestionario(ID);
     }
 
-    // Uniti i due metodi di modifica e sistemata logica in controller
     public boolean modificaInfoQuestionario(Questionario questionario, String nome, String descrizione,
             Difficulty livelloDiff) {
         if (descrizione == null) {
@@ -111,12 +103,9 @@ public class QuestionarioService {
                 if (i + 1 < elenco.size()) {
                     return elenco.get(i + 1);
                 }
-                // Trovata, ma era l'ultima: non c'è una successiva
                 return null;
             }
         }
-        // Si potrebbe definire un'eccezione specifica per distinguere
-        // tra non c'è e ID non valido
         return null;
     }
 

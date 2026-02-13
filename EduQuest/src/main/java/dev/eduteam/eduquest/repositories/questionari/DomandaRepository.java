@@ -18,12 +18,7 @@ public class DomandaRepository {
     @Autowired
     private RispostaRepository rispostaRepository;
 
-    // DA VALUTARE: Dato che l'ID delle domande è univoco si potrebbe fare un metodo
-    // in overload per la ricerca con solo l'ID della domanda
-    // PER ORA li ho messi entrambi
-
-    // Aggiungi questo metodo per le operazioni in cui conosci solo l'ID della
-    // domanda
+    // Metodo per le operazioni in cui conosci solo domandaID
     public Domanda getDomandaByID(int domandaID) {
         Domanda domanda = null;
         String query = "SELECT domandaID, tipo, testo, questionarioID_FK, punteggio FROM domande WHERE domandaID = ?";
@@ -88,8 +83,6 @@ public class DomandaRepository {
         }
         return domanda;
     }
-
-    // -------------------------
 
     public ArrayList<Domanda> getDomandeByQuestionario(int questionarioID) {
         ArrayList<Domanda> elecoDomande = new ArrayList<Domanda>();

@@ -57,9 +57,6 @@ public class DomandaService {
         return false;
     }
 
-    // POSSIBILE AGGIUNTA FUTURA DI UN METODO MODIFICA IMMAGINE/AUDIO PER DOMANDE
-    // MULTIMEDIALI
-
     public boolean setRispostaCorretta(int domandaID, int rispostaID) {
         Domanda domanda = domandaRepository.getDomandaByID(domandaID);
         if (domanda == null)

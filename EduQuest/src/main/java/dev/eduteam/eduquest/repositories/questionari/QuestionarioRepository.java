@@ -20,10 +20,7 @@ import java.util.ArrayList;
 public class QuestionarioRepository {
 
     @Autowired
-    protected DocenteRepository docenteRepository; // p protected per permettere alle extension di accedervi
-
-    // NOTA: si potrebbe ottimizzare modificano le query in modo che facciano JOIN,
-    // riduce #chiamate alla repo
+    protected DocenteRepository docenteRepository; // protected per permettere alle extension di accedervi
 
     // Helper method polimorfico: per mappare il ResultSet al Questionario o
     // Compitino
@@ -97,7 +94,6 @@ public class QuestionarioRepository {
         return questionari;
     }
 
-    // la Primary key di un questionario è questionarioID, NON SERVE IL DOCENTE
     public Questionario getQuestionarioByID(int id) {
         String query = "SELECT q.*, " +
                 "c.dataFine, c.tentativiMax, " +
@@ -122,6 +118,7 @@ public class QuestionarioRepository {
         return null;
     }
 
+    // Ritorna la lista dei Questionari creati dal Docente specificato
     public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
         ArrayList<Questionario> questionari = new ArrayList<Questionario>();
 
@@ -214,6 +211,7 @@ public class QuestionarioRepository {
         return result;
     }
 
+    // Ritorna una lista dei Questionari in cui figura la keyword
     public ArrayList<Questionario> searchQuestionari(String keyword) {
         ArrayList<Questionario> questionari = new ArrayList<>();
         String query = "SELECT q.*, " +

@@ -59,7 +59,6 @@ public class EsercitazioneService {
         return esercitazioneRepository.insertEsercitazione(nuova);
     }
 
-    // Uniti i due metodi di modifica e sistemata logica in controller
     public boolean modificaInfoEsercitazione(Esercitazione questionario, String nome, String descrizione,
             Difficulty livelloDiff, String noteDidattiche) {
         questionario.setNome(nome);

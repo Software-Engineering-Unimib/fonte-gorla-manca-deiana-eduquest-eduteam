@@ -20,7 +20,7 @@ public class Questionario {
 
     private ArrayList<Domanda> elencoDomande;
 
-    private LocalDate dataCreazione; // inizializzata di default nel costruttore senza parametri
+    private LocalDate dataCreazione;
     private Docente docenteCreatore; // ID del docente che ha creato il questionario
     private String materia;
     private Difficulty livelloDiff;

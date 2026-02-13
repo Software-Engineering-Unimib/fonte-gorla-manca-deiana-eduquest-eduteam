@@ -60,16 +60,15 @@ public class AccountService {
         return accountTrovato;
     }
 
-    // metodi nuovi necessari nei controller
     public Docente logInDocente(String userName, String password) {
-        Account acc = logIn(userName, password); // Chiama il metodo sopra
+        Account acc = logIn(userName, password);
         if (acc instanceof Docente)
             return (Docente) acc;
         throw new IllegalArgumentException("L'account non è un Docente.");
     }
 
     public Studente logInStudente(String userName, String password) {
-        Account acc = logIn(userName, password); // Chiama il metodo sopra
+        Account acc = logIn(userName, password);
         if (acc instanceof Studente)
             return (Studente) acc;
         throw new IllegalArgumentException("L'account non è uno Studente.");
@@ -113,9 +112,6 @@ public class AccountService {
         return accountEsistente;
     }
 
-    // TODO sistemare chiamate a repository
-    // metodo che controlla se i parametri passati in input durante la creazione
-    // sono nuovi, in caso contrario lancia una eccezione
     private void verificaDisponibilitaCredenziali(String userName, String email) {
         if (accountRepository.getAccountByUserName(userName) != null) {
             throw new IllegalArgumentException("Lo username '" + userName + "' è già occupato.");
@@ -125,7 +121,7 @@ public class AccountService {
         }
     }
 
-    // metodo che controlla se i parametri passati in input durante la creazione
+    // Metodo che controlla se i parametri passati in input durante la creazione
     // sono validi, in caso contrario lancia una eccezione
     private void validaDati(String nome, String cognome, String userName, String email, String password) {
         if (nome == null || nome.isBlank()) {
@@ -141,7 +137,7 @@ public class AccountService {
         }
     }
 
-    // metodo che controlla se i caratteri di un userName sono alfanumerici (ho
+    // Metodo che controlla se i caratteri di un userName sono alfanumerici (ho
     // pensato cosi, potremmo cambiare)
     private boolean isUserNameValido(String userName) {
         if (userName == null || userName.isEmpty()) {
@@ -155,23 +151,23 @@ public class AccountService {
         return true;
     }
 
-    // metodo che grazie all'utilizzo di java.util.regex.Pattern controlla se una
-    // email è valida
-    // ossia controlla che una email sia costituita da (vedere espressione
-    // EMAILVALIDA a riga 11):
-    // una prima parte di caratteri, seguiti da "@", seguiti dal dominio e infine
-    // un'estensione
+    /*
+     * Metodo che grazie all'utilizzo di java.util.regex.Pattern controlla se una
+     * email è valida ossia controlla che una email sia costituita da (vedere
+     * espressione EMAILVALIDA a riga 11): una prima parte di caratteri, seguiti
+     * da "@", seguiti dal dominio e infine un'estensione
+     */
     private boolean isEmailValida(String email) {
         return email != null && EMAILVALIDA.matcher(email).matches();
     }
 
     /*
-     * metodo che controlla se una password è valida:
-     * Lunghezza minima e massima
-     * controlla se ci sono spazi
-     * controlla se c'è almeno un carattere speciale
-     * controlla se c'è almeno una maisucola
-     * controlla se c'è almeno un numero
+     * Metodo che controlla se una password è valida:
+     * - Lunghezza minima e massima
+     * - Controlla se ci sono spazi
+     * - Controlla se c'è almeno un carattere speciale
+     * - Controlla se c'è almeno una maisucola
+     * - Controlla se c'è almeno un numero
      */
     private boolean isPasswordValida(String password) {
         // controllo la lunghezza
