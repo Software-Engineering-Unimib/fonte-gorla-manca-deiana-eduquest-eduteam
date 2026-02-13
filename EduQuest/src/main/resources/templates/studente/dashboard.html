@@ -55,11 +55,11 @@
                         <h4 th:text="${q.nome}">Nome Questionario</h4>
                         <p th:text="${q.descrizione}">Descrizione</p>
                         <div class="card-meta">
-                            <span>📝 <span th:text="${q.numeroDomande}"></span> domande</span>
+                            <span>📝 <span th:text="${q.getNumeroDomande()}"></span> domande</span>
                             <span>👨‍🏫 <span th:text="${q.docente.cognome}"></span></span>
                         </div>
                         <div class="card-actions">
-                            <a th:href="@{/studente/questionari/{id}/inizia(id=${q.ID})}" class="btn btn-primary btn-sm">Inizia</a>
+                            <a th:href="@{/studente/dashboard/{id}(id=${q.ID})}" class="btn btn-primary btn-sm">Inizia</a>
                         </div>
                     </div>
                 </div>
