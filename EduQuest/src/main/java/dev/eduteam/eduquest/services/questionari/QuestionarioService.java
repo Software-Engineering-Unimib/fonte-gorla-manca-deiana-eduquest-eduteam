@@ -9,6 +9,7 @@ import dev.eduteam.eduquest.repositories.questionari.QuestionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,11 +29,14 @@ public class QuestionarioService {
     @Autowired
     private DomandaService domandaService;
 
-    // Aggiunto per permettere allo studente di controllare i questionari senza l'ID
-    // del docente
     public ArrayList<Questionario> getQuestionari() {
         // Restituisce una lista mista di Questionario e Compitini
-        return questionarioRepository.getQuestionari();
+        ArrayList<Questionario> questionari = questionarioRepository.getQuestionari();
+        for (Questionario q : questionari) {
+            ArrayList<Domanda> domande = domandaService.getDomandeComplete(q.getID());
+            q.setElencoDomande(domande);
+        }
+        return questionari;
     }
 
     public ArrayList<Questionario> getQuestionariByDocente(int docenteID) {
@@ -45,7 +49,7 @@ public class QuestionarioService {
     }
 
     public List<Questionario> getQuestionariDisponibliPerStudente(int studenteID) {
-        List<Questionario> tutti = questionarioRepository.getQuestionari();
+        List<Questionario> tutti = getQuestionari();
 
         return tutti.stream().filter(q -> {
             if (q instanceof Compitino) {

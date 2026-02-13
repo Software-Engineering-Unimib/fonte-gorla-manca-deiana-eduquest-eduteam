@@ -126,18 +126,20 @@ public class CompilazioneWebController {
             return "redirect:/docente/dashboard/" + ID;
         }
 
+        Studente studente = studenteService.getById(user.getAccountID());
         Questionario questionario = questionarioService.getQuestionarioCompleto(ID);
         Compilazione compilazione = compilazioneService.getCompilazioneByID(compilazioneID);
         Risposta[] risposteComp = compilazione.getRisposte();
 
         if (questionario != null) {
 
+            int eduPointsAssegnati = compilazioneService.calcolaEduPoints(studente, compilazione.getPunteggio(), questionario.getPunteggioMax());
             ArrayList<Domanda> domande = questionario.getElencoDomande();
             model.addAttribute("compilazione", compilazione);
             model.addAttribute("questionario", questionario);
             model.addAttribute("risposte", risposteComp);
             model.addAttribute("domande", domande);
-
+            model.addAttribute("eduPoints", eduPointsAssegnati);
         }
         return "questionario/riepilogo-questionario";
     }

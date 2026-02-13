@@ -33,6 +33,7 @@
             <div class="section-header">
                 <h4>
                     <span>💯 <span th:text="${compilazione.getPunteggio()}"></span> / <span th:text="${questionario.getPunteggioMax()}"></span></span>
+                    <span>🧿 Edupoints guadagnati: <span th:text="${eduPoints}"></span></span>
                     <span>📅 <span th:text="${questionario.dataCreazione}"></span></span>
                     <span>📒 Materia: <span th:text="${questionario.materia}"></span></span>
                     <span>🚩 Difficoltà: <span th:text="${questionario.getLivelloDifficulty()}"></span></span>
@@ -65,6 +66,10 @@
                 <div th:each="d : ${domande}" class="questionario-card">
                     <section th:replace="~{fragments/domanda-riepilogo :: domandaCard(${risposte[domande.indexOf(d)]}, ${d}, ${domande.indexOf(d)})}"></section>
                 </div>
+            </div>
+
+            <div>
+                <a th:href="@{/studente/dashboard}" class="btn btn-secondary">Ritorna alla Dashboard</a>
             </div>
         </section>
     </div>

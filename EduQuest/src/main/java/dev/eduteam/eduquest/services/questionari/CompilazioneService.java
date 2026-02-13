@@ -114,17 +114,27 @@ public class CompilazioneService {
         int maxPunteggio = q.getPunteggioMax();
 
         if (studente == null || maxPunteggio == 0) {
-
-            System.out.println("Studente: " + studente);
-            System.out.println("Punteggio: " + maxPunteggio);
             return false;
         }
 
         double punteggioOttenuto = c.getPunteggio();
-        double votoNormalizzato = (punteggioOttenuto / maxPunteggio) * 100;
 
+        int eduPointsDaAssegnare = calcolaEduPoints(studente, punteggioOttenuto, maxPunteggio);
+
+        if (eduPointsDaAssegnare > 0) {
+            int eduPointsAttuali = studente.getEduPoints();
+            studente.setEduPoints(eduPointsAttuali + eduPointsDaAssegnare);
+        }
+        c.setCompletato(true);
+        return (studenteRepository.updateStudente(studente)
+                && compilazioneRepository.updateStatusCompilazione(compilazioneID, true));
+    }
+
+    public int calcolaEduPoints(Studente studente, double punteggioOttenuto, int maxPunteggio) {
+
+        double votoNormalizzato = (punteggioOttenuto / maxPunteggio) * 100;
         double mediaAttuale = studente.getMediaPunteggio();
-        int totCompilazioni = compilazioneRepository.getCompilazioniStatus(studenteID, true).size();
+        int totCompilazioni = compilazioneRepository.getCompilazioniStatus(studente.getAccountID(), true).size();
         double nuovaMedia = ((mediaAttuale * totCompilazioni) + votoNormalizzato) / (totCompilazioni + 1);
         studente.setMediaPunteggio(nuovaMedia);
 
@@ -135,15 +145,7 @@ public class CompilazioneService {
             eduPointsDaAssegnare = 10;
         else if (votoNormalizzato > 50)
             eduPointsDaAssegnare = 5;
-
-        if (eduPointsDaAssegnare > 0) {
-            int eduPointsAttuali = studente.getEduPoints();
-            studente.setEduPoints(eduPointsAttuali + eduPointsDaAssegnare);
-        }
-
-        c.setCompletato(true);
-        return (studenteRepository.updateStudente(studente)
-                && compilazioneRepository.updateStatusCompilazione(compilazioneID, true));
+        return eduPointsDaAssegnare;
     }
 
     public ArrayList<Compilazione> getCompilazioniInSospeso(int studenteID) {
