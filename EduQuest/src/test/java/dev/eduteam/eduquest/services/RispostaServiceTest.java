@@ -1,6 +1,8 @@
 package dev.eduteam.eduquest.services;
 
+import dev.eduteam.eduquest.models.questionari.Domanda;
 import dev.eduteam.eduquest.models.questionari.Risposta;
+import dev.eduteam.eduquest.repositories.questionari.DomandaRepository;
 import dev.eduteam.eduquest.repositories.questionari.RispostaRepository;
 import dev.eduteam.eduquest.services.questionari.RispostaService;
 
@@ -14,6 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,6 +26,9 @@ class RispostaServiceTest {
 
     @Mock
     private RispostaRepository rispostaRepository;
+
+    @Mock
+    private DomandaRepository domandaRepository;
 
     @InjectMocks
     private RispostaService rispostaService;
@@ -113,17 +121,20 @@ class RispostaServiceTest {
     @Test
     void testModificaTesto() {
         String nuovoTesto = "Milano";
+        Domanda mockDomanda = Domanda.createDomandaOfType(Domanda.Type.DOMANDA_MULTIPLA);
+        when(domandaRepository.getDomandaByRisposta(anyInt())).thenReturn(mockDomanda);
+
         when(rispostaRepository.updateRisposta(risposta)).thenReturn(true);
 
-        boolean result = rispostaService.modificaTesto(risposta, nuovoTesto);
+        boolean result = rispostaService.modificaRisposta(risposta, nuovoTesto, false);
+
         assertTrue(result);
         assertEquals(nuovoTesto, risposta.getTesto());
-        verify(rispostaRepository, times(1)).updateRisposta(risposta);
     }
 
     @Test
     void testModificaTestoNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> rispostaService.modificaTesto(risposta, null));
+                () -> rispostaService.modificaRisposta(risposta, null, true));
     }
 }

@@ -51,6 +51,8 @@ public class RispostaService {
     }
 
     public boolean modificaRisposta(Risposta risposta, String testo, boolean corretta) {
+        if (testo == null)
+            throw new IllegalArgumentException("Il testo non può essere null");
         risposta.setTesto(testo);
         risposta.setCorretta(corretta);
 
@@ -64,14 +66,6 @@ public class RispostaService {
             }
         }
 
-        return rispostaRepository.updateRisposta(risposta);
-    }
-
-    public boolean modificaTesto(Risposta risposta, String testo) {
-        if (testo == null) {
-            throw new IllegalArgumentException("Il testo non può essere null");
-        }
-        risposta.setTesto(testo);
         return rispostaRepository.updateRisposta(risposta);
     }
 }
