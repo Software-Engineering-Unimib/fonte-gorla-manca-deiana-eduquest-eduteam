@@ -1,0 +1,81 @@
+package dev.eduteam.eduquest.models.questionari;
+
+import java.util.ArrayList;
+
+public abstract class Domanda {
+
+    public enum Type {
+        DOMANDA_MULTIPLA,
+        DOMANDA_MULTIPLE_RISPOSTE,
+        DOMANDA_VERO_FALSO
+    }
+
+    protected Type tipoDomanda;
+    protected int punteggio;
+
+    // VARIABILI COMUNI A TUTTE LE DOMANDE
+
+    protected int ID; // GLI ID SARANNO LEGATI ALLE DOMANDE SALVATI SUL DB
+    private String testo;
+    protected ArrayList<Risposta> elencoRisposte = new ArrayList<>();
+
+    // METODI COMUNI A TUTTE LE DOMANDE
+
+    public static Domanda createDomandaOfType(Type tipoDomanda) {
+        return switch (tipoDomanda) {
+            case DOMANDA_MULTIPLA -> new DomandaMultipla("");
+            case DOMANDA_MULTIPLE_RISPOSTE -> new DomandaMultipleRisposte("");
+            case DOMANDA_VERO_FALSO -> new DomandaVeroFalso("");
+            default -> null;
+        };
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public String getTesto() {
+        return testo;
+    }
+
+    public void setTesto(String testo) {
+        if (testo == null) {
+            throw new IllegalArgumentException("Il testo di una domanda non puo' essere nullo");
+        }
+        this.testo = testo;
+    }
+
+    public int getNumeroRisposte() {
+        return elencoRisposte.size();
+    }
+
+    public ArrayList<Risposta> getElencoRisposte() {
+        return elencoRisposte;
+    }
+
+    public void setElencoRisposte(ArrayList<Risposta> risposte) {
+        elencoRisposte = risposte;
+    }
+
+    public void addRisposta(Risposta risposta) {
+        elencoRisposte.add(risposta);
+    }
+
+    public Type getTipoDomanda() {
+        return tipoDomanda;
+    }
+
+    public int getPunteggio() {
+        return punteggio;
+    }
+
+    public void setPunteggio(int punteggio) {
+        if (punteggio <= 0)
+            this.punteggio = 1; // impostato come punteggio di default 1
+        this.punteggio = punteggio;
+    }
+}

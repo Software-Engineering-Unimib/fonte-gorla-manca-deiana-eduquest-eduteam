@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Dashboard Studente')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="dashboard">
+            <header class="dashboard-header">
+                <h1>Dashboard Studente</h1>
+                <p>Benvenuto, <span th:text="${user.nome + ' ' + user.cognome}"></span>!</p>
+            </header>
+            
+            <section th:replace="~{fragments/profile-card :: profileCard(${user}, false)}"></section>
+            
+            <section class="dashboard-section">
+                <h3>📊 Le Tue Statistiche</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" th:text="${questionariCompletati != null ? questionariCompletati : 0}">0</span>
+                        <span class="stat-label">Questionari Completati</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" th:text="${user.mediaPunteggio}">0.0</span>
+                        <span class="stat-label">Media Voto</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" th:text="${user.eduPoints}">0</span>
+                        <span class="stat-label">EduPoints</span>
+                    </div>
+                </div>
+                <div class="edupoints-info">
+                    <h4>🌟 Benvenuto in EduQuest! Potenzia il tuo profilo con gli EduPoints!</h4>
+                    <p>
+                        Gli EduPoints sono il cuore della tua scalata verso la vetta! Non sono semplici voti, 
+                        ma punti bonus che premiano il tuo impegno, la tua costanza e la tua voglia di metterti in gioco.
+                    </p>
+
+                    <h4 style="font-size: 1.3rem;">Come puoi guadagnarli? 🚀</h4>
+                    
+                    <p><strong>Dimostra quanto vali:</strong> Ogni volta che completi un quiz, ricevi punti in base al tuo risultato. 
+                    Più alto è il voto, più punti accumuli!</p>
+
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>100% di risposte esatte:</strong> +15 EduPoints 🏆</li>
+                        <li><strong>Oltre il 75%:</strong> +10 EduPoints 🥈</li>
+                        <li><strong>Oltre il 50%:</strong> +5 EduPoints 🥉</li>
+                    </ul>
+
+                    <p>
+                        <strong>Domina i Compitini:</strong> Alla scadenza di ogni Compitino, i primi 3 classificati 
+                        (quelli con il voto più alto) riceveranno un super bonus extra! Controlla spesso la Dashboard per vedere se hai vinto.
+                    </p>
+
+                    <p>
+                        <strong>Scala la classifica:</strong> Accumula EduPoints per scalare la Classifica globale 
+                        e dimostrare a tutti chi è il top player di EduQuest.
+                    </p>
+
+                    <p><em>Pronto a scendere in campo? Buona fortuna e che vinca il migliore! 🎮📖</em></p>
+                </div>
+            </section>
+            
+            <section class="dashboard-section">
+                <h3>📋 Questionari Disponibili</h3>
+
+                <form th:action="@{/studente/dashboard}" method="get" class="search-bar" style="margin-bottom: 1rem;">
+                    <input type="text" name="cerca" th:value="${cerca}"
+                           placeholder="Cerca per nome, descrizione o materia..." class="search-input" />
+                    <button type="submit" class="btn btn-primary btn-sm">&#x1F50E; Cerca</button>
+                    <a th:if="${cerca != null and !cerca.isEmpty()}" th:href="@{/studente/dashboard}"
+                       class="btn btn-secondary btn-sm">&#x2716; Reset</a>
+                </form>
+
+                <p th:if="${cerca != null and !cerca.isEmpty()}" style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.75rem;"
+                   th:text="'Risultati per: &quot;' + ${cerca} + '&quot; (' + ${questionariDisponibili.size()} + ')'"></p>
+
+                <div th:if="${questionariDisponibili == null or questionariDisponibili.empty}" class="empty-state">
+                    <p th:if="${cerca != null and !cerca.isEmpty()}">Nessun questionario trovato per la tua ricerca.</p>
+                    <p th:if="${cerca == null or cerca.isEmpty()}">Non ci sono questionari disponibili al momento.</p>
+                </div>
+                
+                <div th:if="${questionariDisponibili != null and !questionariDisponibili.empty}" class="questionari-list">
+                    <div th:each="q : ${questionariDisponibili}" class="questionario-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Questionario"}'>
+                                <h4 style="margin: 0;">Questionario "<span th:text="${q.nome}"></span>"</h4>
+                            </div>
+
+                            <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+                                <h4 style="margin: 0;">Esercitazione "<span th:text="${q.nome}"></span>"</h4>
+                            </div>
+
+                            <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+                                <h4 style="margin: 0;">Compitino "<span th:text="${q.nome}"></span>"</h4>
+                            </div>
+                            <span style="color: var(--text-secondary); font-size: 0.8rem; white-space: nowrap;">&#x1F4DA; <span th:text="${q.materia != null ? q.materia : 'N/D'}"></span></span>
+                        </div>
+                        <p th:text="${q.descrizione}">Descrizione</p>
+                        <div class="card-meta">
+                            <span>&#x1F4DD; <span th:text="${q.getNumeroDomande()}"></span> domande</span>
+                            <span>&#x1F468;&#x200D;&#x1F3EB; <span th:text="${q.docente.cognome}"></span></span>
+                        </div>
+                        <div class="card-actions">
+                            <a th:href="@{/studente/dashboard/{id}(id=${q.ID})}" class="btn btn-primary btn-sm">Inizia</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

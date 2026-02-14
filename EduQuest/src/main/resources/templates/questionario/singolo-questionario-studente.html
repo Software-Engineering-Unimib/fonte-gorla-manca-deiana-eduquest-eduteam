@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Questionario')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="questionario">
+        <header class="questionario-header">
+            <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Questionario"}'>
+                <h1>Questionario "<span th:text="${questionario.nome}"></span>"</h1>
+            </div>
+
+            <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+                <h1>Esercitazione "<span th:text="${questionario.nome}"></span>"</h1>
+            </div>
+
+            <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+                <h1>Compitino "<span th:text="${questionario.nome}"></span>"</h1>
+            </div>
+        </header>
+
+        <!-- <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> -->
+
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h3>
+                    📝 <span th:text="${questionario.descrizione}"></span>
+                </h3>
+
+            </div>
+
+            <div class="section-header">
+                <h4>
+                    <span>📅 <span th:text="${questionario.dataCreazione}"></span></span>
+                </h4>
+            </div>
+            <div class="section-header">
+                <h4>
+                    <span>📒 Materia: <span th:text="${questionario.materia}"></span></span>
+                    |
+                    <span>🚩 Difficoltà: <span th:text="${questionario.getLivelloDifficulty()}"></span></span>
+                </h4>
+            </div>
+
+            <div>
+
+                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}' class="section-header">
+                    <h4>
+                        <span>✒️ Note Didattiche:</span>
+                    </h4>
+                </div>
+
+                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}' class="section-header">
+                    <p><span th:text="${questionario.noteDidattiche}"></span></p>
+                </div>
+
+                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}' class="section-header">
+                    <h4>
+                        <span>📅 Data fine: <span th:text="${questionario.dataFine}"></span></span>
+                        <span>🔢 Tentativi: <span th:text="${questionario.tentativiMax}"></span></span>
+                    </h4>
+                </div>
+
+            </div>
+
+            <div th:if="${questionario == null}" class="empty-state">
+                <p>Questionario non trovato</p>
+            </div>
+
+            <div th:if="${rimangonoTentativi == true}" class="questionari-list">
+
+                <form th:action="@{|/studente/compila/${questionario.ID}|}" method="post">
+                    <button type="submit" class="btn btn-primary">Compila Questionario</button>
+                </form>
+            </div>
+        </section>
+        <section th:if="${esisteCompilazione == true}" class="dashboard-section">
+            <div class="questionari-list">
+                <h3>Hai delle compilazioni in sospeso!!</h3>
+                <a th:href="@{|compilazioni|}" class="btn btn-primary">Dashboard Compilazioni in sospeso</a>
+                </form>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

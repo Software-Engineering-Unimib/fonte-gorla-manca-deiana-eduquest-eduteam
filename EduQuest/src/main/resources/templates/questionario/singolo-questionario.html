@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Questionario')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="questionario">
+        <header class="questionario-header">
+            <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Questionario"}'>
+                <h1>Questionario "<span th:text="${questionario.nome}"></span>"</h1>
+            </div>
+
+            <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+                <h1>Esercitazione "<span th:text="${questionario.nome}"></span>"</h1>
+            </div>
+
+            <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+                <h1>Compitino "<span th:text="${questionario.nome}"></span>"</h1>
+            </div>
+        </header>
+
+        <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section>
+
+        <section class="dashboard-section">
+                    <div class="section-header">
+                        <h3>
+                            📝 <span th:text="${questionario.descrizione}"></span>
+                        </h3>
+
+                    </div>
+
+                    <div class="section-header">
+                        <h4>
+                            <span>📅 <span th:text="${questionario.dataCreazione}"></span></span>
+                            <span>📒 Materia: <span th:text="${questionario.materia}"></span></span>
+                            <span>🚩 Difficoltà: <span th:text="${questionario.getLivelloDifficulty()}"></span></span>
+                        </h4>
+
+                    </div>
+                    <div class="section-header">
+
+                        <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+                            <h4>
+                                ✒️ Note Didattiche
+                                <span th:text="${questionario.noteDidattiche}"></span>
+                            </h4>
+                        </div>
+
+                        <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+                            <h4>
+                                <span>📅 Data fine: <span th:text="${questionario.dataFine}"></span></span>
+                                <span>🔢 Tentativi: <span th:text="${questionario.tentativiMax}"></span></span>
+                            </h4>
+                        </div>
+
+                    </div>
+
+                    <div th:if="${questionario == null}" class="empty-state">
+                        <p>Questionario non trovato</p>
+                    </div>
+
+                    <div th:if="${questionario != null}" class="questionari-list">
+                        <div th:each="d : ${domande}" class="questionario-card">
+                            <section th:replace="~{fragments/domanda :: domandaCard(${questionario.ID}, ${d}, ${domande.indexOf(d)})}"></section>
+                        </div>
+                    </div>
+                </section>
+            <section class="dashboard-section">
+                <form th:action="@{|/docente/dashboard/${questionario.ID}/aggiungiSingolaRisposta|}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuova Domanda Singola Risposta</button>
+                </form>
+            </section>
+            <section class="dashboard-section">
+                <form th:action="@{|/docente/dashboard/${questionario.ID}/aggiungiMultipleRisposte|}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuova Domanda Multiple Risposte</button>
+                </form>
+            </section>
+            <section class="dashboard-section">
+                <form th:action="@{|/docente/dashboard/${questionario.ID}/aggiungiVeroFalso|}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuova Domanda Vero/Falso</button>
+                </form>
+            </section>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+        </body>
+        </html>

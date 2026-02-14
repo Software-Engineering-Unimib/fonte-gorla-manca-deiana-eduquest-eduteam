@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="navbar" class="navbar">
+    <div class="navbar-brand">
+        <a th:href="@{/}">EduQuest</a>
+    </div>
+    <div class="navbar-menu">
+        <!-- Se l'utente NON è loggato -->
+        <th:block th:if="${session.user == null}">
+            <a th:href="@{/login}" class="nav-link">Accedi</a>
+            <a th:href="@{/register}" class="nav-link btn-primary">Registrati</a>
+        </th:block>
+        
+        <!-- Se l'utente è loggato -->
+        <th:block th:if="${session.user != null}">
+            <span class="nav-user">Ciao, <span th:text="${session.user.nome}"></span>!</span>
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/classifiche}" class="nav-link">🏆 Classifiche</a>
+            <a th:href="@{/logout}" class="nav-link">Esci</a>
+        </th:block>
+    </div>
+</nav>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Modifica Profilo')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="form-container form-container-wide">
+            <h2>Modifica Profilo Docente</h2>
+            
+            <!-- Messaggi di feedback -->
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            
+            <form th:action="@{/docente/profilo}" method="post" class="form">
+                
+                <!-- Campi comuni (nome, cognome, email, password) -->
+                <div th:replace="~{fragments/profile-form :: formCampiComuni(${user})}"></div>
+                
+                <hr class="form-divider">
+                <p class="form-section-title">Informazioni Docente</p>
+                
+                <!-- Campo specifico Docente: Materia -->
+                <div class="form-group">
+                    <label for="insegnamento">Materia di Insegnamento</label>
+                    <input type="text" id="insegnamento" name="insegnamento"
+                           th:value="${user.insegnamento}" placeholder="Es. Matematica, Italiano, Storia...">
+                </div>
+                
+                <div class="form-actions">
+                    <a th:href="@{/docente/dashboard}" class="btn btn-secondary">Annulla</a>
+                    <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+                </div>
+            </form>
+
+            <hr class="form-divider">
+
+            <div class="danger-zone">
+                <h3>Zona Pericolosa</h3>
+                <p>L'eliminazione dell'account è permanente e non può essere annullata. Tutti i tuoi dati verranno rimossi.</p>
+                <form th:action="@{/docente/elimina-account}" method="post" class="form"
+                      onsubmit="return confirm('Sei sicuro di voler eliminare il tuo account? Questa azione è irreversibile.');">
+                    <div class="form-group">
+                        <label for="passwordConferma">Conferma Password</label>
+                        <input type="password" id="passwordConferma" name="passwordConferma" required
+                               placeholder="Inserisci la tua password per confermare">
+                    </div>
+                    <button type="submit" class="btn btn-danger">Elimina Account</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

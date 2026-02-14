@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="rispostaCard(q, d, r, index)">
+
+    <h4>Risposta <span th:text="${index + 1}"></span></h4>
+    <p th:text="${r.testo}">Testo Risposta</p>
+    <div class="card-meta">
+        <div th:if="${r.corretta == true}" class="empty-state">
+            <p>✅ Risposta Corretta</p>
+        </div>
+        <div th:if="${r.corretta == false}" class="empty-state">
+            <p>❌ Risposta Errata</p>
+        </div>
+    </div>
+    <div class="card-actions">
+        <a th:href="@{/docente/dashboard/{questionarioID}/{domandaID}/modifica/{rispostaID}(questionarioID=${q.ID}, domandaID=${d.ID}, rispostaID=${r.ID})}" class="btn btn-sm btn-secondary">Modifica</a>
+        <form th:if='${d.tipoDomanda.toString() != "DOMANDA_VERO_FALSO"}' th:action="@{|/docente/dashboard/${q.ID}/${d.ID}/rimuovi/${r.ID}|}" method="post">
+            <button type="submit" class="btn btn-sm btn-secondary">Rimuovi</button>
+        </form>
+    </div>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</section>
+</html>

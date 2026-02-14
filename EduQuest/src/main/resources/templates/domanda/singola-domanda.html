@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Domanda')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="container">
+    <div class="questionario">
+        <header class="questionario-header">
+            <h1>Domanda <span th:text="${index + 2}"></span></h1>
+            <p>Appartenente al Questionario "<span th:text="${questionario.nome}"></span>"</p>
+        </header>
+
+        <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section>
+
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h3>
+                    📝 <span th:text="${domanda.testo}"></span>
+                </h3>
+
+            </div>
+
+            <div th:if="${questionario == null}" class="empty-state">
+                <p>Questionario non trovato</p>
+            </div>
+
+            <div th:if="${questionario != null}" class="questionari-list">
+                <div th:each="r : ${risposte}" class="questionario-card">
+
+                    <section th:replace="~{fragments/risposta :: rispostaCard(${questionario}, ${domanda}, ${r}, ${risposte.indexOf(r)})}"></section>
+                </div>
+            </div>
+        </section>
+        <section th:if='${domanda.tipoDomanda.toString() != "DOMANDA_VERO_FALSO"}' class="dashboard-section">
+            <form th:action="@{|/docente/dashboard/${questionario.ID}/${domanda.ID}/aggiungi|}" method="post" class="section-header">
+                <button type="submit" class="btn btn-primary">+ Nuova Risposta</button>
+            </form>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
+h1>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Dashboard Docente')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="dashboard">
+            <header class="dashboard-header">
+                <h1>Dashboard Docente</h1>
+                <p>Benvenuto, <span th:text="${user.nome + ' ' + user.cognome}"></span>!</p>
+            </header>
+
+            
+            <section th:replace="~{fragments/profile-card :: profileCard(${user}, true)}"></section> 
+            
+            <section class="dashboard-section">
+
+                <h3>📋 I Tuoi Questionari</h3>
+
+                <form th:action="@{/docente/dashboard}" method="get" class="search-bar" style="margin-bottom: 1rem;">
+                    <input type="text" name="cerca" th:value="${cerca}"
+                           placeholder="Cerca tra i tuoi questionari..." class="search-input" />
+                    <button type="submit" class="btn btn-primary btn-sm">&#x1F50E; Cerca</button>
+                    <a th:if="${cerca != null and !cerca.isEmpty()}" th:href="@{/docente/dashboard}"
+                       class="btn btn-secondary btn-sm">&#x2716; Reset</a>
+                </form>
+
+                <p th:if="${cerca != null and !cerca.isEmpty()}" style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.75rem;"
+                   th:text="'Risultati per: &quot;' + ${cerca} + '&quot; (' + ${questionari != null ? questionari.size() : 0} + ')'"></p>
+                
+                <div th:if="${questionari == null or questionari.isEmpty()}" class="empty-state">
+                    <p th:if="${cerca != null and !cerca.isEmpty()}">Nessun questionario trovato per la tua ricerca.</p>
+                    <p th:if="${cerca == null or cerca.isEmpty()}">Non hai ancora creato nessun questionario.</p>
+                    <form th:action="@{/docente/dashboard/crea}" method="post" class="form">
+                        <div class="form-actions">
+
+                            <button type="submit" class="btn btn-primary">Crea il tuo primo Questionario</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div th:if="${questionari != null and !questionari.isEmpty()}" class="questionari-list">
+                    <div th:each="q : ${questionari}" class="questionario-card">
+                        <section th:replace="~{fragments/questionario :: questionarioCard(${q})}"></section>
+                    </div>
+                </div>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/crea}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuovo Questionario</button>
+                </form>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/creaEsercitazione}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuova Esercitazione</button>
+                </form>
+
+            </section>
+            <section class="dashboard-section">
+
+                <form th:action="@{/docente/dashboard/creaCompitino}" method="post" class="section-header">
+                    <button type="submit" class="btn btn-primary">+ Nuovo Compitino</button>
+                </form>
+
+            </section>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

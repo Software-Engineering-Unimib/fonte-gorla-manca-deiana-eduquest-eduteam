@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<section th:fragment="rispostaCard(c, q, d, r, index)">
+
+    <h4>Risposta <span th:text="${index + 1}"></span></h4>
+    <p th:text="${r.testo}">Testo Risposta</p>
+    <div class="card-actions">
+
+        <form th:action="@{|/studente/compila/rispondi/${q.ID}|}" method="post">
+            <input hidden type="number" id="compilazioneID" name="compilazioneID" th:value="${c.ID}">
+            <input hidden type="number" id="domandaID" name="domandaID" th:value="${d.ID}">
+            <input hidden type="number" id="rispostaID" name="rispostaID" th:value="${r.ID}">
+            <button type="submit" class="btn btn-sm btn-secondary">Rispondi!</button>
+        </form>
+    </div>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</section>
+</html>

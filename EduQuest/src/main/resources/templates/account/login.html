@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('EduQuest - Accedi')}"></head>
+<body>
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="container">
+        <div class="form-container">
+            <h2>Accedi</h2>
+            
+            <!-- Messaggio di errore -->
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            
+            <!-- Messaggio di successo (es. dopo registrazione) -->
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            
+            <!-- Messaggio dopo eliminazione account -->
+            <div th:if="${param.accountEliminato}" class="alert alert-success">
+                Il tuo account è stato eliminato con successo.
+            </div>
+            
+            <form th:action="@{/login}" method="post" class="form">
+                <div class="form-group">
+                    <label for="userName">Username</label>
+                    <input type="text" id="userName" name="userName" required 
+                           placeholder="Inserisci il tuo username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Inserisci la tua password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Accedi</button>
+            </form>
+            
+            <p class="form-footer">
+                Non hai un account? <a th:href="@{/register}">Registrati</a>
+            </p>
+        </div>
+    </main>
+    
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
