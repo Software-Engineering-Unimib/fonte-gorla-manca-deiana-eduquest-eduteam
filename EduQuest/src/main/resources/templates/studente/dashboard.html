@@ -29,27 +29,35 @@
                         <span class="stat-label">EduPoints</span>
                     </div>
                 </div>
-                <div>
-                    <h3>
-                        🌟 Benvenuto in EduQuest! Potenzia il tuo profilo con gli EduPoints!
-                        Gli EduPoints sono il cuore della tua scalata verso la vetta! Non sono semplici voti, ma punti bonus che premiano il tuo impegno, la tua costanza e la tua voglia di metterti in gioco.
+                <div class="edupoints-info">
+                    <h4>🌟 Benvenuto in EduQuest! Potenzia il tuo profilo con gli EduPoints!</h4>
+                    <p>
+                        Gli EduPoints sono il cuore della tua scalata verso la vetta! Non sono semplici voti, 
+                        ma punti bonus che premiano il tuo impegno, la tua costanza e la tua voglia di metterti in gioco.
+                    </p>
 
-                        Come puoi guadagnarli? 🚀
+                    <h4 style="font-size: 1.3rem;">Come puoi guadagnarli? 🚀</h4>
+                    
+                    <p><strong>Dimostra quanto vali:</strong> Ogni volta che completi un quiz, ricevi punti in base al tuo risultato. 
+                    Più alto è il voto, più punti accumuli!</p>
 
-                        Dimostra quanto vali: Ogni volta che completi un quiz, ricevi punti in base al tuo risultato. Più alto è il voto, più punti accumuli!
+                    <ul style="margin-left: 2rem;">
+                        <li><strong>100% di risposte esatte:</strong> +15 EduPoints 🏆</li>
+                        <li><strong>Oltre il 75%:</strong> +10 EduPoints 🥈</li>
+                        <li><strong>Oltre il 50%:</strong> +5 EduPoints 🥉</li>
+                    </ul>
 
-                        100% di risposte esatte: +15 EduPoints 🏆
+                    <p>
+                        <strong>Domina i Compitini:</strong> Alla scadenza di ogni Compitino, i primi 3 classificati 
+                        (quelli con il voto più alto) riceveranno un super bonus extra! Controlla spesso la Dashboard per vedere se hai vinto.
+                    </p>
 
-                        Oltre il 75%: +10 EduPoints 🥈
+                    <p>
+                        <strong>Scala la classifica:</strong> Accumula EduPoints per scalare la Classifica globale 
+                        e dimostrare a tutti chi è il top player di EduQuest.
+                    </p>
 
-                        Oltre il 50%: +5 EduPoints 🥉
-
-                        Domina i Compitini: Alla scadenza di ogni Compitino, i primi 3 classificati (quelli con il voto più alto) riceveranno un super bonus extra! Controlla spesso la Dashboard per vedere se hai vinto.
-
-                        Scala la classifica: Accumula EduPoints per scalare la Classifica globale e dimostrare a tutti chi è il top player di EduQuest.
-
-                        Pronto a scendere in campo? Buona fortuna e che vinca il migliore! 🎮📖
-                    </h3>
+                    <p><em>Pronto a scendere in campo? Buona fortuna e che vinca il migliore! 🎮📖</em></p>
                 </div>
             </section>
             
@@ -74,11 +82,14 @@
                 
                 <div th:if="${questionariDisponibili != null and !questionariDisponibili.empty}" class="questionari-list">
                     <div th:each="q : ${questionariDisponibili}" class="questionario-card">
-                        <h4 th:text="${q.nome}">Nome Questionario</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h4 th:text="${q.nome}" style="margin: 0;">Nome Questionario</h4>
+                            <span style="color: var(--text-secondary); font-size: 0.8rem; white-space: nowrap;">&#x1F4DA; <span th:text="${q.materia != null ? q.materia : 'N/D'}"></span></span>
+                        </div>
                         <p th:text="${q.descrizione}">Descrizione</p>
                         <div class="card-meta">
-                            <span>📝 <span th:text="${q.getNumeroDomande()}"></span> domande</span>
-                            <span>👨‍🏫 <span th:text="${q.docente.cognome}"></span></span>
+                            <span>&#x1F4DD; <span th:text="${q.getNumeroDomande()}"></span> domande</span>
+                            <span>&#x1F468;&#x200D;&#x1F3EB; <span th:text="${q.docente.cognome}"></span></span>
                         </div>
                         <div class="card-actions">
                             <a th:href="@{/studente/dashboard/{id}(id=${q.ID})}" class="btn btn-primary btn-sm">Inizia</a>
