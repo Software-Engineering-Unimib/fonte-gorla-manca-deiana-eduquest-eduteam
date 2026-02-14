@@ -27,26 +27,39 @@
                 <h3>
                     📝 <span th:text="${questionario.descrizione}"></span>
                 </h3>
-
             </div>
 
             <div class="section-header">
                 <h4>
                     <span>💯 <span th:text="${compilazione.getPunteggio()}"></span> / <span th:text="${questionario.getPunteggioMax()}"></span></span>
                     <span>🧿 Edupoints guadagnati: <span th:text="${eduPoints}"></span></span>
+                </h4>
+            </div>
+
+            <div class="section-header">
+                <h4>
                     <span>📅 <span th:text="${questionario.dataCreazione}"></span></span>
                     <span>📒 Materia: <span th:text="${questionario.materia}"></span></span>
+                </h4>
+            </div>
+
+            <div class="section-header">
+                <h4>
                     <span>🚩 Difficoltà: <span th:text="${questionario.getLivelloDifficulty()}"></span></span>
                 </h4>
-
             </div>
+
+
             <div class="section-header">
 
                 <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
                     <h4>
                         ✒️ Note Didattiche
-                        <span th:text="${questionario.noteDidattiche}"></span>
                     </h4>
+                </div>
+
+                <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+                    <p><span th:text="${q.noteDidattiche}"></span></p>
                 </div>
 
                 <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>

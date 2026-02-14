@@ -29,7 +29,10 @@
 
     <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}' class="card-meta">
         <span>✒️ Note Didattiche:</span>
-        <span th:text="${q.noteDidattiche}"></span>
+    </div>
+
+    <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}' class="card-meta">
+        <p><span th:text="${q.noteDidattiche}"></span></p>
     </div>
 
     <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}' class="card-meta">
