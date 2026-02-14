@@ -40,13 +40,6 @@
             </div>
             <div class="section-header">
 
-                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
-                    <h4>
-                        ✒️ Note Didattiche
-                        <span th:text="${questionario.noteDidattiche}"></span>
-                    </h4>
-                </div>
-
                 <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
                     <h4>
                         <span>📅 Data fine: <span th:text="${questionario.dataFine}"></span></span>

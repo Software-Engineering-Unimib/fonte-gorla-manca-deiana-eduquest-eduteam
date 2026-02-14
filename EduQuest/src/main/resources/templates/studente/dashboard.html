@@ -83,7 +83,17 @@
                 <div th:if="${questionariDisponibili != null and !questionariDisponibili.empty}" class="questionari-list">
                     <div th:each="q : ${questionariDisponibili}" class="questionario-card">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <h4 th:text="${q.nome}" style="margin: 0;">Nome Questionario</h4>
+                            <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Questionario"}'>
+                                <h4 style="margin: 0;">Questionario "<span th:text="${q.nome}"></span>"</h4>
+                            </div>
+
+                            <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+                                <h4 style="margin: 0;">Esercitazione "<span th:text="${q.nome}"></span>"</h4>
+                            </div>
+
+                            <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+                                <h4 style="margin: 0;">Compitino "<span th:text="${q.nome}"></span>"</h4>
+                            </div>
                             <span style="color: var(--text-secondary); font-size: 0.8rem; white-space: nowrap;">&#x1F4DA; <span th:text="${q.materia != null ? q.materia : 'N/D'}"></span></span>
                         </div>
                         <p th:text="${q.descrizione}">Descrizione</p>

@@ -31,7 +31,7 @@
 
             <div class="section-header">
                 <h4>
-                    <span>💯 <span th:text="${compilazione.getPunteggio()}"></span> / <span th:text="${questionario.getPunteggioMax()}"></span></span>
+                    <span>💯 Punteggio: <span th:text="${compilazione.getPunteggio()}"></span> / <span th:text="${questionario.getPunteggioMax()}"></span></span>
                     <span>🧿 Edupoints guadagnati: <span th:text="${eduPoints}"></span></span>
                 </h4>
             </div>
@@ -39,30 +39,31 @@
             <div class="section-header">
                 <h4>
                     <span>📅 <span th:text="${questionario.dataCreazione}"></span></span>
-                    <span>📒 Materia: <span th:text="${questionario.materia}"></span></span>
                 </h4>
             </div>
 
             <div class="section-header">
                 <h4>
+                    <span>📒 Materia: <span th:text="${questionario.materia}"></span></span>
+                    |
                     <span>🚩 Difficoltà: <span th:text="${questionario.getLivelloDifficulty()}"></span></span>
                 </h4>
             </div>
 
 
-            <div class="section-header">
+            <div>
 
-                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
+                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}' class="section-header">
                     <h4>
-                        ✒️ Note Didattiche
+                        <span>✒️ Note Didattiche:</span>
                     </h4>
                 </div>
 
-                <div th:if='${q.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}'>
-                    <p><span th:text="${q.noteDidattiche}"></span></p>
+                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Esercitazione"}' class="section-header">
+                    <p><span th:text="${questionario.noteDidattiche}"></span></p>
                 </div>
 
-                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}'>
+                <div th:if='${questionario.getClass().toString() == "class dev.eduteam.eduquest.models.questionari.Compitino"}' class="section-header">
                     <h4>
                         <span>📅 Data fine: <span th:text="${questionario.dataFine}"></span></span>
                         <span>🔢 Tentativi: <span th:text="${questionario.tentativiMax}"></span></span>
