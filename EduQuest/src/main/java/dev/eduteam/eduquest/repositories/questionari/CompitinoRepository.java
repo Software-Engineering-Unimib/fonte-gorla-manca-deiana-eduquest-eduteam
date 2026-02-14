@@ -16,6 +16,8 @@ import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 @Repository
 public class CompitinoRepository extends QuestionarioRepository {
 
+
+    // Metodo che inserisce un compitino creato nel database
     public Compitino insertCompitino(Compitino c) {
         // Usiamo il metodo padre per salvare nella tabella "questionari" i dati comuni
         Questionario base = super.insertQuestionario(c);
@@ -42,6 +44,7 @@ public class CompitinoRepository extends QuestionarioRepository {
         return null;
     }
 
+    // Metodo che recupera il numero di tentativi rimasti per un compitino in base allo studente
     public int countTentativi(int studenteID, int questionarioID) {
         String query = "SELECT COUNT(*) FROM compilazioni WHERE studenteID_FK = ? AND questionarioID_FK = ?";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
@@ -59,6 +62,7 @@ public class CompitinoRepository extends QuestionarioRepository {
         return 0;
     }
 
+    // Metodo che aggiorna un compitino esistente nel database
     public boolean updateCompitino(Compitino comp) {
         boolean result = false;
         String query = "UPDATE compitini SET dataFine = ?, tentativiMax = ?, puntiBonus = ?, assegnatiPtBonus = ? WHERE questionarioID_FK = ?";
@@ -81,6 +85,7 @@ public class CompitinoRepository extends QuestionarioRepository {
     }
 
     // Funzioni Dashboard
+    // Metodo che recupera gli ID dei compitini scaduti che ancora vanno assegnati
     public List<Integer> getIDCompitiniScadutiDaAssegnare() {
         List<Integer> ids = new ArrayList<>();
         String query = "SELECT questionarioID_FK FROM compitini " +

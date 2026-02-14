@@ -19,6 +19,7 @@ public class DomandaRepository {
     private RispostaRepository rispostaRepository;
 
     // Metodo per le operazioni in cui conosci solo domandaID
+    // Recupera una domanda tramile l'ID dal database
     public Domanda getDomandaByID(int domandaID) {
         Domanda domanda = null;
         String query = "SELECT domandaID, tipo, testo, questionarioID_FK, punteggio FROM domande WHERE domandaID = ?";
@@ -47,6 +48,7 @@ public class DomandaRepository {
         return domanda;
     }
 
+    // Metodo che recupera una domanda tramite ID del questionario e della domanda dal database
     public Domanda getDomandaByID(int questionarioID, int domandaID) {
         Domanda domanda = null;
         String query = "SELECT " +
@@ -84,6 +86,7 @@ public class DomandaRepository {
         return domanda;
     }
 
+    // Metodo che recupera tutte le domande di un certo questionario dal database
     public ArrayList<Domanda> getDomandeByQuestionario(int questionarioID) {
         ArrayList<Domanda> elecoDomande = new ArrayList<Domanda>();
         String query = "SELECT " +
@@ -120,6 +123,7 @@ public class DomandaRepository {
         return elecoDomande;
     }
 
+    // Metodo che recupera la domanda a cui appartiene la risposta dal database
     public Domanda getDomandaByRisposta(int rispostaID) {
 
         Domanda domanda = null;
@@ -142,6 +146,7 @@ public class DomandaRepository {
         return domanda;
     }
 
+    // Metodo che aggiunge una domanda creata al database
     public Domanda insertDomanda(Domanda d, int questionarioID) {
         String query = "INSERT INTO domande (tipo, testo, questionarioID_FK, punteggio) VALUES (?, ?, ?, ?)";
 
@@ -166,6 +171,7 @@ public class DomandaRepository {
         }
     }
 
+    // Metodo che rimuove una domanda esistente dal database
     public boolean removeDomanda(int domandaID, int questionarioID) {
         boolean result = false;
         String query = "DELETE FROM domande WHERE domandaID = ? AND questionarioID_FK = ?";
@@ -184,6 +190,7 @@ public class DomandaRepository {
         return result;
     }
 
+    // Metodo che aggiorna una domanda esistente dal database
     public boolean updateDomanda(Domanda d) {
         // Una volta creata la domanda, il tipo non può essere modificato
         boolean result = false;

@@ -18,6 +18,8 @@ public class StudenteRepository {
     @Autowired
     private AccountRepository accountRepository;
 
+    // Prende un result set ottenuto da una query per recuperare uno studente, mappa tutti gli attributi del result set
+    // agli attributi di studente e ritorna lo studente mappato
     private Studente mapResultSetToStudente(ResultSet rs) throws Exception {
         Studente s = new Studente(rs.getString("nome"), rs.getString("cognome"),
                 rs.getString("userName"), rs.getString("email"), rs.getString("password"));
@@ -28,6 +30,7 @@ public class StudenteRepository {
         return s;
     }
 
+    // Metodo che recupera uno studente tramite il suo id dal database
     public Studente getStudenteByAccountID(int accountID) {
         String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints FROM accounts a " +
                 "INNER JOIN studenti s ON a.accountID = s.accountID_FK WHERE a.accountID = ?";
@@ -48,6 +51,7 @@ public class StudenteRepository {
         return null;
     }
 
+    // Metodo che aggiunge uno studente creato al database
     public Studente insertStudente(Studente studente) {
         try {
             // Inserimento nella tabella 'account' tramite la repository comune
@@ -69,6 +73,7 @@ public class StudenteRepository {
         }
     }
 
+    // Metodo che recupera tutti gli studenti nel database
     public List<Studente> getAllStudenti() {
         List<Studente> studenti = new ArrayList<>();
         String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints FROM accounts a " +
@@ -87,6 +92,7 @@ public class StudenteRepository {
         return studenti;
     }
 
+    // Metodo che aggiorna uno studente già esistente nel database
     public boolean updateStudente(Studente studente) {
         try {
             // Aggiorna i dati comuni nella tabella account
@@ -107,7 +113,9 @@ public class StudenteRepository {
         }
     }
 
-    // Funzioni Dashboard
+    // -= Funzioni Dashboard =-
+
+    // Metodo che recupera una lista dei primi "numStudenti" studenti per media dal database
     public ArrayList<Studente> getTopStudentiPerMedia(int numStudenti) {
         ArrayList<Studente> elencoTopStudenti = new ArrayList<Studente>();
         String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints " +
@@ -132,6 +140,7 @@ public class StudenteRepository {
         return elencoTopStudenti;
     }
 
+    // Metodo che recupera una lista dei primi "numStudenti" studenti per eduPoints dal database
     public ArrayList<Studente> getTopStudentiPerEduPoints(int numStudenti) {
         ArrayList<Studente> elencoTopStudenti = new ArrayList<Studente>();
         String query = "SELECT a.*, s.mediaPunteggio, s.eduPoints " +
@@ -164,6 +173,7 @@ public class StudenteRepository {
         public int numeroCompilazioni;
     }
 
+    // Ritona un DTO che rappresenta le statistiche di uno specifico studente
     public RiepilogoStudente getStatisticheBaseStudente(int studenteID) {
         // Vengono contate solo le compilazioni completate
         String query = "SELECT s.mediaPunteggio, s.eduPoints, COUNT(CASE WHEN c.completato = 1 THEN 1 END) as totale " +
@@ -191,6 +201,7 @@ public class StudenteRepository {
         return null;
     }
 
+    // Metodo che recupera una lista dei primi "limit" studenti che hanno vinto punti bonus di un compitino
     public List<Studente> getVincitoriBonusCompitino(int questionarioID, int limit) {
         List<Studente> vincitori = new ArrayList<>();
         String query = "SELECT a.*, MAX(c.punteggio) as migliorVoto, s.puntiBonus " +

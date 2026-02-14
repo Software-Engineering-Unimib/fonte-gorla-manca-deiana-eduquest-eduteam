@@ -45,6 +45,7 @@ public class FeedbackRepository {
         return f;
     }
 
+    // Metodo che aggiunge un feedback creato nel database
     public Feedback insertFeedback(Feedback feedback) {
         String query = "INSERT INTO feedback (testo, domandaID_FK) VALUES (?, ?)";
 

@@ -13,6 +13,7 @@ import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 @Repository
 public class RispostaRepository {
 
+    // Metodo che recupera una risposta dal database in base all'ID
     public Risposta getRispostaByID(int rispostaID) {
         Risposta risposta = null;
         String query = "SELECT " +
@@ -42,6 +43,7 @@ public class RispostaRepository {
         return risposta;
     }
 
+    // Metodo che recupera tutte le risposte di una domanda dal database
     public ArrayList<Risposta> getRisposteByDomanda(int domandaID) {
         ArrayList<Risposta> risposte = new ArrayList<Risposta>();
         String query = "SELECT " +
@@ -71,6 +73,7 @@ public class RispostaRepository {
         return risposte;
     }
 
+    // Metodo che aggiunge una risposta creata nel database
     public Risposta insertRisposta(Risposta r, int domandaID) {
         String query = "INSERT INTO risposte (testo, isCorretta, domandaID_FK) VALUES (?, ?, ?)";
 
@@ -94,6 +97,7 @@ public class RispostaRepository {
         }
     }
 
+    // Metodo che rimuove una risposta esistente dal database
     public boolean removeRisposta(int rispostaID, int domandaID) {
         boolean result = false;
         String query = "DELETE FROM risposte WHERE rispostaID = ? AND domandaID_FK = ?";
@@ -112,6 +116,7 @@ public class RispostaRepository {
         return result;
     }
 
+    // Metodo che aggiorna una risposta esistente nel database
     public boolean updateRisposta(Risposta r) {
         boolean result = false;
         String query = "UPDATE risposte SET testo = ?, isCorretta = ? WHERE rispostaID = ?";

@@ -11,6 +11,7 @@ import dev.eduteam.eduquest.repositories.ConnectionSingleton;
 @Repository
 public class EsercitazioneRepository extends QuestionarioRepository {
 
+    // Metodo che aggiunge una esercitazione creata nel database
     public Esercitazione insertEsercitazione(Esercitazione es) {
         // Usiamo il metodo padre per salvare nella tabella "questionari" i dati comuni
         Questionario base = super.insertQuestionario(es);
@@ -34,6 +35,7 @@ public class EsercitazioneRepository extends QuestionarioRepository {
         return null;
     }
 
+    // Metodo che aggiorna le note di una esercitazione esistente nel database
     public boolean updateNoteEsercitazione(Esercitazione es) {
         boolean result = false;
         String query = "UPDATE esercitazioni SET noteDidattiche = ? WHERE questionarioID_FK = ?";

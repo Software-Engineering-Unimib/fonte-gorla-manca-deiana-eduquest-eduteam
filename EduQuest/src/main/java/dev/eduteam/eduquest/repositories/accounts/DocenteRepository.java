@@ -19,6 +19,7 @@ public class DocenteRepository {
     @Autowired
     private AccountRepository accountRepository;
 
+    // Metodo per recuperare un docente dal database in base all'account
     public Docente getDocenteByAccountID(int accountID) {
         String query = "SELECT a.*, d.insegnamento FROM accounts a " +
                 "INNER JOIN docenti d ON a.accountID = d.accountID_FK WHERE a.accountID = ?";
@@ -41,6 +42,7 @@ public class DocenteRepository {
         return null;
     }
 
+    // Metodo per aggiungere un ducente appena creato nel databse
     public Docente insertDocente(Docente docente) {
         try {
             // Inserimento nella tabella 'account' tramite la repository comune
@@ -62,6 +64,7 @@ public class DocenteRepository {
         }
     }
 
+    // Metodo che ritorna tutti i docenti presenti nel database
     public List<Docente> getAllDocenti() {
         List<Docente> docenti = new ArrayList<>();
         String query = "SELECT a.*, d.insegnamento FROM accounts a " +
@@ -84,6 +87,7 @@ public class DocenteRepository {
         return docenti;
     }
 
+    // Metodo per aggiornare un docente già esistente nel database
     public boolean updateDocente(Docente docente) {
         try {
             // Aggiorna i dati comuni
@@ -103,6 +107,7 @@ public class DocenteRepository {
         }
     }
 
+    // Ritorna il questionario più compilato tra quelli creati dal docente e il numero di compilazioni
     public Questionario getQuestionarioPiuComp(int docenteID) {
         Docente docente = getDocenteByAccountID(docenteID);
         if (docente == null)
@@ -139,6 +144,8 @@ public class DocenteRepository {
         return null;
     }
 
+
+    // Ritorna il questionario con la media più alta tra quelli creati dal docente e la media
     public Questionario getQuestionarioMigliorMediaPunt(int docenteID) {
         Docente docente = getDocenteByAccountID(docenteID);
         if (docente == null)
@@ -177,6 +184,7 @@ public class DocenteRepository {
         return null;
     }
 
+    // Ritorna il numero totale di questionari creati nel database
     public int getNumeroTotQuestCreati(int docenteID) {
         String query = "SELECT COUNT(*) AS totQuestionariCreati " +
                 "FROM questionari q " +
@@ -197,6 +205,7 @@ public class DocenteRepository {
         return 0;
     }
 
+    // Ritorna tutta i compitini creati da un docente che ancora non sono scaduti
     public List<String> getCompitiniValidiConMedia(int docenteID) {
         List<String> validi = new ArrayList<>();
 

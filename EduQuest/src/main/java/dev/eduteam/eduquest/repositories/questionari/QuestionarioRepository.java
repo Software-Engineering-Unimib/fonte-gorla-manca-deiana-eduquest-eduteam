@@ -94,6 +94,7 @@ public class QuestionarioRepository {
         return questionari;
     }
 
+    // Metodo che recupera un questionario esistente dal database in base all'ID
     public Questionario getQuestionarioByID(int id) {
         String query = "SELECT q.*, " +
                 "c.dataFine, c.tentativiMax, " +
@@ -146,6 +147,7 @@ public class QuestionarioRepository {
         return questionari;
     }
 
+    // Metodo che aggiunge un questionario creato nel database
     public Questionario insertQuestionario(Questionario questionario) {
         String query = "INSERT INTO questionari (nome, descrizione, materia, livelloDiff, dataCreazione, docenteID_FK) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -175,6 +177,7 @@ public class QuestionarioRepository {
 
     }
 
+    // Metodo che rimuove un questionario esistente dal database
     public boolean removeQuestionario(int id) {
         String query = "DELETE FROM questionari WHERE questionarioID = ?";
 
@@ -191,6 +194,7 @@ public class QuestionarioRepository {
         return false;
     }
 
+    // Metodo che aggiorna un questionario esistente nel database
     public boolean updateQuestionario(Questionario questionario) {
         boolean result = false;
         String query = "UPDATE questionari SET nome = ?, descrizione = ?, livelloDiff = ? WHERE questionarioID = ?";

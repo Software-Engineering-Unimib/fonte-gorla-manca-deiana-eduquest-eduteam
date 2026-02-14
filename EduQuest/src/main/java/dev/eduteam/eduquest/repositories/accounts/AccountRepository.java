@@ -50,6 +50,7 @@ public class AccountRepository {
         }
     }
 
+    // Metodo per aggiungere un nuovo account creato all'interno del database
     public int insertAccount(Account account, String tipo) throws Exception {
         String query = "INSERT INTO accounts (nome, cognome, userName, email, password, tipo) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -73,6 +74,7 @@ public class AccountRepository {
         throw new Exception("Errore durante l'inserimento dell'account base.");
     }
 
+    // Metodo per aggiornare un account già esistente nel database
     public boolean updateAccount(Account account) {
         boolean result = false;
         String query = "UPDATE accounts SET nome = ?, cognome = ?, email = ?, password = ? WHERE accountID = ?";
@@ -94,6 +96,7 @@ public class AccountRepository {
         return result;
     }
 
+    // Metodo per rimuovere un account già esistente dal database
     public boolean removeAccount(int accountID) {
         String query = "DELETE FROM accounts WHERE accountID = ?";
         try (Connection conn = ConnectionSingleton.getInstance().getConnection();
