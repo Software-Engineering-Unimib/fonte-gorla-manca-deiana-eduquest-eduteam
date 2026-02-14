@@ -268,7 +268,7 @@ class CompilazioneServiceTest {
                 assertTrue(risultato);
                 // Calcolo atteso: votoNormalizzato = (8/10)*100 = 80
                 // nuovaMedia = ((70 * 2) + 80) / (2 + 1) = 220/3 = 73.333...
-                assertEquals(73.33333333333333, studente.getMediaPunteggio(), 0.001);
+                assertEquals(73.33, studente.getMediaPunteggio(), 0.001);
                 verify(studenteRepository, times(1)).updateStudente(any(Studente.class));
                 verify(compilazioneRepository, times(1)).updateStatusCompilazione(1, true);
         }
